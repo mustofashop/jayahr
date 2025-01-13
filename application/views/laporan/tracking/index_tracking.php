@@ -1,0 +1,44 @@
+<div class="box">
+    <div class="box-header">
+        <a class="btn btn-app" href="<?php echo base_url() ?>tracking">
+            <i class="fa fa-refresh"></i>
+            Refresh
+        </a>
+    </div>
+    <div class="box-body">
+        <table class="table table-bordered table-striped tabeldinamis">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIP</th>
+                    <th style="width:100px;">Nama Karyawan</th>
+                    <th>Lokasi</th>
+                    <th>Bagian</th>
+                    <th>No. HP</th>
+                    <th>Absen Terakhir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    $no     = 1;
+                    $id     = $this->session->userdata('id_perusahaan');
+                    $data   = $this->laporan_model->list_tracking_absen($id);
+                    foreach($data->result() as $dt){
+                ?>
+                    <tr>
+                        <td><?php echo $no; ?></td>
+                        <td><?php echo $dt->nip; ?></td>
+                        <td><?php echo $dt->nama_lengkap; ?></td>
+                        <td><?php echo $dt->nama_lokasi; ?></td>
+                        <td><?php echo $dt->nama_bagian; ?></td>
+                        <td><?php echo $dt->no_telepon; ?></td>
+                        <td><?php echo $dt->checktime; ?></td>
+                    </tr>
+                <?php
+                    $no++;
+                    }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
