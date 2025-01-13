@@ -1796,21 +1796,17 @@ class Perusahaan extends CI_Controller
     {
         $id['id_periode']   = $this->input->post('cari');
 
-        $q      = $this->db2->get_where("mst_periode", $id);
+        $q      = $this->db->get_where("mst_tahun_ajaran", $id);
         $row    = $q->num_rows();
         if ($row > 0) {
             foreach ($q->result() as $dt) {
-                $d['id_periode']         = $dt->id_periode;
-                $d['nama_periode']       = $dt->nama_periode;
-                $d['kode_periode']       = $dt->kode_periode;
-                $d['id_karyawan']       = $dt->id_karyawan;
+                $d['id_tahun_ajaran']       = $dt->id_tahun_ajaran;
+                $d['tahun_ajaran']          = $dt->tahun_ajaran;
             }
             echo json_encode($d);
         } else {
-            $d['id_periode']         = '';
-            $d['nama_periode']       = '';
-            $d['kode_periode']       = '';
-            $d['id_karyawan']       = '';
+            $d['id_tahun_ajaran']       = '';
+            $d['tahun_ajaran']          = '';
             echo json_encode($d);
         }
     }
