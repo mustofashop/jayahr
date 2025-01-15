@@ -1838,178 +1838,101 @@ class Perusahaan extends CI_Controller
         }
     }
 
-     //periode penilaian
-    public function master_inass($id_perusahaan)
+    //periode penilaian level 2
+    public function master_periode_penilaian($id_periode, $id_perusahaan)
     {
         $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
-            $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['nama']       = $nama_perusahaan;
-            $d['class']      = 'perusahaan';
-            $d['id_p']       = $id_perusahaan;
-            $d['header']     = 'Pertanyaan Internal Assesment';
-            $d['content']    = 'perusahaan/master_inass/index_inass';
-            $this->load->view('master', $d);
-        }
-    }
+            $detail_periode_penilaian  = $this->enterprise_model->detail_periode($id_periode);
+            $nama_periode    = $detail_periode_penilaian->row()->periode_tahun;
 
-    public function save_inass()
-    {
-        $logged_in      = $this->session->userdata('logged_in');
-        if ($logged_in != TRUE || empty($logged_in)) {
-            redirect(base_url('login'));
-        } else {
-            $dt1['nama_value']  = $this->input->post('nama_value');
-            $dt1['desc']        = $this->input->post('desc');
-            $dt1['urutan']      = $this->input->post('urutan');
-            $dt1['flag_diisi']  = $this->input->post('flag_diisi');
-            $this->db->insert("mst_inass", $dt1);
-
-            $this->session->set_flashdata('msg', 'Pertanyaan Level 1 Sukses disimpan');
-            redirect($_SERVER['HTTP_REFERER']);
-        }
-    }
-    public function delete_inass($id_iass)
-    {
-        $id['id_iass']    = $id_iass;
-        $this->db->delete("mst_inass", $id);
-        $this->session->set_flashdata('msg', 'Pertanyaan Level 1 Sukses dihapus');
-        redirect($_SERVER['HTTP_REFERER']);
-    }
-    public function edit_inass()
-    {
-        $id['id_iass']   = $this->input->post('cari');
-
-        $q      = $this->db2->get_where("mst_inass", $id);
-        $row    = $q->num_rows();
-        if ($row > 0) {
-            foreach ($q->result() as $dt) {
-                $d['id_iass']    = $dt->id_iass;
-                $d['nama_value'] = $dt->nama_value;
-                $d['flag_diisi'] = $dt->flag_diisi;
-                $d['desc']       = $dt->desc;
-                $d['urutan']     = $dt->urutan;
-            }
-            echo json_encode($d);
-        } else {
-            $d['id_iass']    = '';
-            $d['nama_value'] = '';
-            $d['flag_diisi'] = '';
-            $d['desc']       = '';
-            $d['urutan']     = '';
-            echo json_encode($d);
-        }
-    }
-    public function save_edit_inass()
-    {
-        $logged_in      = $this->session->userdata('logged_in');
-        if ($logged_in != TRUE || empty($logged_in)) {
-            redirect(base_url('login'));
-        } else {
-            $id['id_iass']      = $this->input->post('id_iass');
-            $dt['nama_value']   = $this->input->post('nama_value');
-            $dt['desc']         = $this->input->post('desc');
-            $dt['flag_diisi']   = $this->input->post('flag_diisi');
-            $dt['urutan']       = $this->input->post('urutan');
-            $this->db->update("mst_inass", $dt, $id);
-            $this->session->set_flashdata('msg', 'Bagian / Unit Kerja Sukses diupdate');
-            redirect($_SERVER['HTTP_REFERER']);
-        }
-    }
-
-    public function delete_lokasi_inass($id_bagian_detail)
-    {
-        $id['id_iass'] = $id_bagian_detail;
-        $this->db->delete("mst_inass", $id);
-        $this->session->set_flashdata('msg', 'Pertanyaan Level 1 Sukses dihapus');
-        redirect($_SERVER['HTTP_REFERER']);
-    }
-
-    //inass level 2
-    public function master_inass_2($id_iass, $id_perusahaan)
-    {
-        $logged_in      = $this->session->userdata('logged_in');
-        if ($logged_in != TRUE || empty($logged_in)) {
-            redirect(base_url('login'));
-        } else {
-            $detail_inass  = $this->enterprise_model->detail_inass($id_iass);
-            $nama_inass    = $detail_inass->row()->nama_value;
-
-            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
-            $nama_perusahaan = $detail->row()->nama_perusahaan;
+            // $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            // $nama_perusahaan = $detail->row()->nama_perusahaan;
 
             $d['class']     = 'perusahaan';
             $d['id_p']      = $id_perusahaan;
-            $d['id_iass']   = $id_iass;
-            $d['header']    = 'Pertanyaan level 2 | ' . $nama_inass;
-            $d['content']   = 'perusahaan/master_inass/inass2/index_inass2';
+            $d['id_periode']   = $id_periode;
+            $d['header']    = 'Pertanyaan level 2 | ' . $nama_periode;
+            $d['content']   = 'perusahaan/master_periode_penilaian/index_periode_penilaian';
             $this->load->view('master', $d);
         }
     }
-    public function save_inass_2()
+    public function save_periode_penilaian()
     {
         $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_iass_2        = $this->input->post('id_iass_2');
-            if (empty($id_iass_2)) {
-                $id['id_iass_2']  = '0';
+            $id_pen                = $this->input->post('id_pen');
+            $nama_value              = $this->input->post('nama_value');
+
+            if ($id_pen == '') {
+                $id_p_periode  = '0';
             } else {
-                $id['id_iass_2']  = $id_iass_2;
+                $id_p_periode  = $id_pen;
             }
 
-            $dt['id_iass']    = $this->input->post('id_iass');
-            $dt['nama_value'] = $this->input->post('nama_value');
-            $dt['flag_diisi'] = $this->input->post('flag_diisi');
-            $dt['urutan']     = $this->input->post('urutan');
-            $dt['desc']       = $this->input->post('desc');
-            $c = $this->db->get_where("mst_inass_2", $id);
+            $id['id_p_periode'] = $id_p_periode;
+            $dt['nama_value']   = $nama_value;
+
+            $c = $this->db->get_where("mst_periode_penilaian", $id);
             if ($c->num_rows() > 0) {
-                $this->db->update("mst_inass_2", $dt, $id);
+                $this->db->update("mst_periode_penilaian", $dt, $id);
                 $this->session->set_flashdata('msg', 'Pertanyaan Level 2 Sukses diupdate');
                 redirect($_SERVER['HTTP_REFERER']);
             } else {
-                $this->db->insert("mst_inass_2", $dt);
+                $this->db->insert("mst_periode_penilaian", $dt);
                 $this->session->set_flashdata('msg', 'Pertanyaan Level 2 Sukses disimpan');
                 redirect($_SERVER['HTTP_REFERER']);
             }
         }
     }
-    public function edit_inass_2()
+    public function hapus()
     {
-        $id['id_iass_2']   = $this->input->post('cari');
+        $id['id_p_periode']    = $this->uri->segment(3);
+        $dt['status'] = '1';
+        $q = $this->db->get_where("mst_periode_penilaian", $id);
+        $row = $q->num_rows();
+        if ($row > 0) {
+            $this->db->update("mst_periode_penilaian", $dt, $id);
+        }
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+    public function aktif()
+    {
+        $id['id_p_periode']    = $this->uri->segment(3);
+        $dt['status'] = '0';
+        $q = $this->db->get_where("mst_periode_penilaian", $id);
+        $row = $q->num_rows();
+        if ($row > 0) {
+            $this->db->update("mst_periode_penilaian", $dt, $id);
+        }
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+    public function edit_periode_penilaian()
+    {
+        $id['id_p_periode']   = $this->input->post('cari');
 
-        $q      = $this->db2->get_where("mst_inass_2", $id);
+        $q      = $this->db2->get_where("mst_periode_penilaian", $id);
         $row    = $q->num_rows();
         if ($row > 0) {
             foreach ($q->result() as $dt) {
-                $d['id_iass_2']  = $dt->id_iass_2;
-                $d['id_iass']    = $dt->id_iass;
                 $d['nama_value'] = $dt->nama_value;
-                $d['flag_diisi'] = $dt->flag_diisi;
-                $d['desc']       = $dt->desc;
-                $d['urutan']     = $dt->urutan;
             }
             echo json_encode($d);
         } else {
-            $d['id_iass_2']  = '';
-            $d['id_iass']    = '';
+            $d['id_p_periode']  = '';
             $d['nama_value'] = '';
-            $d['flag_diisi'] = '';
-            $d['desc']       = '';
-            $d['urutan']     = '';
             echo json_encode($d);
         }
     }
-    public function delete_inass_2($id_iass_2)
+    public function delete_periode_penilaian($id_p_periode)
     {
-        $id['id_iass_2']    = $id_iass_2;
-        $this->db->delete("mst_inass_2", $id);
+        $id['id_p_periode']    = $id_p_periode;
+        $this->db->delete("mst_periode_penilaian", $id);
         $this->session->set_flashdata('msg', 'Pertanyaan Level 2 Sukses dihapus');
         redirect($_SERVER['HTTP_REFERER']);
-
+    }
 }

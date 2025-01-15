@@ -173,11 +173,6 @@ if ($class == 'dashboard') {
                 } ?>><a href="<?php echo base_url(); ?>perusahaan/master_periode/12">
                     <i class="fa fa-circle-o"></i> Periode</a>
             </li>
-            <li <?php if ($this->uri->segment(2) == "perusahaan") {
-                    echo 'class="active"';
-                } ?>><a href="<?php echo base_url(); ?>perusahaan/master_periode_penilaian/12">
-                    <i class="fa fa-circle-o"></i> Periode Penilaian</a>
-            </li>
         </ul>
     </li>
     <input type="hidden" name="uri" id="uri" value="<?php echo base_url($this->uri->segment(1)); ?>">

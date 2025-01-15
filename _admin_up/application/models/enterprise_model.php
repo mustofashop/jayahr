@@ -726,26 +726,32 @@ class Enterprise_model extends CI_Model
     public function detail_periode($id_periode)
     {
         $q = $this->db->query("SELECT id_periode, periode_tahun
-        FROM mst_inass
+        FROM mst_periode
         WHERE id_periode = '$id_periode'");
         return $q;
     }
 
     //PERIODE PENILAIAN
-    public function get_periode($id_perusahaan)
+    public function get_periode_penilaian($id_perusahaan)
     {
-        $q = $this->db->query("SELECT id_periode, periode_tahun, status
-        FROM mst_periode
+        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, status, flag_diisi, desc
+        FROM mst_periode_penilaian
         where id_perusahaan = '$id_perusahaan'
-        order by periode_tahun asc");
+        order by nama_value asc");
         return $q;
     }
 
-    public function detail_periode($id_periode)
+    public function detail_periode_penilaian($id_periode)
     {
-        $q = $this->db->query("SELECT id_periode, periode_tahun
-        FROM mst_inass
+        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, status, flag_diisi
+        FROM mst_periode_penilaian
         WHERE id_periode = '$id_periode'");
+        return $q;
+    }
+
+    public function list_penilaian()
+    {
+        $q = $this->db->query("SELECT * FROM mst_periode_penilaian ");
         return $q;
     }
 }

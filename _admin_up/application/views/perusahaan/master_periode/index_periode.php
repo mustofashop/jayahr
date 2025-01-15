@@ -45,6 +45,10 @@
                                 <td><a class="btn bg-olive btn-flat" href="#modal1" onclick="javascript:Tahun_a('<?php echo $dt->id_periode; ?>')" data-toggle="modal" title="Edit">
                                         <i class="fa fa-pencil"></i>
                                     </a>
+                                    <!-- bagian level 2 -->
+                                    <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>perusahaan/master_periode_penilaian/<?php echo $dt->id_periode; ?>/<?php echo $id_p; ?>" title="Level 2">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
                                     <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>perusahaan/delete_periode/<?php echo $dt->id_periode; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">
                                         <i class="fa fa-trash"></i>
                                     </a>
