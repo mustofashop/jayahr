@@ -1,25 +1,25 @@
 <script type="text/javascript">
-function Edit(ID){
-    var cari	= ID;	
-    $.ajax({
-        type	: "POST",
-        url		: "<?php echo site_url(); ?>/perusahaan/edit_inass_2",
-        data	: "cari="+cari,
-        dataType: "json",
-        success	: function(data){
-            $('#id_iass').val(data.id_iass);
-            $('#id_iass_2').val(data.id_iass_2);
-            $('#nama_value').val(data.nama_value);
-            $('#desc').val(data.desc);
-            $('#urutan').val(data.urutan);
-            $('#flag_diisi').val(data.flag_diisi);
-        }
-    });
-}
+    function Edit(ID) {
+        var cari = ID;
+        $.ajax({
+            type: "POST",
+            url: "<?php echo site_url(); ?>/perusahaan/edit_inass_2",
+            data: "cari=" + cari,
+            dataType: "json",
+            success: function(data) {
+                $('#id_iass').val(data.id_iass);
+                $('#id_iass_2').val(data.id_iass_2);
+                $('#nama_value').val(data.nama_value);
+                $('#desc').val(data.desc);
+                $('#urutan').val(data.urutan);
+                $('#flag_diisi').val(data.flag_diisi);
+            }
+        });
+    }
 </script>
 <div class="row">
     <div class="col-md-12">
-        <?php if($this->session->flashdata('msg')): ?>
+        <?php if ($this->session->flashdata('msg')): ?>
             <div class="alert alert-success alert-dismissible" id="success-alert">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-check"></i> Alert!</h4>
@@ -28,11 +28,11 @@ function Edit(ID){
         <?php endif; ?>
         <div class="box">
             <div class="box-header">
-				<a class="btn btn-app" href="<?php echo base_url(); ?>perusahaan/master_inass/<?php echo $id_p; ?>">
+                <a class="btn btn-app" href="<?php echo base_url(); ?>perusahaan/master_inass/<?php echo $id_p; ?>">
                     <i class="fa fa-arrow-left"></i>
                     Kembali
                 </a>
-				<a class="btn btn-app" id="tambah" data-toggle="modal" data-target="#modal">
+                <a class="btn btn-app" id="tambah" data-toggle="modal" data-target="#modal">
                     <i class="fa fa-plus"></i>
                     Tambah
                 </a>
@@ -42,28 +42,28 @@ function Edit(ID){
                     <thead>
                         <tr>
                             <td>No</td>
-							<td>Pertanyaan</td>
-							<td>Deskripsi</td>
-							<td>Diisi?</td>
-							<td>Urutan</td>
-							<td>Aksi</td>
+                            <td>Pertanyaan</td>
+                            <td>Deskripsi</td>
+                            <td>Diisi?</td>
+                            <td>Urutan</td>
+                            <td>Aksi</td>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                            $no     = 1;
-                            $data   = $this->enterprise_model->list_inass_lvl_2($id_iass);
-                            foreach($data->result() as $dt){
+                        $no     = 1;
+                        $data   = $this->enterprise_model->list_inass_lvl_2($id_iass);
+                        foreach ($data->result() as $dt) {
                         ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
-								<td><?php echo $dt->nama_value; ?></td>
-								<td><?php echo $dt->desc; ?></td>
-								<td><?php echo $dt->flag_diisi; ?></td>
-								<td><?php echo $dt->urutan; ?></td>
+                                <td><?php echo $dt->nama_value; ?></td>
+                                <td><?php echo $dt->desc; ?></td>
+                                <td><?php echo $dt->flag_diisi; ?></td>
+                                <td><?php echo $dt->urutan; ?></td>
                                 <td>
                                     <!-- edit -->
-                                    <a class="btn bg-olive btn-flat" href="#modal" onclick="javascript:Edit('<?php echo $dt->id_iass_2;?>')" data-toggle="modal" title="Edit">
+                                    <a class="btn bg-olive btn-flat" href="#modal" onclick="javascript:Edit('<?php echo $dt->id_iass_2; ?>')" data-toggle="modal" title="Edit">
                                         <i class="fa fa-pencil"></i>
                                     </a>
                                     <!-- bagian level 3 -->
@@ -78,7 +78,7 @@ function Edit(ID){
                             </tr>
                         <?php
                             $no++;
-                            }
+                        }
                         ?>
                     </tbody>
                 </table>
@@ -105,11 +105,11 @@ function Edit(ID){
                         <input type="hidden" name="id_iass_2" id="id_iass_2">
                         <input type="hidden" name="id_iass" value="<?php echo $id_iass; ?>">
                     </div>
-					<div class="form-group">
+                    <div class="form-group">
                         <label for="">Deskripsi</label>
                         <input type="text" name="desc" id="desc" class="form-control" required="required">
                     </div>
-					<div class="form-group">
+                    <div class="form-group">
                         <label for="">Diisi?</label>
                         <input type="text" name="flag_diisi" id="flag_diisi" class="form-control" required="required">
                     </div>

@@ -712,4 +712,40 @@ class Enterprise_model extends CI_Model
 		order by a.tanggal asc");
         return $q;
     }
+
+    //PERIODE
+    public function get_periode($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_periode, periode_tahun, status
+        FROM mst_periode
+        where id_perusahaan = '$id_perusahaan'
+        order by periode_tahun asc");
+        return $q;
+    }
+
+    public function detail_periode($id_periode)
+    {
+        $q = $this->db->query("SELECT id_periode, periode_tahun
+        FROM mst_inass
+        WHERE id_periode = '$id_periode'");
+        return $q;
+    }
+
+    //PERIODE PENILAIAN
+    public function get_periode($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_periode, periode_tahun, status
+        FROM mst_periode
+        where id_perusahaan = '$id_perusahaan'
+        order by periode_tahun asc");
+        return $q;
+    }
+
+    public function detail_periode($id_periode)
+    {
+        $q = $this->db->query("SELECT id_periode, periode_tahun
+        FROM mst_inass
+        WHERE id_periode = '$id_periode'");
+        return $q;
+    }
 }

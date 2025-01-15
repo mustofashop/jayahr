@@ -14,22 +14,22 @@ class Perusahaan extends CI_Controller
     //settings 1
     public function setting($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
-            $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['id_p']      = $id_perusahaan;
-            $d['class']     = 'perusahaan';
-            $d['header']    = 'Setting | ' . $nama_perusahaan;
-            $d['content']   = 'perusahaan/setting/index_setting';
+            $detail             = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $nama_perusahaan    = $detail->row()->nama_perusahaan;
+            $d['id_p']          = $id_perusahaan;
+            $d['class']         = 'perusahaan';
+            $d['header']        = 'Setting | ' . $nama_perusahaan;
+            $d['content']       = 'perusahaan/setting/index_setting';
             $this->load->view('master', $d);
         }
     }
     public function save_setting_omit()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -52,7 +52,7 @@ class Perusahaan extends CI_Controller
     }
     public function hapus_omit($id_om_it, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -74,7 +74,7 @@ class Perusahaan extends CI_Controller
     //settings 2 
     public function save_settings()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -93,7 +93,7 @@ class Perusahaan extends CI_Controller
     //master perusahaan
     public function master_perusahaan()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -106,7 +106,7 @@ class Perusahaan extends CI_Controller
     }
     public function get_data_perusahaan()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -143,13 +143,13 @@ class Perusahaan extends CI_Controller
     }
     public function save_perusahaan()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
             $id_perusahaan          = $this->input->post('id');
             $nama_perusahaan        = $this->input->post('nama');
-            $ip_perusahaan             = $this->input->post('ip');
+            $ip_perusahaan          = $this->input->post('ip');
             if ($id_perusahaan == "" || empty($id_perusahaan)) {
                 $id['id_perusahaan'] = '0';
             } else {
@@ -206,7 +206,7 @@ class Perusahaan extends CI_Controller
     }
     public function delete_perusahaan($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -219,38 +219,38 @@ class Perusahaan extends CI_Controller
     //bagian
     public function master_bagian($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
-            $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['nama']      = $nama_perusahaan;
-            $d['class']     = 'perusahaan';
-            $d['id_p']      = $id_perusahaan;
-            $d['header']    = 'Bagian / Unit Kerja';
-            $d['content']   = 'perusahaan/master_bagian/index_bagian';
+            $detail             = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $nama_perusahaan    = $detail->row()->nama_perusahaan;
+            $d['nama']          = $nama_perusahaan;
+            $d['class']         = 'perusahaan';
+            $d['id_p']          = $id_perusahaan;
+            $d['header']        = 'Bagian / Unit Kerja';
+            $d['content']       = 'perusahaan/master_bagian/index_bagian';
             $this->load->view('master', $d);
         }
     }
 
     public function save_bagian()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $bagian             = $this->input->post('bagian');
-            $id_perusahaan      = $this->input->post('id_perusahaan');
-            $absen              = $this->input->post('absen_o');
+            $bagian                     = $this->input->post('bagian');
+            $id_perusahaan              = $this->input->post('id_perusahaan');
+            $absen                      = $this->input->post('absen_o');
             $dt1['nama_bagian']         = $bagian;
             $dt1['id_perusahaan']       = $id_perusahaan;
             $dt1['flag_absen_online']   = $absen;
             $dt1['id_karyawan']         = $this->input->post('leader');
             $this->db->insert("mst_bagian", $dt1);
-            $id_bagian          = $this->db->insert_id();
-            $lokasi             = $this->input->post('lokasi', TRUE);
-            $data2              = array();
+            $id_bagian                  = $this->db->insert_id();
+            $lokasi                     = $this->input->post('lokasi', TRUE);
+            $data2                      = array();
             foreach ($lokasi as $i => $a) {
                 $data2[] = array(
                     'id_lokasi'     => $a,
@@ -264,7 +264,7 @@ class Perusahaan extends CI_Controller
     }
     public function delete_bagian($id_bagian)
     {
-        $id['id_bagian']    = $id_bagian;
+        $id['id_bagian'] = $id_bagian;
         $this->db->delete("mst_bagian", $id);
         $this->db->delete("mst_bagian_detail", $id);
         $this->session->set_flashdata('msg', 'Bagian / Unit Kerja Sukses dihapus');
@@ -272,7 +272,7 @@ class Perusahaan extends CI_Controller
     }
     public function edit_bagian()
     {
-        $id['id_bagian']   = $this->input->post('cari');
+        $id['id_bagian'] = $this->input->post('cari');
 
         $q      = $this->db2->get_where("mst_bagian", $id);
         $row    = $q->num_rows();
@@ -294,7 +294,7 @@ class Perusahaan extends CI_Controller
     }
     public function save_edit_bagian()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -309,7 +309,7 @@ class Perusahaan extends CI_Controller
     }
     public function edit_lokasi_bagian($id_bagian, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -332,7 +332,7 @@ class Perusahaan extends CI_Controller
     }
     public function save_lokasi_bagian()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -353,15 +353,15 @@ class Perusahaan extends CI_Controller
     //bagian level 2
     public function master_bagian_2($id_bagian, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
             $detail_bagian  = $this->enterprise_model->detail_bagian($id_bagian);
             $nama_bagian    = $detail_bagian->row()->nama_bagian;
 
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
-            $nama_perusahaan = $detail->row()->nama_perusahaan;
+            $detail             = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $nama_perusahaan    = $detail->row()->nama_perusahaan;
 
             $d['class']     = 'perusahaan';
             $d['id_p']      = $id_perusahaan;
@@ -373,20 +373,20 @@ class Perusahaan extends CI_Controller
     }
     public function save_bagian_2()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_bagian_2        = $this->input->post('id_bagian_2');
+            $id_bagian_2    = $this->input->post('id_bagian_2');
             if (empty($id_bagian_2)) {
                 $id['id_bagian_2']  = '0';
             } else {
                 $id['id_bagian_2']  = $id_bagian_2;
             }
-            $dt['id_bagian']        = $this->input->post('id_bagian');
-            $dt['nama_bagian_2']    = $this->input->post('nama');
-            $dt['flag_absen_online'] = $this->input->post('absen');
-            $dt['id_karyawan']      = $this->input->post('leader');
+            $dt['id_bagian']            = $this->input->post('id_bagian');
+            $dt['nama_bagian_2']        = $this->input->post('nama');
+            $dt['flag_absen_online']    = $this->input->post('absen');
+            $dt['id_karyawan']          = $this->input->post('leader');
             $c = $this->db->get_where("mst_bagian_2", $id);
             if ($c->num_rows() > 0) {
                 $this->db->update("mst_bagian_2", $dt, $id);
@@ -431,7 +431,7 @@ class Perusahaan extends CI_Controller
     //bagian level 3
     public function master_bagian_3($id_bagian_2, $id_bagian, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -441,7 +441,7 @@ class Perusahaan extends CI_Controller
             $detail_bagian  = $this->enterprise_model->detail_bagian($id_bagian);
             $nama_bagian    = $detail_bagian->row()->nama_bagian;
 
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
 
             $d['class']     = 'perusahaan';
@@ -455,7 +455,7 @@ class Perusahaan extends CI_Controller
     }
     public function save_bagian_3()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -465,10 +465,10 @@ class Perusahaan extends CI_Controller
             } else {
                 $id['id_bagian_3']  = $id_bagian_3;
             }
-            $dt['id_bagian_2']      = $this->input->post('id_bagian_2');
-            $dt['nama_bagian_3']    = $this->input->post('nama');
+            $dt['id_bagian_2']       = $this->input->post('id_bagian_2');
+            $dt['nama_bagian_3']     = $this->input->post('nama');
             $dt['flag_absen_online'] = $this->input->post('absen');
-            $dt['id_karyawan']      = $this->input->post('leader');
+            $dt['id_karyawan']       = $this->input->post('leader');
             $c = $this->db->get_where("mst_bagian_3", $id);
             if ($c->num_rows() > 0) {
                 $this->db->update("mst_bagian_3", $dt, $id);
@@ -513,7 +513,7 @@ class Perusahaan extends CI_Controller
     //MASTER BAGIAN 4
     public function master_bagian_4($id_bagian_3, $id_bagian_2, $id_bagian, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -526,7 +526,7 @@ class Perusahaan extends CI_Controller
             $detail_bagian  = $this->enterprise_model->detail_bagian($id_bagian);
             $nama_bagian    = $detail_bagian->row()->nama_bagian;
 
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
 
             $d['class']     = 'perusahaan';
@@ -541,7 +541,7 @@ class Perusahaan extends CI_Controller
     }
     public function save_bagian_4()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -551,10 +551,10 @@ class Perusahaan extends CI_Controller
             } else {
                 $id['id_bagian_4']  = $id_bagian_4;
             }
-            $dt['id_bagian_3']      = $this->input->post('id_bagian_3');
-            $dt['nama_bagian_4']    = $this->input->post('nama');
+            $dt['id_bagian_3']       = $this->input->post('id_bagian_3');
+            $dt['nama_bagian_4']     = $this->input->post('nama');
             $dt['flag_absen_online'] = $this->input->post('absen');
-            $dt['id_karyawan']      = $this->input->post('leader');
+            $dt['id_karyawan']       = $this->input->post('leader');
             $c = $this->db->get_where("mst_bagian_4", $id);
             if ($c->num_rows() > 0) {
                 $this->db->update("mst_bagian_4", $dt, $id);
@@ -601,17 +601,17 @@ class Perusahaan extends CI_Controller
     //inass 1
     public function master_idp($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['nama']      = $nama_perusahaan;
-            $d['class']     = 'perusahaan';
-            $d['id_p']      = $id_perusahaan;
-            $d['header']    = 'Pertanyaan Employee Analitic';
-            $d['content']   = 'perusahaan/master_idp/index_idp';
+            $d['nama']       = $nama_perusahaan;
+            $d['class']      = 'perusahaan';
+            $d['id_p']       = $id_perusahaan;
+            $d['header']     = 'Pertanyaan Employee Analitic';
+            $d['content']    = 'perusahaan/master_idp/index_idp';
             $this->load->view('master', $d);
         }
     }
@@ -620,29 +620,29 @@ class Perusahaan extends CI_Controller
     //inass 1
     public function master_inass($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['nama']      = $nama_perusahaan;
-            $d['class']     = 'perusahaan';
-            $d['id_p']      = $id_perusahaan;
-            $d['header']    = 'Pertanyaan Internal Assesment';
-            $d['content']   = 'perusahaan/master_inass/index_inass';
+            $d['nama']       = $nama_perusahaan;
+            $d['class']      = 'perusahaan';
+            $d['id_p']       = $id_perusahaan;
+            $d['header']     = 'Pertanyaan Internal Assesment';
+            $d['content']    = 'perusahaan/master_inass/index_inass';
             $this->load->view('master', $d);
         }
     }
 
     public function save_inass()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
             $dt1['nama_value']  = $this->input->post('nama_value');
-            $dt1['desc']           = $this->input->post('desc');
+            $dt1['desc']        = $this->input->post('desc');
             $dt1['urutan']      = $this->input->post('urutan');
             $dt1['flag_diisi']  = $this->input->post('flag_diisi');
             $this->db->insert("mst_inass", $dt1);
@@ -666,33 +666,33 @@ class Perusahaan extends CI_Controller
         $row    = $q->num_rows();
         if ($row > 0) {
             foreach ($q->result() as $dt) {
-                $d['id_iass']         = $dt->id_iass;
-                $d['nama_value']       = $dt->nama_value;
+                $d['id_iass']    = $dt->id_iass;
+                $d['nama_value'] = $dt->nama_value;
                 $d['flag_diisi'] = $dt->flag_diisi;
                 $d['desc']       = $dt->desc;
-                $d['urutan']       = $dt->urutan;
+                $d['urutan']     = $dt->urutan;
             }
             echo json_encode($d);
         } else {
-            $d['id_iass']         = '';
-            $d['nama_value']       = '';
+            $d['id_iass']    = '';
+            $d['nama_value'] = '';
             $d['flag_diisi'] = '';
-            $d['desc'] = '';
-            $d['urutan']       = '';
+            $d['desc']       = '';
+            $d['urutan']     = '';
             echo json_encode($d);
         }
     }
     public function save_edit_inass()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id['id_iass']            = $this->input->post('id_iass');
-            $dt['nama_value']          = $this->input->post('nama_value');
-            $dt['desc']    = $this->input->post('desc');
-            $dt['flag_diisi']          = $this->input->post('flag_diisi');
-            $dt['urutan']          = $this->input->post('urutan');
+            $id['id_iass']      = $this->input->post('id_iass');
+            $dt['nama_value']   = $this->input->post('nama_value');
+            $dt['desc']         = $this->input->post('desc');
+            $dt['flag_diisi']   = $this->input->post('flag_diisi');
+            $dt['urutan']       = $this->input->post('urutan');
             $this->db->update("mst_inass", $dt, $id);
             $this->session->set_flashdata('msg', 'Bagian / Unit Kerja Sukses diupdate');
             redirect($_SERVER['HTTP_REFERER']);
@@ -710,19 +710,19 @@ class Perusahaan extends CI_Controller
     //inass level 2
     public function master_inass_2($id_iass, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
             $detail_inass  = $this->enterprise_model->detail_inass($id_iass);
-            $nama_inass     = $detail_inass->row()->nama_value;
+            $nama_inass    = $detail_inass->row()->nama_value;
 
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
 
             $d['class']     = 'perusahaan';
             $d['id_p']      = $id_perusahaan;
-            $d['id_iass']      = $id_iass;
+            $d['id_iass']   = $id_iass;
             $d['header']    = 'Pertanyaan level 2 | ' . $nama_inass;
             $d['content']   = 'perusahaan/master_inass/inass2/index_inass2';
             $this->load->view('master', $d);
@@ -730,7 +730,7 @@ class Perusahaan extends CI_Controller
     }
     public function save_inass_2()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -741,11 +741,11 @@ class Perusahaan extends CI_Controller
                 $id['id_iass_2']  = $id_iass_2;
             }
 
-            $dt['id_iass']        = $this->input->post('id_iass');
-            $dt['nama_value']    = $this->input->post('nama_value');
+            $dt['id_iass']    = $this->input->post('id_iass');
+            $dt['nama_value'] = $this->input->post('nama_value');
             $dt['flag_diisi'] = $this->input->post('flag_diisi');
-            $dt['urutan']      = $this->input->post('urutan');
-            $dt['desc']      = $this->input->post('desc');
+            $dt['urutan']     = $this->input->post('urutan');
+            $dt['desc']       = $this->input->post('desc');
             $c = $this->db->get_where("mst_inass_2", $id);
             if ($c->num_rows() > 0) {
                 $this->db->update("mst_inass_2", $dt, $id);
@@ -766,21 +766,21 @@ class Perusahaan extends CI_Controller
         $row    = $q->num_rows();
         if ($row > 0) {
             foreach ($q->result() as $dt) {
-                $d['id_iass_2']         = $dt->id_iass_2;
-                $d['id_iass']         = $dt->id_iass;
-                $d['nama_value']       = $dt->nama_value;
+                $d['id_iass_2']  = $dt->id_iass_2;
+                $d['id_iass']    = $dt->id_iass;
+                $d['nama_value'] = $dt->nama_value;
                 $d['flag_diisi'] = $dt->flag_diisi;
                 $d['desc']       = $dt->desc;
-                $d['urutan']       = $dt->urutan;
+                $d['urutan']     = $dt->urutan;
             }
             echo json_encode($d);
         } else {
-            $d['id_iass_2']         = '';
-            $d['id_iass']         = '';
-            $d['nama_value']       = '';
+            $d['id_iass_2']  = '';
+            $d['id_iass']    = '';
+            $d['nama_value'] = '';
             $d['flag_diisi'] = '';
-            $d['desc'] = '';
-            $d['urutan']       = '';
+            $d['desc']       = '';
+            $d['urutan']     = '';
             echo json_encode($d);
         }
     }
@@ -794,7 +794,7 @@ class Perusahaan extends CI_Controller
     //inass level 3
     public function master_inass_3($id_iass_2, $id_iass, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -804,7 +804,7 @@ class Perusahaan extends CI_Controller
             $detail_inass  = $this->enterprise_model->detail_inass($id_iass);
             $nama_inass    = $detail_inass->row()->nama_value;
 
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
 
             $d['class']     = 'perusahaan';
@@ -818,20 +818,20 @@ class Perusahaan extends CI_Controller
     }
     public function save_inass_3()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_bagian_3        = $this->input->post('id_bagian_3');
+            $id_bagian_3    = $this->input->post('id_bagian_3');
             if (empty($id_bagian_3)) {
                 $id['id_bagian_3']  = '0';
             } else {
                 $id['id_bagian_3']  = $id_bagian_3;
             }
-            $dt['id_bagian_2']      = $this->input->post('id_bagian_2');
-            $dt['nama_bagian_3']    = $this->input->post('nama');
-            $dt['flag_absen_online'] = $this->input->post('absen');
-            $dt['id_karyawan']      = $this->input->post('leader');
+            $dt['id_bagian_2']          = $this->input->post('id_bagian_2');
+            $dt['nama_bagian_3']        = $this->input->post('nama');
+            $dt['flag_absen_online']    = $this->input->post('absen');
+            $dt['id_karyawan']          = $this->input->post('leader');
             $c = $this->db->get_where("mst_bagian_3", $id);
             if ($c->num_rows() > 0) {
                 $this->db->update("mst_bagian_3", $dt, $id);
@@ -878,24 +878,24 @@ class Perusahaan extends CI_Controller
     //lokasi
     public function master_lokasi($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['nama']      = $nama_perusahaan;
-            $d['class']     = 'perusahaan';
-            $d['data']      = $this->enterprise_model->get_lokasi($id_perusahaan);
-            $d['id_p']      = $id_perusahaan;
-            $d['header']    = 'Lokasi';
-            $d['content']   = 'perusahaan/master_lokasi/index_lokasi';
+            $d['nama']       = $nama_perusahaan;
+            $d['class']      = 'perusahaan';
+            $d['data']       = $this->enterprise_model->get_lokasi($id_perusahaan);
+            $d['id_p']       = $id_perusahaan;
+            $d['header']     = 'Lokasi';
+            $d['content']    = 'perusahaan/master_lokasi/index_lokasi';
             $this->load->view('master', $d);
         }
     }
     public function save_lokasi()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -941,7 +941,7 @@ class Perusahaan extends CI_Controller
     }
     public function delete_lokasi($id_lokasi)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -953,7 +953,7 @@ class Perusahaan extends CI_Controller
     }
     public function save_edit_lokasi()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -969,7 +969,7 @@ class Perusahaan extends CI_Controller
     //SUB LOKASI
     public function sub_lokasi($id_lokasi)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -988,7 +988,7 @@ class Perusahaan extends CI_Controller
     }
     public function edit_sub_lokasi()
     {
-        $id['id_sub_lokasi']   = $this->input->post('id');
+        $id['id_sub_lokasi'] = $this->input->post('id');
 
         $q      = $this->db->get_where("mst_lokasi_sub", $id);
         $row    = $q->num_rows();
@@ -1014,7 +1014,7 @@ class Perusahaan extends CI_Controller
     }
     public function save_sub_lokasi()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -1033,8 +1033,8 @@ class Perusahaan extends CI_Controller
             $dt['jarak_sub']        = $this->input->post('jarak_sub');
             $dt['sn']               = $this->input->post('sn');
 
-            $q = $this->db->get_where("mst_lokasi_sub", $id);
-            $row = $q->num_rows();
+            $q      = $this->db->get_where("mst_lokasi_sub", $id);
+            $row    = $q->num_rows();
             if ($row > 0) {
                 $this->db->update("mst_lokasi_sub", $dt, $id);
                 $this->session->set_flashdata('msg', 'Sub Lokasi Sukses diupdate');
@@ -1048,7 +1048,7 @@ class Perusahaan extends CI_Controller
     }
     public function delete_sub_lokasi($id_sub_lokasi)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -1061,37 +1061,37 @@ class Perusahaan extends CI_Controller
     //shift
     public function master_shift($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['class']     = 'perusahaan';
-            $d['id_p']      = $id_perusahaan;
-            $d['header']    = 'Shift / Non Shift ' . $nama_perusahaan;
-            $d['content']   = 'perusahaan/master_shift/index_shift';
+            $d['class']      = 'perusahaan';
+            $d['id_p']       = $id_perusahaan;
+            $d['header']     = 'Shift / Non Shift ' . $nama_perusahaan;
+            $d['content']    = 'perusahaan/master_shift/index_shift';
             $this->load->view('master', $d);
         }
     }
     public function tambah_shift($id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $detail         = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             $nama_perusahaan = $detail->row()->nama_perusahaan;
-            $d['class']     = 'perusahaan';
-            $d['id_p']      = $id_perusahaan;
-            $d['header']    = 'Tambah Shift / Non Shift ' . $nama_perusahaan;
-            $d['content']   = 'perusahaan/master_shift/tambah_shift';
+            $d['class']      = 'perusahaan';
+            $d['id_p']       = $id_perusahaan;
+            $d['header']     = 'Tambah Shift / Non Shift ' . $nama_perusahaan;
+            $d['content']    = 'perusahaan/master_shift/tambah_shift';
             $this->load->view('master', $d);
         }
     }
     public function save_shift()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -1211,7 +1211,7 @@ class Perusahaan extends CI_Controller
     }
     public function simpan_edit_shift()
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -1230,7 +1230,7 @@ class Perusahaan extends CI_Controller
     }
     public function edit_shift_hari($id_shift, $id_perusahaan)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $logged_in      = $this->session->userdata('logged_in');
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
@@ -1766,28 +1766,28 @@ class Perusahaan extends CI_Controller
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_ta                = $this->input->post('id_ta');
-            $tahun_a              = $this->input->post('tahun_a');
+            $id_per                = $this->input->post('id_per');
+            $tahun_p              = $this->input->post('tahun_p');
 
-            if ($id_ta == '') {
-                $id_tahun_ajaran  = '0';
+            if ($id_per == '') {
+                $id_periode  = '0';
             } else {
-                $id_tahun_ajaran  = $id_ta;
+                $id_periode  = $id_per;
             }
 
-            $id['id_tahun_ajaran'] = $id_tahun_ajaran;
+            $id['id_periode'] = $id_periode;
 
-            $dt['tahun_ajaran']   = $tahun_a;
+            $dt['periode_tahun']   = $tahun_p;
 
-            $q = $this->db->get_where("mst_tahun_ajaran", $id);
+            $q = $this->db->get_where("mst_periode", $id);
             $row = $q->num_rows();
             if ($row > 0) {
-                $this->db->update("mst_tahun_ajaran", $dt, $id);
-                $this->session->set_flashdata('msg', 'Tahun Ajaran Sukses diupdate');
+                $this->db->update("mst_periode", $dt, $id);
+                $this->session->set_flashdata('msg', 'Tahun periode Sukses diupdate');
                 redirect($_SERVER['HTTP_REFERER']);
             } else {
-                $this->db->insert("mst_tahun_ajaran", $dt);
-                $this->session->set_flashdata('msg', 'Tahun Ajaran Sukses disimpan');
+                $this->db->insert("mst_periode", $dt);
+                $this->session->set_flashdata('msg', 'Tahun periode Sukses disimpan');
                 redirect($_SERVER['HTTP_REFERER']);
             }
         }
@@ -1796,17 +1796,17 @@ class Perusahaan extends CI_Controller
     {
         $id['id_periode']   = $this->input->post('cari');
 
-        $q      = $this->db->get_where("mst_tahun_ajaran", $id);
+        $q      = $this->db->get_where("mst_periode", $id);
         $row    = $q->num_rows();
         if ($row > 0) {
             foreach ($q->result() as $dt) {
-                $d['id_tahun_ajaran']       = $dt->id_tahun_ajaran;
-                $d['tahun_ajaran']          = $dt->tahun_ajaran;
+                $d['id_periode']       = $dt->id_periode;
+                $d['periode_tahun']          = $dt->periode_tahun;
             }
             echo json_encode($d);
         } else {
-            $d['id_tahun_ajaran']       = '';
-            $d['tahun_ajaran']          = '';
+            $d['id_periode']       = '';
+            $d['periode_tahun']          = '';
             echo json_encode($d);
         }
     }
@@ -1817,8 +1817,8 @@ class Perusahaan extends CI_Controller
             redirect(base_url('login'));
         } else {
             $id['id_periode'] = $id_periode;
-            $this->db2->delete("mst_periode", $id);
-            $this->session->set_flashdata('msg', 'Lokasi dihapus');
+            $this->db->delete("mst_periode", $id);
+            $this->session->set_flashdata('msg', 'Periode dihapus');
             redirect($_SERVER['HTTP_REFERER']);
         }
     }
@@ -1837,4 +1837,179 @@ class Perusahaan extends CI_Controller
             redirect($_SERVER['HTTP_REFERER']);
         }
     }
+
+     //periode penilaian
+    public function master_inass($id_perusahaan)
+    {
+        $logged_in      = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $nama_perusahaan = $detail->row()->nama_perusahaan;
+            $d['nama']       = $nama_perusahaan;
+            $d['class']      = 'perusahaan';
+            $d['id_p']       = $id_perusahaan;
+            $d['header']     = 'Pertanyaan Internal Assesment';
+            $d['content']    = 'perusahaan/master_inass/index_inass';
+            $this->load->view('master', $d);
+        }
+    }
+
+    public function save_inass()
+    {
+        $logged_in      = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $dt1['nama_value']  = $this->input->post('nama_value');
+            $dt1['desc']        = $this->input->post('desc');
+            $dt1['urutan']      = $this->input->post('urutan');
+            $dt1['flag_diisi']  = $this->input->post('flag_diisi');
+            $this->db->insert("mst_inass", $dt1);
+
+            $this->session->set_flashdata('msg', 'Pertanyaan Level 1 Sukses disimpan');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+    public function delete_inass($id_iass)
+    {
+        $id['id_iass']    = $id_iass;
+        $this->db->delete("mst_inass", $id);
+        $this->session->set_flashdata('msg', 'Pertanyaan Level 1 Sukses dihapus');
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+    public function edit_inass()
+    {
+        $id['id_iass']   = $this->input->post('cari');
+
+        $q      = $this->db2->get_where("mst_inass", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_iass']    = $dt->id_iass;
+                $d['nama_value'] = $dt->nama_value;
+                $d['flag_diisi'] = $dt->flag_diisi;
+                $d['desc']       = $dt->desc;
+                $d['urutan']     = $dt->urutan;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_iass']    = '';
+            $d['nama_value'] = '';
+            $d['flag_diisi'] = '';
+            $d['desc']       = '';
+            $d['urutan']     = '';
+            echo json_encode($d);
+        }
+    }
+    public function save_edit_inass()
+    {
+        $logged_in      = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_iass']      = $this->input->post('id_iass');
+            $dt['nama_value']   = $this->input->post('nama_value');
+            $dt['desc']         = $this->input->post('desc');
+            $dt['flag_diisi']   = $this->input->post('flag_diisi');
+            $dt['urutan']       = $this->input->post('urutan');
+            $this->db->update("mst_inass", $dt, $id);
+            $this->session->set_flashdata('msg', 'Bagian / Unit Kerja Sukses diupdate');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+
+    public function delete_lokasi_inass($id_bagian_detail)
+    {
+        $id['id_iass'] = $id_bagian_detail;
+        $this->db->delete("mst_inass", $id);
+        $this->session->set_flashdata('msg', 'Pertanyaan Level 1 Sukses dihapus');
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    //inass level 2
+    public function master_inass_2($id_iass, $id_perusahaan)
+    {
+        $logged_in      = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $detail_inass  = $this->enterprise_model->detail_inass($id_iass);
+            $nama_inass    = $detail_inass->row()->nama_value;
+
+            $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
+            $nama_perusahaan = $detail->row()->nama_perusahaan;
+
+            $d['class']     = 'perusahaan';
+            $d['id_p']      = $id_perusahaan;
+            $d['id_iass']   = $id_iass;
+            $d['header']    = 'Pertanyaan level 2 | ' . $nama_inass;
+            $d['content']   = 'perusahaan/master_inass/inass2/index_inass2';
+            $this->load->view('master', $d);
+        }
+    }
+    public function save_inass_2()
+    {
+        $logged_in      = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id_iass_2        = $this->input->post('id_iass_2');
+            if (empty($id_iass_2)) {
+                $id['id_iass_2']  = '0';
+            } else {
+                $id['id_iass_2']  = $id_iass_2;
+            }
+
+            $dt['id_iass']    = $this->input->post('id_iass');
+            $dt['nama_value'] = $this->input->post('nama_value');
+            $dt['flag_diisi'] = $this->input->post('flag_diisi');
+            $dt['urutan']     = $this->input->post('urutan');
+            $dt['desc']       = $this->input->post('desc');
+            $c = $this->db->get_where("mst_inass_2", $id);
+            if ($c->num_rows() > 0) {
+                $this->db->update("mst_inass_2", $dt, $id);
+                $this->session->set_flashdata('msg', 'Pertanyaan Level 2 Sukses diupdate');
+                redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $this->db->insert("mst_inass_2", $dt);
+                $this->session->set_flashdata('msg', 'Pertanyaan Level 2 Sukses disimpan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+    public function edit_inass_2()
+    {
+        $id['id_iass_2']   = $this->input->post('cari');
+
+        $q      = $this->db2->get_where("mst_inass_2", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_iass_2']  = $dt->id_iass_2;
+                $d['id_iass']    = $dt->id_iass;
+                $d['nama_value'] = $dt->nama_value;
+                $d['flag_diisi'] = $dt->flag_diisi;
+                $d['desc']       = $dt->desc;
+                $d['urutan']     = $dt->urutan;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_iass_2']  = '';
+            $d['id_iass']    = '';
+            $d['nama_value'] = '';
+            $d['flag_diisi'] = '';
+            $d['desc']       = '';
+            $d['urutan']     = '';
+            echo json_encode($d);
+        }
+    }
+    public function delete_inass_2($id_iass_2)
+    {
+        $id['id_iass_2']    = $id_iass_2;
+        $this->db->delete("mst_inass_2", $id);
+        $this->session->set_flashdata('msg', 'Pertanyaan Level 2 Sukses dihapus');
+        redirect($_SERVER['HTTP_REFERER']);
+
 }

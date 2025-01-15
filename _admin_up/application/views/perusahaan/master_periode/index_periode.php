@@ -3,12 +3,12 @@
         var cari = ID;
         $.ajax({
             type: "POST",
-            url: "<?php echo site_url(); ?>/perusahaan/edit_periode_tahun",
+            url: "<?php echo site_url(); ?>/perusahaan/edit_periode",
             data: "cari=" + cari,
             dataType: "json",
             success: function(data) {
-                $('#id_ta').val(data.id_periode_tahun);
-                $('#tahun_a').val(data.periode_tahun);
+                $('#id_per').val(data.id_periode);
+                $('#tahun_p').val(data.periode_tahun);
             }
         });
     }
@@ -42,10 +42,10 @@
                             <tr>
                                 <td><?php echo $no; ?></td>
                                 <td><?php echo $dt->periode_tahun; ?></td>
-                                <td><a class="btn bg-olive btn-flat" href="#modal1" onclick="javascript:Tahun_a('<?php echo $dt->id_tahun_ajaran; ?>')" data-toggle="modal" title="Edit">
+                                <td><a class="btn bg-olive btn-flat" href="#modal1" onclick="javascript:Tahun_a('<?php echo $dt->id_periode; ?>')" data-toggle="modal" title="Edit">
                                         <i class="fa fa-pencil"></i>
                                     </a>
-                                    <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>sekolah/delete_tahun_ajaran/<?php echo $dt->id_tahun_ajaran; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">
+                                    <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>perusahaan/delete_periode/<?php echo $dt->id_periode; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </td>
@@ -72,8 +72,8 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Periode Tahun</label>
-                        <input type="hidden" name="id_ta" id="id_ta">
-                        <input type="text" name="tahun_a" id="tahun_a" class="form-control" required="required">
+                        <input type="hidden" name="id_per" id="id_per">
+                        <input type="text" name="tahun_p" id="tahun_p" class="form-control" required="required">
                     </div>
                 </div>
                 <div class="modal-footer">
