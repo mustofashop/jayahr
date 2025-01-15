@@ -754,4 +754,22 @@ class Enterprise_model extends CI_Model
         $q = $this->db->query("SELECT * FROM mst_periode_penilaian ");
         return $q;
     }
+
+    //JENIS FORM
+    public function get_jenis_form($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_jenis_form, id_perusahaan, nama_value, description
+        FROM mst_jenis_form
+        where id_perusahaan = '$id_perusahaan'
+        order by nama_value asc");
+        return $q;
+    }
+
+    public function detail_jenis_form($id_jenis_form)
+    {
+        $q = $this->db->query("SELECT id_jenis_form, id_perusahaan, nama_value, desc
+        FROM mst_jenis_form
+        WHERE id_jenis_form = '$id_jenis_form'");
+        return $q;
+    }
 }

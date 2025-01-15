@@ -1766,18 +1766,18 @@ class Perusahaan extends CI_Controller
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_per                = $this->input->post('id_per');
-            $tahun_p              = $this->input->post('tahun_p');
+            $id_jenis_form                = $this->input->post('id_jenis_form');
+            $nama_value              = $this->input->post('nama_value');
 
-            if ($id_per == '') {
+            if ($id_jenis_form == '') {
                 $id_periode  = '0';
             } else {
-                $id_periode  = $id_per;
+                $id_periode  = $id_jenis_form;
             }
 
             $id['id_periode'] = $id_periode;
 
-            $dt['periode_tahun']   = $tahun_p;
+            $dt['nama_value']   = $nama_value;
 
             $q = $this->db->get_where("mst_periode", $id);
             $row = $q->num_rows();
@@ -1801,12 +1801,12 @@ class Perusahaan extends CI_Controller
         if ($row > 0) {
             foreach ($q->result() as $dt) {
                 $d['id_periode']       = $dt->id_periode;
-                $d['periode_tahun']          = $dt->periode_tahun;
+                $d['nama_value']          = $dt->nama_value;
             }
             echo json_encode($d);
         } else {
             $d['id_periode']       = '';
-            $d['periode_tahun']          = '';
+            $d['nama_value']          = '';
             echo json_encode($d);
         }
     }
@@ -1846,7 +1846,7 @@ class Perusahaan extends CI_Controller
             redirect(base_url('login'));
         } else {
             $detail_periode_penilaian  = $this->enterprise_model->detail_periode($id_periode);
-            $nama_periode    = $detail_periode_penilaian->row()->periode_tahun;
+            $nama_periode    = $detail_periode_penilaian->row()->nama_value;
 
             // $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             // $nama_perusahaan = $detail->row()->nama_perusahaan;
@@ -1934,5 +1934,98 @@ class Perusahaan extends CI_Controller
         $this->db->delete("mst_periode_penilaian", $id);
         $this->session->set_flashdata('msg', 'Pertanyaan Level 2 Sukses dihapus');
         redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    //jenis_form
+    public function master_jenis_form($id_perusahaan)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $d['class']     = 'perusahaan';
+            $d['data']      = $this->enterprise_model->get_jenis_form($id_perusahaan);
+            $d['id_p']      = $id_perusahaan;
+            $d['header']    = 'Lokasi';
+            $d['content']   = 'perusahaan/master_jenis_form/index_jenis_form';
+            $this->load->view('master', $d);
+        }
+    }
+    public function save_jenis_form()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id_jenis_form                = $this->input->post('id_jenis_form');
+            $nama_value              = $this->input->post('nama_value');
+
+            if ($id_jenis_form == '') {
+                $id_jenis_form  = '0';
+            } else {
+                $id_jenis_form  = $id_jenis_form;
+            }
+
+            $id['id_jenis_form'] = $id_jenis_form;
+
+            $dt['nama_value']   = $nama_value;
+
+            $q = $this->db->get_where("mst_jenis_form", $id);
+            $row = $q->num_rows();
+            if ($row > 0) {
+                $this->db->update("mst_jenis_form", $dt, $id);
+                $this->session->set_flashdata('msg', 'Tahun periode Sukses diupdate');
+                redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $this->db->insert("mst_jenis_form", $dt);
+                $this->session->set_flashdata('msg', 'Tahun periode Sukses disimpan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+    public function edit_jenis_form()
+    {
+        $id['id_jenis_form']   = $this->input->post('cari');
+
+        $q      = $this->db->get_where("mst_jenis_form", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_jenis_form']       = $dt->id_jenis_form;
+                $d['nama_value']          = $dt->nama_value;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_jenis_form']       = '';
+            $d['nama_value']          = '';
+            echo json_encode($d);
+        }
+    }
+    public function delete_jenis_form($id_jenis_form)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_jenis_form'] = $id_jenis_form;
+            $this->db->delete("mst_jenis_form", $id);
+            $this->session->set_flashdata('msg', 'Periode dihapus');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+    public function save_edit_jenis_form()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_jenis_form']    = $this->input->post('id_jenis_form');
+            $dt['nama_periode']  = $this->input->post('nama_periode');
+            $dt['kode_periode']  = $this->input->post('kode_periode');
+            //$dt['id_karyawan']  = $this->input->post('karyawan');
+            $this->db->update("mst_jenis_form", $dt, $id);
+            $this->session->set_flashdata('msg', 'Lokasi diupdate');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
     }
 }
