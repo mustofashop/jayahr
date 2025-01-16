@@ -76,8 +76,9 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Nama Value</label>
-                        <input type="hidden" name="id_p_periode" id="id_p_periode">
                         <input type="text" name="nama_value" id="nama_value" class="form-control" required="required">
+                        <input type="hidden" name="id_p_periode" id="id_p_periode">
+                        <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                     </div>
                 </div>
                 <div class="modal-footer">
