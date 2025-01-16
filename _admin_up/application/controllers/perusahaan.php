@@ -1889,6 +1889,7 @@ class Perusahaan extends CI_Controller
         } else {
             $id_p_periode                = $this->input->post('id_p_periode');
             $nama_value              = $this->input->post('nama_value');
+            $id_periode              = $this->input->post('id_periode');
 
             if ($id_p_periode == '') {
                 $id_p_periode  = '0';
@@ -1898,6 +1899,7 @@ class Perusahaan extends CI_Controller
 
             $id['id_p_periode'] = $id_p_periode;
             $dt['nama_value']   = $nama_value;
+            $dt['id_periode']   = $id_periode;
 
             $c = $this->db->get_where("mst_periode_penilaian", $id);
             if ($c->num_rows() > 0) {

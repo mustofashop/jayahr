@@ -18,6 +18,22 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
+	public function setting_pkk()
+	{
+		$q = $this->db->query("SELECT a.periode_tahun, b.nama_value, a.id_periode
+        FROM mst_periode a
+        JOIN mst_periode_penilaian b on a.id_periode = b.id_periode
+        WHERE a.id_perusahaan = '12' and a.status = 0
+		order by a.id_periode asc");
+		return $q;
+	}
+
+	public function list_jenis_form()
+	{
+		$q = $this->db->query("SELECT * from mst_jenis_form");
+		return $q;
+	}
+
 	//USERS
 	public function get_user($id_karyawan)
 	{

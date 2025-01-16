@@ -4,61 +4,60 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th style="width: 200px;"></th>
-                    <th></th>
-                    <th style="width: 200px;"></th>
+                    <th style="width: 200px;">Periode Penilaian</th>
+                    <th>Nama Value</th>
+                    <th style="width: 200px;">Pilih</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td rowspan="3" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <b>Periode Penilaian</b>
-                    </td>
-                    <td>Pertama</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
-                <tr>
-                    <td>Kedua</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
-                <tr>
-                    <td>Ketiga</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
+                <?php
+                $data = $this->master_model->setting_pkk();
+                if ($data->num_rows() > 0) {
+                    foreach ($data->result() as $dt) { ?>
+                        <tr>
+                            <td><?php echo $dt->periode_tahun; ?></td>
+                            <td><?php echo $dt->nama_value; ?></td>
+                            <td>
+                                <input type="radio" name="nama_value" value="<?php echo $dt->id_periode; ?>"> Pilih
+                            </td>
+                        </tr>
+                    <?php }
+                } else { ?>
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Tidak ada data tersedia</td>
+                    </tr>
+                <?php } ?>
             </tbody>
         </table>
+
 
         <!-- Jenis Form -->
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th style="width: 200px;"></th>
+                    <th style="width: 500px;">Jenis Form</th>
                     <th></th>
-                    <th style="width: 200px;"></th>
+                    <th style="width: 200px;">Pilih</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td rowspan="5" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><b>Jenis Form</b></td>
-                    <td>Kelompok 1-2</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
-                <tr>
-                    <td>Karyawan Kelompok 3-4 yang memiliki bawahan</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
-                <tr>
-                    <td>Karyawan Kelompok 3-4 yang tidak memiliki bawahan</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
-                <tr>
-                    <td>Karyawan Kelompok 6-7 yang memiliki bawahan</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
-                <tr>
-                    <td>Karyawan Kelompok 6-7 yang tidak memiliki bawahan</td>
-                    <td><input type="checkbox" name="periode" value="pertama"></td>
-                </tr>
+                <?php
+                $data = $this->master_model->list_jenis_form();
+                if ($data->num_rows() > 0) {
+                    foreach ($data->result() as $dt) { ?>
+                        <tr>
+                            <td><?php echo $dt->nama_value; ?></td>
+                            <td></td>
+                            <td>
+                                <input type="radio" name="nama_value" value="<?php echo $dt->id_jenis_form; ?>"> Pilih
+                            </td>
+                        </tr>
+                    <?php }
+                } else { ?>
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Tidak ada data tersedia</td>
+                    </tr>
+                <?php } ?>
             </tbody>
         </table>
         <!-- Tombol Submit -->

@@ -725,7 +725,7 @@ class Enterprise_model extends CI_Model
 
     public function detail_periode($id_periode)
     {
-        $q = $this->db->query("SELECT id_periode, periode_tahun, status
+        $q = $this->db->query("SELECT id_periode, periode_tahun
         FROM mst_periode
         WHERE id_periode = '$id_periode'");
         return $q;
@@ -734,24 +734,29 @@ class Enterprise_model extends CI_Model
     //PERIODE PENILAIAN
     public function get_periode_penilaian($id_perusahaan)
     {
-        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, flag_diisi, desc
+        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, status, flag_diisi, desc
         FROM mst_periode_penilaian
         where id_perusahaan = '$id_perusahaan'
         order by nama_value asc");
         return $q;
     }
 
-    public function detail_periode_penilaian($id_periode)
+    public function list_periode_penilaian_lvl2($id_periode)
     {
-        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, flag_diisi
+        $q = $this->db->query("SELECT *
         FROM mst_periode_penilaian
-        WHERE id_periode = '$id_periode'");
+        WHERE id_periode = '$id_periode'
+        order by id_p_periode asc");
         return $q;
     }
 
-    public function list_penilaian()
+    public function list_penilaian($id_periode)
     {
-        $q = $this->db->query("SELECT * FROM mst_periode_penilaian ");
+        $q = $this->db->query("SELECT a.periode_tahun,
+        b.nama_value, b.id_p_periode
+        FROM mst_periode a
+        JOIN mst_periode_penilaian b ON a.id_periode = b.id_periode
+        WHERE b.id_periode = $id_periode");
         return $q;
     }
 
@@ -761,7 +766,7 @@ class Enterprise_model extends CI_Model
         $q = $this->db->query("SELECT id_jenis_form, id_perusahaan, nama_value, description
         FROM mst_jenis_form
         where id_perusahaan = '$id_perusahaan'
-        order by nama_value asc");
+        order by id_jenis_form asc");
         return $q;
     }
 
@@ -772,6 +777,7 @@ class Enterprise_model extends CI_Model
         WHERE id_jenis_form = '$id_jenis_form'");
         return $q;
     }
+<<<<<<< HEAD
 
     //PENILAIAN 1-2
     public function get_penilaian_1_2($id_perusahaan)
@@ -862,4 +868,6 @@ class Enterprise_model extends CI_Model
         WHERE id_fb_karyawan = '$id_fb_karyawan'");
         return $q;
     }
+=======
+>>>>>>> 66c3b33877e9972cfcc1f72ac9362e4740cf6ea8
 }
