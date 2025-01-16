@@ -198,6 +198,11 @@ if ($class == 'dashboard') {
                 } ?>><a href="<?php echo base_url(); ?>perusahaan/master_penilaian_3_7_form_b/12">
                     <i class="fa fa-circle-o"></i>Penilaian Form B</a>
             </li>
+            <li <?php if ($this->uri->segment(2) == "perusahaan") {
+                    echo 'class="active"';
+                } ?>><a href="<?php echo base_url(); ?>perusahaan/master_feedback_karyawan/12">
+                    <i class="fa fa-circle-o"></i>Feedback Karyawan</a>
+            </li>
         </ul>
     </li>
     <input type="hidden" name="uri" id="uri" value="<?php echo base_url($this->uri->segment(1)); ?>">

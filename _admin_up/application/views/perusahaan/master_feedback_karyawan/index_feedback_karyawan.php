@@ -3,11 +3,11 @@
         var cari = ID;
         $.ajax({
             type: "POST",
-            url: "<?php echo site_url(); ?>/perusahaan/edit_penilaian_3_7_form_b",
+            url: "<?php echo site_url(); ?>/perusahaan/edit_feedback_karyawan",
             data: "cari=" + cari,
             dataType: "json",
             success: function(data) {
-                $('#id_form_b').val(data.id_form_b);
+                $('#id_fb_karyawan').val(data.id_fb_karyawan);
                 $('#nama_value').val(data.nama_value);
                 $('#description').val(data.description);
             }
@@ -43,14 +43,14 @@
                         <td><?php echo $no; ?></td>
                         <td><?php echo $dt->nama_value; ?></td>
                         <td><?php echo $dt->description; ?></td>
-                        <td><a class="btn bg-olive btn-flat" href="#modal1" onclick="javascript:Tahun_a('<?php echo $dt->id_form_b; ?>')" data-toggle="modal">
+                        <td><a class="btn bg-olive btn-flat" href="#modal1" onclick="javascript:Tahun_a('<?php echo $dt->id_fb_karyawan; ?>')" data-toggle="modal" title="Edit">
                                 <i class="fa fa-pencil"></i>
                             </a>
-                            <!-- bagian level 2
-                                    <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>perusahaan/master_penilaian_3_7_form_b/<?php echo $dt->id_form_b; ?>/<?php echo $id_p; ?>">
+                            <!-- bagian level 2 -->
+                            <!-- <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>perusahaan/master_jenis_form/<?php echo $dt->id_fb_karyawan; ?>/<?php echo $id_fb_karyawan; ?>" title="Level 2">
                                         <i class="fa fa-plus"></i>
                                     </a> -->
-                            <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>perusahaan/delete_penilaian_3_7_form_b/<?php echo $dt->id_form_b; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">
+                            <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>perusahaan/delete_feedback_karyawan/<?php echo $dt->id_fb_karyawan; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">
                                 <i class="fa fa-trash"></i>
                             </a>
                         </td>
@@ -64,7 +64,7 @@
 <div class="modal fade" id="modal1">
     <div class="modal-dialog">
         <!-- form start -->
-        <form role="form" method="POST" action="<?php echo base_url(); ?>perusahaan/save_penilaian_3_7_form_b" enctype="multipart/form-data">
+        <form role="form" method="POST" action="<?php echo base_url(); ?>perusahaan/save_feedback_karyawan" enctype="multipart/form-data">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -75,11 +75,12 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Nama Value</label>
-                        <input type="hidden" name="id_form_b" id="id_form_b">
+                        <input type="hidden" name="id_fb_karyawan" id="id_fb_karyawan">
                         <input type="text" name="nama_value" id="nama_value" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Deskripsi</label>
+                        <input type="hidden" name="id_fb_karyawan" id="id_fb_karyawan">
                         <input type="text" name="description" id="description" class="form-control" required="required">
                     </div>
                 </div>

@@ -844,4 +844,22 @@ class Enterprise_model extends CI_Model
         WHERE id_form_b = '$id_form_b'");
         return $q;
     }
+
+    //FEEDBACK KARYAWAN 
+    public function get_feedback_karyawan($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_fb_karyawan, id_perusahaan, nama_value, description
+        FROM mst_feedback_karyawan
+        where id_perusahaan = '$id_perusahaan'
+        order by id_fb_karyawan asc");
+        return $q;
+    }
+
+    public function detail_feedback_karyawan($id_fb_karyawan)
+    {
+        $q = $this->db->query("SELECT id_fb_karyawan, id_perusahaan, nama_value, desc
+        FROM mst_feedback_karyawan
+        WHERE id_fb_karyawan = '$id_fb_karyawan'");
+        return $q;
+    }
 }

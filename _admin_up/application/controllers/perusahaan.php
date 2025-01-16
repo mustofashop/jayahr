@@ -2368,4 +2368,100 @@ class Perusahaan extends CI_Controller
             redirect($_SERVER['HTTP_REFERER']);
         }
     }
+
+    //feedback karyawan
+    public function master_feedback_karyawan($id_perusahaan)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $d['class']     = 'perusahaan';
+            $d['data']      = $this->enterprise_model->get_feedback_karyawan($id_perusahaan);
+            $d['id_p']      = $id_perusahaan;
+            $d['header']    = 'Lokasi';
+            $d['content']   = 'perusahaan/master_feedback_karyawan/index_feedback_karyawan';
+            $this->load->view('master', $d);
+        }
+    }
+    public function save_feedback_karyawan()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id_fb_karyawan                = $this->input->post('id_fb_karyawan');
+            $nama_value              = $this->input->post('nama_value');
+            $description              = $this->input->post('description');
+
+            if ($id_fb_karyawan == '') {
+                $id_fb_karyawan  = '0';
+            } else {
+                $id_fb_karyawan  = $id_fb_karyawan;
+            }
+
+            $id['id_fb_karyawan'] = $id_fb_karyawan;
+            $dt['nama_value']   = $nama_value;
+            $dt['description']   = $description;
+
+            $q = $this->db->get_where("mst_feedback_karyawan", $id);
+            $row = $q->num_rows();
+            if ($row > 0) {
+                $this->db->update("mst_feedback_karyawan", $dt, $id);
+                $this->session->set_flashdata('msg', 'Data Sukses diupdate');
+                redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $this->db->insert("mst_feedback_karyawan", $dt);
+                $this->session->set_flashdata('msg', 'Data Sukses disimpan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+    public function edit_feedback_karyawan()
+    {
+        $id['id_fb_karyawan']   = $this->input->post('cari');
+
+        $q      = $this->db->get_where("mst_feedback_karyawan", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_fb_karyawan']       = $dt->id_fb_karyawan;
+                $d['nama_value']          = $dt->nama_value;
+                $d['description']          = $dt->description;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_fb_karyawan']       = '';
+            $d['nama_value']          = '';
+            $d['description']          = '';
+            echo json_encode($d);
+        }
+    }
+    public function delete_feedback_karyawan($id_fb_karyawan)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_fb_karyawan'] = $id_fb_karyawan;
+            $this->db->delete("mst_feedback_karyawan", $id);
+            $this->session->set_flashdata('msg', 'Data dihapus');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+    public function save_edit_feedback_karyawan()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_fb_karyawan']    = $this->input->post('id_fb_karyawan');
+            $dt['nama_value']  = $this->input->post('nama_value');
+            $dt['description']  = $this->input->post('description');
+            //$dt['id_karyawan']  = $this->input->post('karyawan');
+            $this->db->update("mst_feedback_karyawan", $dt, $id);
+            $this->session->set_flashdata('msg', 'Lokasi diupdate');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
 }
