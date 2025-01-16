@@ -3,11 +3,11 @@
         var cari = ID;
         $.ajax({
             type: "POST",
-            url: "<?php echo site_url(); ?>/perusahaan/edit_periode_penilaian",
+            url: "<?php echo site_url(); ?>/perusahaan/edit_penilaian_3_7_form_penilaian",
             data: "cari=" + cari,
             dataType: "json",
             success: function(data) {
-                $('#id_p_periode').val(data.id_p_periode);
+                $('#id_form_penilaian').val(data.id_form_penilaian);
                 $('#nama_value').val(data.nama_value);
             }
         });
@@ -37,19 +37,19 @@
                     </thead>
                     <tbody>
                         <?php
-                        $no     = 1;
-                        $data   = $this->enterprise_model->list_penilaian($id_periode);
+                        $no = '1';
                         foreach ($data->result() as $dt) { ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
                                 <td><?php echo $dt->nama_value; ?></td>
-                                <td>
-                                    <!-- edit -->
-                                    <a class="btn bg-olive btn-flat" href="#modal1" onclick="javascript:Tahun_a('<?php echo $dt->id_p_periode; ?>')" data-toggle="modal" title="Edit">
+                                <td><a class="btn bg-olive btn-flat" href="#modal1" onclick="javascript:Tahun_a('<?php echo $dt->id_form_penilaian; ?>')" data-toggle="modal">
                                         <i class="fa fa-pencil"></i>
                                     </a>
-                                    <!-- hapus -->
-                                    <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>perusahaan/delete_periode_penilaian/<?php echo $dt->id_p_periode; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">
+                                    <!-- bagian level 2
+                                    <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>perusahaan/master_penilaian_3_7_form_penilaian/<?php echo $dt->id_form_penilaian; ?>/<?php echo $id_p; ?>">
+                                        <i class="fa fa-plus"></i>
+                                    </a> -->
+                                    <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>perusahaan/delete_penilaian_3_7_form_penilaian/<?php echo $dt->id_form_penilaian; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </td>
@@ -65,7 +65,7 @@
 <div class="modal fade" id="modal1">
     <div class="modal-dialog">
         <!-- form start -->
-        <form role="form" method="POST" action="<?php echo base_url(); ?>perusahaan/save_periode_penilaian" enctype="multipart/form-data">
+        <form role="form" method="POST" action="<?php echo base_url(); ?>perusahaan/save_penilaian_3_7_form_penilaian" enctype="multipart/form-data">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -76,7 +76,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Nama Value</label>
-                        <input type="hidden" name="id_p_periode" id="id_p_periode">
+                        <input type="hidden" name="id_form_penilaian" id="id_form_penilaian">
                         <input type="text" name="nama_value" id="nama_value" class="form-control" required="required">
                     </div>
                 </div>

@@ -1792,6 +1792,28 @@ class Perusahaan extends CI_Controller
             }
         }
     }
+    public function hapus()
+    {
+        $id['id_periode']    = $this->uri->segment(3);
+        $dt['status'] = '1';
+        $q = $this->db->get_where("mst_periode", $id);
+        $row = $q->num_rows();
+        if ($row > 0) {
+            $this->db->update("mst_periode", $dt, $id);
+        }
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+    public function aktif()
+    {
+        $id['id_periode']    = $this->uri->segment(3);
+        $dt['status'] = '0';
+        $q = $this->db->get_where("mst_periode", $id);
+        $row = $q->num_rows();
+        if ($row > 0) {
+            $this->db->update("mst_periode", $dt, $id);
+        }
+        redirect($_SERVER['HTTP_REFERER']);
+    }
     public function edit_periode()
     {
         $id['id_periode']   = $this->input->post('cari');
@@ -1846,7 +1868,7 @@ class Perusahaan extends CI_Controller
             redirect(base_url('login'));
         } else {
             $detail_periode_penilaian  = $this->enterprise_model->detail_periode($id_periode);
-            $nama_periode    = $detail_periode_penilaian->row()->nama_value;
+            $nama_periode    = $detail_periode_penilaian->row()->periode_tahun;
 
             // $detail          = $this->enterprise_model->get_detail_perusahaan($id_perusahaan);
             // $nama_perusahaan = $detail->row()->nama_perusahaan;
@@ -1865,13 +1887,13 @@ class Perusahaan extends CI_Controller
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_pen                = $this->input->post('id_pen');
+            $id_p_periode                = $this->input->post('id_p_periode');
             $nama_value              = $this->input->post('nama_value');
 
-            if ($id_pen == '') {
+            if ($id_p_periode == '') {
                 $id_p_periode  = '0';
             } else {
-                $id_p_periode  = $id_pen;
+                $id_p_periode  = $id_p_periode;
             }
 
             $id['id_p_periode'] = $id_p_periode;
@@ -1889,28 +1911,6 @@ class Perusahaan extends CI_Controller
             }
         }
     }
-    public function hapus()
-    {
-        $id['id_p_periode']    = $this->uri->segment(3);
-        $dt['status'] = '1';
-        $q = $this->db->get_where("mst_periode_penilaian", $id);
-        $row = $q->num_rows();
-        if ($row > 0) {
-            $this->db->update("mst_periode_penilaian", $dt, $id);
-        }
-        redirect($_SERVER['HTTP_REFERER']);
-    }
-    public function aktif()
-    {
-        $id['id_p_periode']    = $this->uri->segment(3);
-        $dt['status'] = '0';
-        $q = $this->db->get_where("mst_periode_penilaian", $id);
-        $row = $q->num_rows();
-        if ($row > 0) {
-            $this->db->update("mst_periode_penilaian", $dt, $id);
-        }
-        redirect($_SERVER['HTTP_REFERER']);
-    }
     public function edit_periode_penilaian()
     {
         $id['id_p_periode']   = $this->input->post('cari');
@@ -1919,6 +1919,7 @@ class Perusahaan extends CI_Controller
         $row    = $q->num_rows();
         if ($row > 0) {
             foreach ($q->result() as $dt) {
+                $d['id_p_periode'] = $dt->id_p_periode;
                 $d['nama_value'] = $dt->nama_value;
             }
             echo json_encode($d);
@@ -1936,7 +1937,7 @@ class Perusahaan extends CI_Controller
         redirect($_SERVER['HTTP_REFERER']);
     }
 
-    //jenis_form
+    //jenis form
     public function master_jenis_form($id_perusahaan)
     {
         $logged_in          = $this->session->userdata('logged_in');
@@ -1974,11 +1975,11 @@ class Perusahaan extends CI_Controller
             $row = $q->num_rows();
             if ($row > 0) {
                 $this->db->update("mst_jenis_form", $dt, $id);
-                $this->session->set_flashdata('msg', 'Tahun periode Sukses diupdate');
+                $this->session->set_flashdata('msg', 'Data Sukses diupdate');
                 redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $this->db->insert("mst_jenis_form", $dt);
-                $this->session->set_flashdata('msg', 'Tahun periode Sukses disimpan');
+                $this->session->set_flashdata('msg', 'Data Sukses disimpan');
                 redirect($_SERVER['HTTP_REFERER']);
             }
         }
@@ -2009,7 +2010,7 @@ class Perusahaan extends CI_Controller
         } else {
             $id['id_jenis_form'] = $id_jenis_form;
             $this->db->delete("mst_jenis_form", $id);
-            $this->session->set_flashdata('msg', 'Periode dihapus');
+            $this->session->set_flashdata('msg', 'Data dihapus');
             redirect($_SERVER['HTTP_REFERER']);
         }
     }
@@ -2025,6 +2026,345 @@ class Perusahaan extends CI_Controller
             //$dt['id_karyawan']  = $this->input->post('karyawan');
             $this->db->update("mst_jenis_form", $dt, $id);
             $this->session->set_flashdata('msg', 'Lokasi diupdate');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+
+    //penilaian 1-2
+    public function master_penilaian_1_2($id_perusahaan)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $d['class']     = 'perusahaan';
+            $d['data']      = $this->enterprise_model->get_penilaian_1_2($id_perusahaan);
+            $d['id_p']      = $id_perusahaan;
+            $d['header']    = 'Lokasi';
+            $d['content']   = 'perusahaan/master_penilaian_1_2/index_penilaian_1_2';
+            $this->load->view('master', $d);
+        }
+    }
+    public function save_penilaian_1_2()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id_nilai_pkk  = $this->input->post('id_nilai_pkk');
+            $nama_value    = $this->input->post('nama_value');
+            $bobot         = $this->input->post('bobot');
+
+            if ($id_nilai_pkk == '') {
+                $id_nilai_pkk  = '0';
+            } else {
+                $id_nilai_pkk  = $id_nilai_pkk;
+            }
+
+            $id['id_nilai_pkk'] = $id_nilai_pkk;
+            $dt['nama_value']   = $nama_value;
+            $dt['bobot']   = $bobot;
+
+            $q = $this->db->get_where("mst_penilaian_1_2", $id);
+            $row = $q->num_rows();
+            if ($row > 0) {
+                $this->db->update("mst_penilaian_1_2", $dt, $id);
+                $this->session->set_flashdata('msg', 'Sukses diupdate');
+                redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $this->db->insert("mst_penilaian_1_2", $dt);
+                $this->session->set_flashdata('msg', 'Sukses disimpan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+    public function edit_penilaian_1_2()
+    {
+        $id['id_nilai_pkk']   = $this->input->post('cari');
+
+        $q      = $this->db->get_where("mst_penilaian_1_2", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_nilai_pkk']   = $dt->id_nilai_pkk;
+                $d['nama_value']     = $dt->nama_value;
+                $d['bobot']          = $dt->bobot;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_nilai_pkk']   = '';
+            $d['nama_value']     = '';
+            $d['bobot']          = '';
+
+            echo json_encode($d);
+        }
+    }
+    public function delete_penilaian_1_2($id_nilai_pkk)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_nilai_pkk'] = $id_nilai_pkk;
+            $this->db->delete("mst_penilaian_1_2", $id);
+            $this->session->set_flashdata('msg', 'Data dihapus');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+    // public function save_edit_penilaian_1_2()
+    // {
+    //     $logged_in          = $this->session->userdata('logged_in');
+    //     if ($logged_in != TRUE || empty($logged_in)) {
+    //         redirect(base_url('login'));
+    //     } else {
+    //         $id['id_nilai_pkk']    = $this->input->post('id_nilai_pkk');
+    //         $dt['nama_value']  = $this->input->post('nama_value');
+    //         $dt['bobot']  = $this->input->post('bobot');
+    //         //$dt['id_karyawan']  = $this->input->post('karyawan');
+    //         $this->db->update("mst_penilaian_1_2", $dt, $id);
+    //         $this->session->set_flashdata('msg', 'Lokasi diupdate');
+    //         redirect($_SERVER['HTTP_REFERER']);
+    //     }
+    // }
+
+    //penilaian 3-7 form penilaian
+    public function master_penilaian_3_7_form_penilaian($id_perusahaan)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $d['class']     = 'perusahaan';
+            $d['data']      = $this->enterprise_model->get_penilaian_3_7_form_penilaian($id_perusahaan);
+            $d['id_p']      = $id_perusahaan;
+            $d['header']    = 'Lokasi';
+            $d['content']   = 'perusahaan/master_penilaian_3_7_form_penilaian/index_penilaian_3_7_form_penilaian';
+            $this->load->view('master', $d);
+        }
+    }
+    public function save_penilaian_3_7_form_penilaian()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id_form_penilaian  = $this->input->post('id_form_penilaian');
+            $nama_value    = $this->input->post('nama_value');
+
+            if ($id_form_penilaian == '') {
+                $id_form_penilaian  = '0';
+            } else {
+                $id_form_penilaian  = $id_form_penilaian;
+            }
+
+            $id['id_form_penilaian'] = $id_form_penilaian;
+            $dt['nama_value']   = $nama_value;
+
+            $q = $this->db->get_where("mst_penilaian_3_7_form_penilaian", $id);
+            $row = $q->num_rows();
+            if ($row > 0) {
+                $this->db->update("mst_penilaian_3_7_form_penilaian", $dt, $id);
+                $this->session->set_flashdata('msg', 'Sukses diupdate');
+                redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $this->db->insert("mst_penilaian_3_7_form_penilaian", $dt);
+                $this->session->set_flashdata('msg', 'Sukses disimpan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+    public function edit_penilaian_3_7_form_penilaian()
+    {
+        $id['id_form_penilaian']   = $this->input->post('cari');
+
+        $q      = $this->db->get_where("mst_penilaian_3_7_form_penilaian", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_form_penilaian']   = $dt->id_form_penilaian;
+                $d['nama_value']     = $dt->nama_value;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_form_penilaian']   = '';
+            $d['nama_value']     = '';
+
+            echo json_encode($d);
+        }
+    }
+    public function delete_penilaian_3_7_form_penilaian($id_form_penilaian)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_form_penilaian'] = $id_form_penilaian;
+            $this->db->delete("mst_penilaian_3_7_form_penilaian", $id);
+            $this->session->set_flashdata('msg', 'Data dihapus');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+
+    //penilaian 3-7 form a
+    public function master_penilaian_3_7_form_a($id_perusahaan)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $d['class']     = 'perusahaan';
+            $d['data']      = $this->enterprise_model->get_penilaian_3_7_form_a($id_perusahaan);
+            $d['id_p']      = $id_perusahaan;
+            $d['header']    = 'Lokasi';
+            $d['content']   = 'perusahaan/master_penilaian_3_7_form_a/index_penilaian_3_7_form_a';
+            $this->load->view('master', $d);
+        }
+    }
+    public function save_penilaian_3_7_form_a()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id_form_a  = $this->input->post('id_form_a');
+            $nama_value    = $this->input->post('nama_value');
+            $description    = $this->input->post('description');
+
+            if ($id_form_a == '') {
+                $id_form_a  = '0';
+            } else {
+                $id_form_a  = $id_form_a;
+            }
+
+            $id['id_form_a'] = $id_form_a;
+            $dt['nama_value']   = $nama_value;
+            $dt['description']   = $description;
+
+            $q = $this->db->get_where("mst_penilaian_3_7_form_a", $id);
+            $row = $q->num_rows();
+            if ($row > 0) {
+                $this->db->update("mst_penilaian_3_7_form_a", $dt, $id);
+                $this->session->set_flashdata('msg', 'Sukses diupdate');
+                redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $this->db->insert("mst_penilaian_3_7_form_a", $dt);
+                $this->session->set_flashdata('msg', 'Sukses disimpan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+    public function edit_penilaian_3_7_form_a()
+    {
+        $id['id_form_a']   = $this->input->post('cari');
+
+        $q      = $this->db->get_where("mst_penilaian_3_7_form_a", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_form_a']   = $dt->id_form_a;
+                $d['nama_value']     = $dt->nama_value;
+                $d['description']     = $dt->description;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_form_a']   = '';
+            $d['nama_value']     = '';
+            $d['description']     = '';
+
+            echo json_encode($d);
+        }
+    }
+    public function delete_penilaian_3_7_form_a($id_form_a)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_form_a'] = $id_form_a;
+            $this->db->delete("mst_penilaian_3_7_form_a", $id);
+            $this->session->set_flashdata('msg', 'Data dihapus');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+
+    //penilaian 3-7 form b
+    public function master_penilaian_3_7_form_b($id_perusahaan)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $d['class']     = 'perusahaan';
+            $d['data']      = $this->enterprise_model->get_penilaian_3_7_form_b($id_perusahaan);
+            $d['id_p']      = $id_perusahaan;
+            $d['header']    = 'Lokasi';
+            $d['content']   = 'perusahaan/master_penilaian_3_7_form_b/index_penilaian_3_7_form_b';
+            $this->load->view('master', $d);
+        }
+    }
+    public function save_penilaian_3_7_form_b()
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id_form_b  = $this->input->post('id_form_b');
+            $nama_value    = $this->input->post('nama_value');
+            $description    = $this->input->post('description');
+
+            if ($id_form_b == '') {
+                $id_form_b  = '0';
+            } else {
+                $id_form_b  = $id_form_b;
+            }
+
+            $id['id_form_b'] = $id_form_b;
+            $dt['nama_value']   = $nama_value;
+            $dt['description']   = $description;
+
+            $q = $this->db->get_where("mst_penilaian_3_7_form_b", $id);
+            $row = $q->num_rows();
+            if ($row > 0) {
+                $this->db->update("mst_penilaian_3_7_form_b", $dt, $id);
+                $this->session->set_flashdata('msg', 'Sukses diupdate');
+                redirect($_SERVER['HTTP_REFERER']);
+            } else {
+                $this->db->insert("mst_penilaian_3_7_form_b", $dt);
+                $this->session->set_flashdata('msg', 'Sukses disimpan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+    public function edit_penilaian_3_7_form_b()
+    {
+        $id['id_form_b']   = $this->input->post('cari');
+
+        $q      = $this->db->get_where("mst_penilaian_3_7_form_b", $id);
+        $row    = $q->num_rows();
+        if ($row > 0) {
+            foreach ($q->result() as $dt) {
+                $d['id_form_b']   = $dt->id_form_b;
+                $d['nama_value']     = $dt->nama_value;
+                $d['description']     = $dt->description;
+            }
+            echo json_encode($d);
+        } else {
+            $d['id_form_b']   = '';
+            $d['nama_value']     = '';
+            $d['description']     = '';
+
+            echo json_encode($d);
+        }
+    }
+    public function delete_penilaian_3_7_form_b($id_form_b)
+    {
+        $logged_in          = $this->session->userdata('logged_in');
+        if ($logged_in != TRUE || empty($logged_in)) {
+            redirect(base_url('login'));
+        } else {
+            $id['id_form_b'] = $id_form_b;
+            $this->db->delete("mst_penilaian_3_7_form_b", $id);
+            $this->session->set_flashdata('msg', 'Data dihapus');
             redirect($_SERVER['HTTP_REFERER']);
         }
     }

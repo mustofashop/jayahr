@@ -725,7 +725,7 @@ class Enterprise_model extends CI_Model
 
     public function detail_periode($id_periode)
     {
-        $q = $this->db->query("SELECT id_periode, periode_tahun
+        $q = $this->db->query("SELECT id_periode, periode_tahun, status
         FROM mst_periode
         WHERE id_periode = '$id_periode'");
         return $q;
@@ -734,7 +734,7 @@ class Enterprise_model extends CI_Model
     //PERIODE PENILAIAN
     public function get_periode_penilaian($id_perusahaan)
     {
-        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, status, flag_diisi, desc
+        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, flag_diisi, desc
         FROM mst_periode_penilaian
         where id_perusahaan = '$id_perusahaan'
         order by nama_value asc");
@@ -743,7 +743,7 @@ class Enterprise_model extends CI_Model
 
     public function detail_periode_penilaian($id_periode)
     {
-        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, status, flag_diisi
+        $q = $this->db->query("SELECT id_p_periode, id_periode, id_perusahaan, nama_value, flag_diisi
         FROM mst_periode_penilaian
         WHERE id_periode = '$id_periode'");
         return $q;
@@ -770,6 +770,78 @@ class Enterprise_model extends CI_Model
         $q = $this->db->query("SELECT id_jenis_form, id_perusahaan, nama_value, desc
         FROM mst_jenis_form
         WHERE id_jenis_form = '$id_jenis_form'");
+        return $q;
+    }
+
+    //PENILAIAN 1-2
+    public function get_penilaian_1_2($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_nilai_pkk, nama_value, flag_diisi, bobot
+         FROM mst_penilaian_1_2
+         where id_perusahaan = '$id_perusahaan'
+         order by id_nilai_pkk asc");
+        return $q;
+    }
+
+    public function detail_penilaian_1_2($id_nilai_pkk)
+    {
+        $q = $this->db->query("SELECT id_nilai_pkk, nama_value, flag_diisi, bobot
+         FROM mst_penilaian_1_2
+         WHERE id_nilai_pkk = '$id_nilai_pkk'");
+        return $q;
+    }
+
+    //PENILAIAN 3-7 FORM PENILAIAN
+    public function get_penilaian_3_7_form_penilaian($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_form_penilaian, nama_value, flag_diisi, id_perusahaan
+        FROM mst_penilaian_3_7_form_penilaian
+        where id_perusahaan = '$id_perusahaan'
+        order by nama_value asc");
+        return $q;
+    }
+
+    public function detail_penilaian_3_7_form_penilaian($id_form_penilaian)
+    {
+        $q = $this->db->query("SELECT id_form_penilaian, nama_value, flag_diisi, id_perusahaan
+        FROM mst_penilaian_3_7_form_penilaian
+        WHERE id_form_penilaian = '$id_form_penilaian'");
+        return $q;
+    }
+
+    //PENILAIAN FORM A
+    public function get_penilaian_3_7_form_a($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_form_a, id_perusahaan, nama_value, description
+        FROM mst_penilaian_3_7_form_a
+        where id_perusahaan = '$id_perusahaan'
+        order by id_form_a asc");
+        return $q;
+    }
+
+    public function detail_penilaian_3_7_form_a($id_form_a)
+    {
+        $q = $this->db->query("SELECT id_form_a, id_perusahaan, nama_value, desc
+        FROM mst_penilaian_3_7_form_a
+        WHERE id_form_a = '$id_form_a'");
+        return $q;
+    }
+
+    //PENILAIAN FORM B
+    public function get_penilaian_3_7_form_b($id_perusahaan)
+    {
+        $q = $this->db->query("SELECT id_form_b, id_perusahaan, nama_value, description
+        FROM mst_penilaian_3_7_form_b
+        where id_perusahaan = '$id_perusahaan'
+        order by id_form_b asc");
+        return $q;
+    }
+
+    public function detail_penilaian_3_7_form_b($id_form_b)
+    {
+        $q = $this->db->query("SELECT id_form_b, id_perusahaan, nama_value, desc
+        FROM mst_penilaian_3_7_form_b
+        WHERE id_form_b = '$id_form_b'");
         return $q;
     }
 }

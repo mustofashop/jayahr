@@ -14,7 +14,7 @@
     }
 </script>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-7">
         <?php if ($this->session->flashdata('msg')): ?>
             <div class="alert alert-success alert-dismissible" id="success-alert">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -46,7 +46,7 @@
                                         <i class="fa fa-pencil"></i>
                                     </a>
                                     <!-- bagian level 2 -->
-                                    <!-- <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>perusahaan/master_jenis_form/<?php echo $dt->id_jenis_form; ?>/<?php echo $id_p; ?>" title="Level 2">
+                                    <!-- <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>perusahaan/master_jenis_form/<?php echo $dt->id_jenis_form; ?>/<?php echo $id_jenis_form; ?>" title="Level 2">
                                         <i class="fa fa-plus"></i>
                                     </a> -->
                                     <a class="btn bg-maroon btn-flat" href="<?php echo base_url(); ?>perusahaan/delete_jenis_form/<?php echo $dt->id_jenis_form; ?>" onClick="return confirm('Anda yakin ingin menghapus data ini?')" title="Hapus">

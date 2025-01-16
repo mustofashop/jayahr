@@ -178,6 +178,26 @@ if ($class == 'dashboard') {
                 } ?>><a href="<?php echo base_url(); ?>perusahaan/master_jenis_form/12">
                     <i class="fa fa-circle-o"></i>Jenis Form</a>
             </li>
+            <li <?php if ($this->uri->segment(2) == "perusahaan") {
+                    echo 'class="active"';
+                } ?>><a href="<?php echo base_url(); ?>perusahaan/master_penilaian_1_2/12">
+                    <i class="fa fa-circle-o"></i>Penilaian 1-2</a>
+            </li>
+            <li <?php if ($this->uri->segment(2) == "perusahaan") {
+                    echo 'class="active"';
+                } ?>><a href="<?php echo base_url(); ?>perusahaan/master_penilaian_3_7_form_penilaian/12">
+                    <i class="fa fa-circle-o"></i>Penilaian 3-7</a>
+            </li>
+            <li <?php if ($this->uri->segment(2) == "perusahaan") {
+                    echo 'class="active"';
+                } ?>><a href="<?php echo base_url(); ?>perusahaan/master_penilaian_3_7_form_a/12">
+                    <i class="fa fa-circle-o"></i>Penilaian Form A</a>
+            </li>
+            <li <?php if ($this->uri->segment(2) == "perusahaan") {
+                    echo 'class="active"';
+                } ?>><a href="<?php echo base_url(); ?>perusahaan/master_penilaian_3_7_form_b/12">
+                    <i class="fa fa-circle-o"></i>Penilaian Form B</a>
+            </li>
         </ul>
     </li>
     <input type="hidden" name="uri" id="uri" value="<?php echo base_url($this->uri->segment(1)); ?>">
