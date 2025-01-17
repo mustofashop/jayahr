@@ -777,7 +777,6 @@ class Enterprise_model extends CI_Model
         WHERE id_jenis_form = '$id_jenis_form'");
         return $q;
     }
-<<<<<<< HEAD
 
     //PENILAIAN 1-2
     public function get_penilaian_1_2($id_perusahaan)
@@ -868,6 +867,4 @@ class Enterprise_model extends CI_Model
         WHERE id_fb_karyawan = '$id_fb_karyawan'");
         return $q;
     }
-=======
->>>>>>> 66c3b33877e9972cfcc1f72ac9362e4740cf6ea8
 }
