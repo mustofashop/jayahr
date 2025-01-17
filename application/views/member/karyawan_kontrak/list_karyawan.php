@@ -33,7 +33,8 @@
                         $no     = '1';
                         $status = '0'; //0 = available, 1 = resign, 2 = phk, 3 = hapus 
                         //jenis (1 = karyawan tetap, 2 = project, 3 kontrak)
-                        $data   = $this->master_model->list_user_pkk();
+                        $nrp    = $this->session->userdata('nrp');
+                        $data   = $this->master_model->list_member_pkk($nrp);
                         foreach ($data->result() as $dt) {
                         ?>
                             <tr>
@@ -44,7 +45,7 @@
                                 <td><?php echo $dt->job_grade; ?></td>
                                 <td>
                                     <!-- view -->
-                                    <a class="btn bg-green btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/setting_pkk/<?php echo $dt->id_karyawan; ?>" title="View Data">
+                                    <a class="btn bg-green btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/setting_pkk/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
                                         <i class="fa fa-pencil"></i>
                                     </a>
                                 </td>

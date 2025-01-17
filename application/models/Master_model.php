@@ -9,18 +9,20 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
-	public function list_user_pkk()
+	public function list_member_pkk($nrp)
 	{
-		$q = $this->db->query("SELECT *
-        FROM mst_karyawan a
-        where jenis_karyawan = '3'
-        order by a.nama_lengkap asc");
+
+		$q = $this->db->query("SELECT id_karyawan, nip, nama_lengkap, status_jaya, department, job_title, job_grade, tgl_hire, tgl_permanen, tgl_lahir
+		FROM mst_karyawan
+		where (spv1 = '$nrp' OR spv2 = '$nrp' OR spv3 = '$nrp')
+		and flag_hapus = '0' and jenis_karyawan = '3'
+		order by nama_lengkap asc");
 		return $q;
 	}
 
-	public function setting_pkk()
+	public function set_pkk()
 	{
-		$q = $this->db->query("SELECT a.periode_tahun, b.nama_value, a.id_periode
+		$q = $this->db->query("SELECT a.periode_tahun, b.nama_value, a.id_periode, b.id_p_periode
         FROM mst_periode a
         JOIN mst_periode_penilaian b on a.id_periode = b.id_periode
         WHERE a.id_perusahaan = '12' and a.status = 0

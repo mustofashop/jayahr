@@ -83,7 +83,7 @@ class Pengaturan_pkk extends CI_Controller
         }
     }
 
-    public function setting_pkk($id_karyawan)
+    public function setting_pkk($id_karyawan, $nrp)
     {
         $masuk  = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
@@ -95,7 +95,9 @@ class Pengaturan_pkk extends CI_Controller
             } else {
                 $nama_kr    = '';
             }
+            $detail_nrp  = $this->master_model->detail_nrp($nrp);
             $d['id_k']      = $id_karyawan;
+            $d['idp_nrp']        = $nrp;
             $d['class']     = '';
             $d['header']    = 'Setting PKK | ' . $nama_kr;
             $d['content']   = 'member/karyawan_kontrak/set_pkk';
