@@ -6,6 +6,10 @@
                     <i class="fa fa-floppy-o"></i>
                     Simpan
                 </button>
+                <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
+                    <i class="fa fa-arrow-left"></i>
+                    Kembali
+                </button>
             </div>
             <div class="box-body">
                 <ul class="nav nav-pills">
