@@ -12,17 +12,32 @@ class Master_model extends CI_Model
 	public function list_member_pkk($nrp)
 	{
 
-		$q = $this->db->query("SELECT id_karyawan, nip, nama_lengkap, status_jaya, department, job_title, job_grade, tgl_hire, tgl_permanen, tgl_lahir
-		FROM mst_karyawan
+		$q = $this->db->query("SELECT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
+		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir
+		FROM mst_karyawan a
 		where (spv1 = '$nrp' OR spv2 = '$nrp' OR spv3 = '$nrp')
 		and flag_hapus = '0' and jenis_karyawan = '3'
-		order by nama_lengkap asc");
+		order by nama_lengkap ASC");
+		return $q;
+	}
+
+	public function list_member_pkk_2($nrp)
+	{
+
+		$q = $this->db->query("SELECT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
+		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.flag_jenis_form
+		FROM mst_karyawan a
+		JOIN trans_pkk b ON a.nip = b.nrp
+		where (spv1 = '$nrp' OR spv2 = '$nrp' OR spv3 = '$nrp')
+		and flag_hapus = '0' and jenis_karyawan = '3'
+		order by nama_lengkap ASC");
 		return $q;
 	}
 
 	public function set_pkk()
 	{
-		$q = $this->db->query("SELECT a.periode_tahun, b.nama_value, a.id_periode, b.id_p_periode
+		$q = $this->db->query("SELECT a.periode_tahun, b.nama_value, 
+		a.id_periode, b.id_p_periode, b.flag_penilaian
         FROM mst_periode a
         JOIN mst_periode_penilaian b on a.id_periode = b.id_periode
         WHERE a.id_perusahaan = '12' and a.status = 0
@@ -36,6 +51,20 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
+	public function get_penilaian_1_2()
+	{
+		$q = $this->db->query("SELECT * from mst_penilaian_1_2");
+		return $q;
+	}
+
+	public function isi_pkk($atasan)
+	{
+		$q = $this->db->query("SELECT a.*, b.nama_lengkap, b.spv1, b.spv2
+		FROM trans_pkk a
+		JOIN mst_karyawan b ON a.nrp = b.nip
+		WHERE a.insert_by = '$atasan' order by id_trans_pkk asc");
+		return $q;
+	}
 	//USERS
 	public function get_user($id_karyawan)
 	{

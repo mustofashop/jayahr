@@ -80,6 +80,16 @@
                         <input type="text" name="nama_value" id="nama_value" class="form-control" required="required">
                     </div>
                 </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="">Jenis Form</label>
+                        <select name="flag_jenis_form" id="flag_jenis_form" class="form-control">
+                            <option value=""> -- Pilih Kelompok Jenis Form -- </option>
+                            <option value="1"> Kelompok 1 - 2 </option>
+                            <option value="2"> Kelompok 3 - 7 </option>
+                        </select>
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Simpan</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>

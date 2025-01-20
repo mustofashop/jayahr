@@ -14,6 +14,7 @@
                             <td rowspan="2">No</td>
                             <td rowspan="2">NRP</td>
                             <td rowspan="2">Nama Karyawan</td>
+                            <td rowspan="2">Penilaian Ke</td>
                             <td rowspan="2">Submit</td>
                             <td colspan="3" class="text-center">Ceklis</td>
                         </tr>
@@ -24,18 +25,71 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data Karyawan Manual -->
-                        <tr>
-                            <td>1</td>
-                            <td>12345</td>
-                            <td>John Doe</td>
-                            <td>
-                                <button type="button" class="btn btn-primary">Submit</button>
-                            </td>
-                            <td><input type="checkbox" name="spv1_12345"></td>
-                            <td><input type="checkbox" name="spv2_12345"></td>
-                            <td><input type="checkbox" name="karyawan_12345"></td>
-                        </tr>
+                        <?php
+                        $no     = 1;
+                        $data = $this->master_model->isi_pkk($atasan);
+                        if ($data->num_rows() > 0) {
+                            foreach ($data->result() as $dt) { ?>
+                                <tr>
+                                    <td><?php echo $no; ?></td>
+                                    <td><?php echo $dt->nrp; ?></td>
+                                    <td><?php echo $dt->nama_lengkap; ?></td>
+                                    <?php if ($dt->flag_penilaian == 1) { ?>
+                                        <td>1</td>
+                                    <?php } elseif ($dt->flag_penilaian == 2) { ?>
+                                        <td>2</td>
+                                    <?php } elseif ($dt->flag_penilaian == 3) { ?>
+                                        <td>3</td>
+                                    <?php } ?>
+
+                                    <td>
+                                        <?php if ($dt->flag_sent == 1) { ?>
+                                            <i class="fa fa-check text-success"></i> <!-- SPV1 sudah mengisi -->
+                                        <?php } else { ?>
+                                        <?php } ?>
+                                    </td>
+                                    <!-- Checkbox otomatis dicentang berdasarkan nilai dari database -->
+                                    <td>
+                                        <!-- Kolom SPV1 -->
+                                        <?php if ($dt->spv1  && $dt->flag_sent == 1) { ?>
+                                            <i class="fa fa-check text-success"></i> <!-- SPV1 sudah mengisi -->
+                                        <?php } else { ?>
+                                            <i class="fa fa-times text-danger"></i> <!-- SPV1 belum mengisi -->
+                                        <?php } ?>
+                                    </td>
+                                    <td>
+                                        <!-- Kolom SPV2 -->
+                                        <?php if ($dt->spv2  && $dt->flag_sent == 1) { ?>
+                                            <i class="fa fa-check text-success"></i> <!-- SPV2 sudah mengisi -->
+                                        <?php } else { ?>
+                                            <i class="fa fa-times text-danger"></i> <!-- SPV2 belum mengisi -->
+                                        <?php } ?>
+                                    </td>
+                                    <!-- <td>
+                                        <?php if ($dt->spv1 == $atasan && $dt->insert_by == $dt->spv1 && $dt->flag_sent == 1) { ?>
+                                            <i class="fa fa-check text-success"></i>
+                                        <?php } else { ?>
+                                            <i class="fa fa-times text-danger"></i>
+                                        <?php } ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($dt->spv2 == $atasan && $dt->insert_by == $dt->spv2 && $dt->flag_sent == 1) { ?>
+                                            <i class="fa fa-check text-success"></i>
+                                        <?php } else { ?>
+                                            <i class="fa fa-times text-danger"></i>
+                                        <?php } ?>
+                                    </td> -->
+                                    <td>
+                                    </td>
+                                </tr>
+                            <?php }
+                        } else { ?>
+                            <tr>
+                                <td colspan="3" style="text-align: center;">Tidak ada data tersedia</td>
+                            </tr>
+                        <?php
+                            $no++;
+                        } ?>
                     </tbody>
                 </table>
             </div>

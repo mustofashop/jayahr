@@ -71,7 +71,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title">Tambah Nama Value</h4>
+                    <h4 class="modal-title"></h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -79,6 +79,17 @@
                         <input type="text" name="nama_value" id="nama_value" class="form-control" required="required">
                         <input type="hidden" name="id_p_periode" id="id_p_periode">
                         <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="">Penilaian Keberapa</label>
+                        <select name="flag_penilaian" id="flag_penilaian" class="form-control">
+                            <option value=""> -- Penilaian Ke -- </option>
+                            <option value="1"> Penilaian Ke 1 </option>
+                            <option value="2"> Penilaian Ke 2 </option>
+                            <option value="3"> Penilaian Ke 3 </option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">

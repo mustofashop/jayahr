@@ -1887,9 +1887,10 @@ class Perusahaan extends CI_Controller
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_p_periode                = $this->input->post('id_p_periode');
+            $id_p_periode            = $this->input->post('id_p_periode');
             $nama_value              = $this->input->post('nama_value');
             $id_periode              = $this->input->post('id_periode');
+            $flag_penilaian          = $this->input->post('flag_penilaian');
 
             if ($id_p_periode == '') {
                 $id_p_periode  = '0';
@@ -1897,9 +1898,10 @@ class Perusahaan extends CI_Controller
                 $id_p_periode  = $id_p_periode;
             }
 
-            $id['id_p_periode'] = $id_p_periode;
-            $dt['nama_value']   = $nama_value;
-            $dt['id_periode']   = $id_periode;
+            $id['id_p_periode']     = $id_p_periode;
+            $dt['nama_value']       = $nama_value;
+            $dt['id_periode']       = $id_periode;
+            $dt['flag_penilaian']   = $flag_penilaian;
 
             $c = $this->db->get_where("mst_periode_penilaian", $id);
             if ($c->num_rows() > 0) {
@@ -1921,13 +1923,15 @@ class Perusahaan extends CI_Controller
         $row    = $q->num_rows();
         if ($row > 0) {
             foreach ($q->result() as $dt) {
-                $d['id_p_periode'] = $dt->id_p_periode;
-                $d['nama_value'] = $dt->nama_value;
+                $d['id_p_periode']   = $dt->id_p_periode;
+                $d['nama_value']     = $dt->nama_value;
+                $d['flag_penilaian'] = $dt->flag_penilaian;
             }
             echo json_encode($d);
         } else {
             $d['id_p_periode']  = '';
             $d['nama_value'] = '';
+            $d['flag_penilaian'] = '';
             echo json_encode($d);
         }
     }
@@ -1960,8 +1964,9 @@ class Perusahaan extends CI_Controller
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_jenis_form                = $this->input->post('id_jenis_form');
+            $id_jenis_form           = $this->input->post('id_jenis_form');
             $nama_value              = $this->input->post('nama_value');
+            $flag_jenis_form         = $this->input->post('flag_jenis_form');
 
             if ($id_jenis_form == '') {
                 $id_jenis_form  = '0';
@@ -1972,7 +1977,7 @@ class Perusahaan extends CI_Controller
             $id['id_jenis_form'] = $id_jenis_form;
 
             $dt['nama_value']   = $nama_value;
-
+            $dt['flag_jenis_form']   = $flag_jenis_form;
             $q = $this->db->get_where("mst_jenis_form", $id);
             $row = $q->num_rows();
             if ($row > 0) {
@@ -1996,11 +2001,13 @@ class Perusahaan extends CI_Controller
             foreach ($q->result() as $dt) {
                 $d['id_jenis_form']       = $dt->id_jenis_form;
                 $d['nama_value']          = $dt->nama_value;
+                $d['flag_jenis_form']     = $dt->flag_jenis_form;
             }
             echo json_encode($d);
         } else {
             $d['id_jenis_form']       = '';
             $d['nama_value']          = '';
+            $d['flag_jenis_form']     = '';
             echo json_encode($d);
         }
     }

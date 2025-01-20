@@ -10,10 +10,10 @@ class Trans_pkk extends CI_Controller
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            // $dt['id_trans_pkk']     = $this->input->post('id_trans_pkk');
             $dt['id_periode']       = $this->input->post('id_periode');
             $dt['id_jenis_form']    = $this->input->post('id_jenis_form');
             $dt['id_p_periode']     = $this->input->post('id_p_periode');
+            $dt['flag_jenis_form']  = $this->input->post('flag_jenis_form');
             $dt['nrp']              = $this->input->post('nrp');
             $dt['insert_by']        = $this->session->userdata('nrp');
             $dt['insert_date']      = date("Y-m-d");

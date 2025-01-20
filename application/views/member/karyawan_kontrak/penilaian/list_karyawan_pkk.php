@@ -21,13 +21,11 @@
                     <thead>
                         <tr>
                             <td>No</td>
-                            <td>Nama Karyawan</td>
                             <td>NRP</td>
+                            <td>Nama Karyawan</td>
                             <td>Unit</td>
-                            <td>Ceklis</td>
-                            <td>Nilai(Angka)</td>
-                            <td>Kriteria Nilai</td>
-                            <td>Cetak Penilaian Ke</td>
+                            <td>Job Grade</td>
+                            <td>Aksi</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,24 +33,21 @@
                         $no     = '1';
                         $status = '0'; //0 = available, 1 = resign, 2 = phk, 3 = hapus 
                         //jenis (1 = karyawan tetap, 2 = project, 3 kontrak)
-                        $data   = $this->master_model->list_user_pkk();
+                        $nrp    = $this->session->userdata('nrp');
+                        $data   = $this->master_model->list_member_pkk_2($nrp);
                         foreach ($data->result() as $dt) {
                         ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
-                                <td><?php echo $dt->nama_lengkap; ?></td>
                                 <td><?php echo $dt->nip; ?></td>
+                                <td><?php echo $dt->nama_lengkap; ?></td>
                                 <td><?php echo $dt->department; ?></td>
-                                <td>4/4</td>
-                                <td>82,4</td>
-                                <td>B</td>
+                                <td><?php echo $dt->job_grade; ?></td>
                                 <td>
-                                    <div class="button-group">
-                                        <button class="circle-btn" onclick="cetakPenilaian(1, '<?php echo $dt->nama_lengkap; ?>')">1</button>
-                                        <button class="circle-btn" onclick="cetakPenilaian(2, '<?php echo $dt->nama_lengkap; ?>')">2</button>
-                                        <button class="circle-btn" onclick="cetakPenilaian(3, '<?php echo $dt->nama_lengkap; ?>')">3</button>
-                                        <button class="circle-btn" onclick="cetakSemua('<?php echo $dt->nama_lengkap; ?>')">All</button>
-                                    </div>
+                                    <!-- view -->
+                                    <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->flag_jenis_form; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
                                 </td>
                             </tr>
                         <?php
@@ -65,34 +60,3 @@
         </div>
     </div>
 </div>
-<style>
-    .circle-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid #000;
-        background-color: #f0f0f0;
-        color: #000;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .circle-btn:hover {
-        background-color: #dcdcdc;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 5px;
-        justify-content: center;
-    }
-</style>
-<script>
-    function cetakPenilaian(nomor, nama) {
-        alert(`Cetak penilaian ke-${nomor} untuk ${nama}`);
-    }
-
-    function cetakSemua(nama) {
-        alert(`Cetak semua penilaian untuk ${nama}`);
-    }
-</script>
