@@ -2,6 +2,17 @@
     <div class="box">
         <form role="form" method="POST" action="<?php echo base_url(); ?>data_karyawan/simpan_karyawan" enctype="multipart/form-data">
             <div class="box-header">
+<<<<<<< HEAD
+=======
+                <button class="btn btn-app" type="submit">
+                    <i class="fa fa-floppy-o"></i>
+                    Simpan
+                </button>
+                <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
+                    <i class="fa fa-arrow-left"></i>
+                    Kembali
+                </button>
+>>>>>>> 6228405ea5fec46d2a4093a15ebd55ef21fd45a5
             </div>
             <div class="box-body">
                 <ul class="nav nav-pills">

@@ -127,6 +127,20 @@ class Pengaturan_pkk extends CI_Controller
         }
     }
 
+    public function laporan_penilaian_kontrak()
+    {
+        $masuk  = $this->session->userdata('masuk_k');
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+
+            $d['class']     = '';
+            $d['header']    = 'Laporan Penilaian Karyawan Kontrak';
+            $d['content']   = 'member/karyawan_kontrak/laporan_penilaian_kontrak';
+            $this->load->view('master', $d);
+        }
+    }
+
     public function penilaian_pkk()
     {
         $masuk  = $this->session->userdata('masuk_k');

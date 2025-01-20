@@ -4,14 +4,18 @@
             <!-- <div class="box-header">
             
             </div> -->
-            <form role="form" method="GET" action="<?php echo base_url(); ?>Pengaturan_pkk/penilaian_pkk">
+            <form role="form" method="GET" action="<?php echo base_url(); ?>Pengaturan_pkk/laporan_penilaian_kontrak">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="">Karyawan</label>
                         <select name="karyawan" class="form-control select2" required="required" style="width:100%;">
                             <option value="">-- Pilih Karyawan Kontrak --</option>
                             <?php
+<<<<<<< HEAD
                             $nrp  = $this->session->userdata('nrp');
+=======
+                            $nrp         = $this->session->userdata('nrp');
+>>>>>>> 6228405ea5fec46d2a4093a15ebd55ef21fd45a5
                             $k  = $this->master_model->list_member_pkk($nrp);
                             foreach ($k->result() as $dk) {
                             ?>
