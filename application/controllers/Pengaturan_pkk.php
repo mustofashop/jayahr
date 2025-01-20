@@ -199,7 +199,7 @@ class Pengaturan_pkk extends CI_Controller
         }
     }
 
-    public function form_penilaian($id_karyawan, $nrp)
+    public function form_penilaian_1_2($id_karyawan, $nrp)
     {
         $masuk  = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
@@ -215,8 +215,43 @@ class Pengaturan_pkk extends CI_Controller
             $d['id_k']      = $id_karyawan;
             $d['idp_nrp']        = $nrp;
             $d['class']     = '';
-            $d['header']    = 'Setting PKK | ' . $nama_kr;
+            $d['header']    = 'Isi PKK Kel 1_2 | ' . $nama_kr;
             $d['content']   = 'member/karyawan_kontrak/penilaian/form_penilaian_1_2';
+            $this->load->view('master', $d);
+        }
+    }
+
+    public function form_penilaian_3_7($id_karyawan, $nrp)
+    {
+        $masuk = $this->session->userdata('masuk_k');
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+            // Ambil detail karyawan
+            $detail_karyawan = $this->master_model->detail_karyawan($id_karyawan);
+            if ($detail_karyawan->num_rows() > 0) {
+                $nama_kr = $detail_karyawan->row()->nama_lengkap;
+            } else {
+                $nama_kr = '';
+            }
+
+            // Ambil detail NRP
+            $detail_nrp = $this->master_model->detail_nrp($nrp);
+
+            // Ambil data untuk setiap menu
+            $d['menu3'] = $this->master_model->get_menu3_data();
+            $d['menu4'] = $this->master_model->get_menu4_data();
+            $d['menu5'] = $this->master_model->get_menu5_data();
+            $d['menu6'] = $this->master_model->get_menu6_data();
+
+            // Data tambahan
+            $d['id_k'] = $id_karyawan;
+            $d['idp_nrp'] = $nrp;
+            $d['class'] = '';
+            $d['header'] = 'Isi PKK Kel 3_7 | ' . $nama_kr;
+            $d['content'] = 'member/karyawan_kontrak/penilaian/form_penilaian_3_7';
+
+            // Load view
             $this->load->view('master', $d);
         }
     }

@@ -23,8 +23,7 @@ class Master_model extends CI_Model
 
 	public function list_member_pkk_2($nrp)
 	{
-
-		$q = $this->db->query("SELECT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
+		$q = $this->db->query("SELECT distinct a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
 		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.flag_jenis_form
 		FROM mst_karyawan a
 		JOIN trans_pkk b ON a.nip = b.nrp
@@ -65,6 +64,36 @@ class Master_model extends CI_Model
 		WHERE a.insert_by = '$atasan' order by id_trans_pkk asc");
 		return $q;
 	}
+
+	public function get_menu3_data()
+	{
+		$this->db->select('*');
+		$this->db->from('mst_penilaian_3_7_form_a');
+		return $this->db->get();
+	}
+
+	public function get_menu4_data()
+	{
+		$this->db->select('*');
+		$this->db->from('mst_penilaian_3_7_form_b');
+		return $this->db->get();
+	}
+
+	public function get_menu5_data()
+	{
+		$this->db->select('*');
+		$this->db->from('mst_penilaian_3_7_form_penilaian');
+		$this->db->order_by('id_form_penilaian', 'ASC');
+		return $this->db->get();
+	}
+
+	public function get_menu6_data()
+	{
+		$this->db->select('*');
+		$this->db->from('mst_feedback_karyawan');
+		return $this->db->get();
+	}
+
 	//USERS
 	public function get_user($id_karyawan)
 	{

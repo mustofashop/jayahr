@@ -81,7 +81,7 @@
                     <div class="form-group">
                         <label for="exampleInputEmail1">Deskripsi</label>
                         <input type="hidden" name="id_fb_karyawan" id="id_fb_karyawan">
-                        <input type="text" name="description" id="description" class="form-control" required="required">
+                        <input type="text" name="description" id="description" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer">

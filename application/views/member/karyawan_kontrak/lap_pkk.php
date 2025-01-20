@@ -11,7 +11,8 @@
                         <select name="karyawan" class="form-control select2" required="required" style="width:100%;">
                             <option value="">-- Pilih Karyawan Kontrak --</option>
                             <?php
-                            $k  = $this->master_model->list_user_pkk();
+                            $nrp  = $this->session->userdata('nrp');
+                            $k  = $this->master_model->list_member_pkk($nrp);
                             foreach ($k->result() as $dk) {
                             ?>
                                 <option value="<?php echo $dk->id_karyawan; ?>"><?php echo $dk->nama_lengkap; ?></option>

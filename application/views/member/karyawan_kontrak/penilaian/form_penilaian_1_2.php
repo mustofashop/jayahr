@@ -2,10 +2,6 @@
     <div class="box">
         <form role="form" method="POST" action="<?php echo base_url(); ?>data_karyawan/simpan_karyawan" enctype="multipart/form-data">
             <div class="box-header">
-                <button class="btn btn-app" type="submit">
-                    <i class="fa fa-floppy-o"></i>
-                    Simpan
-                </button>
             </div>
             <div class="box-body">
                 <ul class="nav nav-pills">
@@ -54,7 +50,9 @@
                             <label for="aspek_tambahan">Aspek Tambahan (Mohon diuraikan, bila ada):</label>
                             <textarea name="aspek_tambahan" id="aspek_tambahan" class="form-control" rows="3"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-success">Simpan</button>
+                        <div class="form-group text-right" style="margin-top: 20px;">
+                            <button type="submit" class="btn bg-green btn-success btn-flat-margin">Submit</button>
+                        </div>
                     </div>
                 </div>
             </div>

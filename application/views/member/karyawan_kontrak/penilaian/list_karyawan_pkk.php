@@ -45,9 +45,15 @@
                                 <td><?php echo $dt->job_grade; ?></td>
                                 <td>
                                     <!-- view -->
-                                    <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->flag_jenis_form; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
-                                        <i class="fa fa-plus"></i>
-                                    </a>
+                                    <?php if ($dt->flag_jenis_form == 1) { ?>
+                                        <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->flag_jenis_form; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    <?php } elseif ($dt->flag_jenis_form == 2) { ?>
+                                        <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_3_7/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->flag_jenis_form; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    <?php } ?>
                                 </td>
                             </tr>
                         <?php
