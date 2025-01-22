@@ -9,6 +9,22 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
+	public function detail_periode($id_periode)
+	{
+		$q = $this->db->query("SELECT id_periode, periode_tahun
+        FROM mst_periode
+        WHERE id_periode = '$id_periode'");
+		return $q;
+	}
+
+	public function detail_jenis_form($flag_jenis_form)
+	{
+		$q = $this->db->query("SELECT flag_jenis_form
+        FROM mst_jenis_form
+        WHERE flag_jenis_form = '$flag_jenis_form'");
+		return $q;
+	}
+
 	public function list_member_pkk($nrp)
 	{
 
@@ -24,7 +40,7 @@ class Master_model extends CI_Model
 	public function list_member_pkk_2($nrp)
 	{
 		$q = $this->db->query("SELECT distinct a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
-		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.flag_jenis_form
+		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.flag_jenis_form, b.id_periode
 		FROM mst_karyawan a
 		JOIN trans_pkk b ON a.nip = b.nrp
 		where (spv1 = '$nrp' OR spv2 = '$nrp' OR spv3 = '$nrp')
@@ -56,6 +72,12 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
+	public function mst_nilai_1_2()
+	{
+		$q = $this->db->query("SELECT * from mst_nilai_1_2");
+		return $q;
+	}
+
 	public function isi_pkk($atasan)
 	{
 		$q = $this->db->query("SELECT a.*, b.nama_lengkap, b.spv1, b.spv2
@@ -81,10 +103,9 @@ class Master_model extends CI_Model
 
 	public function get_menu5_data()
 	{
-		$this->db->select('*');
-		$this->db->from('mst_penilaian_3_7_form_penilaian');
-		$this->db->order_by('id_form_penilaian', 'ASC');
-		return $this->db->get();
+		$this->db->select('id_form_penilaian, nama_value');
+		$this->db->order_by('id_form_penilaian', 'ASC'); // Urutkan berdasarkan id_form_penilaian
+		return $this->db->get('mst_penilaian_3_7_form_penilaian'); // Ganti 'nama_tabel' dengan nama tabel Anda
 	}
 
 	public function get_menu6_data()

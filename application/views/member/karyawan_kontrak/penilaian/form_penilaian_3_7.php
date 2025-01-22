@@ -1,6 +1,6 @@
 <body>
     <div class="box">
-        <form role="form" method="POST" action="<?php echo base_url(); ?>data_karyawan/simpan_karyawan" enctype="multipart/form-data">
+        <form role="form" method="POST" action="<?php echo base_url(); ?>Trans_pkk/simpan_nilai_3_7" enctype="multipart/form-data">
             <div class="box-header">
                 <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
                     <i class="fa fa-arrow-left"></i>
@@ -106,20 +106,55 @@
                         </table>
                     </div>
                     <div id="menu5" class="tab-pane fade">
-                        <h4>Penilaian Kompetensi</h4>
                         <table border="1" style="width: 100%; text-align: center;">
-                            <?php foreach ($menu5->result() as $row) { ?>
-                                <tr>
-                                    <td><?php echo $row->kriteria; ?></td>
-                                    <td>
-                                        <input type="radio" name="kompetensi[<?php echo $row->id; ?>]" value="A" <?php echo $row->nilai == 'A' ? 'checked' : ''; ?>> A
-                                        <input type="radio" name="kompetensi[<?php echo $row->id; ?>]" value="B" <?php echo $row->nilai == 'B' ? 'checked' : ''; ?>> B
-                                        <input type="radio" name="kompetensi[<?php echo $row->id; ?>]" value="C" <?php echo $row->nilai == 'C' ? 'checked' : ''; ?>> C
-                                        <input type="radio" name="kompetensi[<?php echo $row->id; ?>]" value="D" <?php echo $row->nilai == 'D' ? 'checked' : ''; ?>> D
-                                    </td>
-                                </tr>
-                            <?php } ?>
+                            <!-- Bagian A. KINERJA -->
+                            <tr>
+                                <th colspan="2">A. KINERJA</th>
+                            </tr>
+                            <?php
+                            $count_kinerja = 1; // Nomor untuk Penilaian Kinerja
+                            foreach ($menu5_data->result() as $dt1) {
+                                if (strtolower($dt1->nama_value) == 'tugas pokok' || strtolower($dt1->nama_value) == 'tugas tambahan') {
+                            ?>
+                                    <tr>
+                                        <td style="text-align: left;" colspan="2"><?php echo $count_kinerja . '. ' . $dt1->nama_value; ?></td>
+                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="A"> A</td>
+                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="B"> B</td>
+                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="C"> C</td>
+                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="D"> D</td>
+                                    </tr>
+                            <?php
+                                    $count_kinerja++;
+                                }
+                            }
+                            ?>
+
+                            <!-- Bagian B. KOMPETENSI -->
+                            <tr>
+                                <th colspan="2">B. KOMPETENSI</th>
+                            </tr>
+                            <?php
+                            $count_kompetensi = 1; // Nomor untuk Penilaian Kompetensi
+                            foreach ($menu5_data->result() as $dt1) {
+                                if (!in_array(strtolower($dt1->nama_value), ['tugas pokok', 'tugas tambahan'])) { // Filter kompetensi selain Kinerja
+                            ?>
+                                    <tr>
+                                        <td style="text-align: left;" colspan="2"><?php echo $count_kompetensi . '. ' . $dt1->nama_value; ?></td>
+                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="A"> A</td>
+                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="B"> B</td>
+                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="C"> C</td>
+                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="D"> D</td>
+                                    </tr>
+                            <?php
+                                    $count_kompetensi++;
+                                }
+                            }
+                            ?>
                         </table>
+                        <p style="text-align: left;">Keterangan: * = Hanya untuk karyawan yang memiliki bawahan</p>
+                        <div class="form-group text-right" style="margin-top: 20px;">
+                            <button type="submit" class="btn bg-green btn-success btn-flat-margin">Submit</button>
+                        </div>
                     </div>
                     <div id="menu6" class="tab-pane fade">
                         <h4><b>V. Pendapat / Komentar</b></h4>
