@@ -213,7 +213,7 @@ class Pengaturan_pkk extends CI_Controller
         }
     }
 
-    public function form_penilaian_1_2($id_karyawan, $nrp)
+    public function form_penilaian_1_2($id_karyawan, $nrp, $id_periode, $flag_jenis_form)
     {
         $masuk  = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
@@ -226,11 +226,15 @@ class Pengaturan_pkk extends CI_Controller
                 $nama_kr    = '';
             }
             $detail_nrp  = $this->master_model->detail_nrp($nrp);
-            $d['id_k']      = $id_karyawan;
-            $d['idp_nrp']        = $nrp;
-            $d['class']     = '';
-            $d['header']    = 'Isi PKK Kel 1_2 | ' . $nama_kr;
-            $d['content']   = 'member/karyawan_kontrak/penilaian/form_penilaian_1_2';
+            $detail_periode_penilaian  = $this->master_model->detail_periode($id_periode);
+            $jenis_form = $this->master_model->detail_jenis_form($flag_jenis_form);
+            $d['id_k']              = $id_karyawan;
+            $d['idp_nrp']           = $nrp;
+            $d['id_periode']        = $id_periode;
+            $d['flag_jenis_form']   = $flag_jenis_form;
+            $d['class']             = '';
+            $d['header']            = 'Isi PKK Kel 1_2 | ' . $nama_kr;
+            $d['content']           = 'member/karyawan_kontrak/penilaian/form_penilaian_1_2';
             $this->load->view('master', $d);
         }
     }
@@ -261,6 +265,7 @@ class Pengaturan_pkk extends CI_Controller
             // Data tambahan
             $d['id_k'] = $id_karyawan;
             $d['idp_nrp'] = $nrp;
+            $d['menu5_data'] = $this->master_model->get_menu5_data();
             $d['class'] = '';
             $d['header'] = 'Isi PKK Kel 3_7 | ' . $nama_kr;
             $d['content'] = 'member/karyawan_kontrak/penilaian/form_penilaian_3_7';
