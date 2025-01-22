@@ -43,7 +43,7 @@
                                 <td><?php echo $no; ?></td>
                                 <td><?php echo $dt->nama_lengkap; ?></td>
                                 <td><?php echo $dt->nip; ?></td>
-                                <td><?php echo $dt->department;; ?></td>
+                                <td><?php echo $dt->department; ?></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

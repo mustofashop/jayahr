@@ -1,21 +1,21 @@
 <script type="text/javascript">
-function Edit(ID){
-    var cari	= ID;	
-    $.ajax({
-        type	: "POST",
-        url		: "<?php echo site_url(); ?>/perusahaan/edit_jabatan",
-        data	: "cari="+cari,
-        dataType: "json",
-        success	: function(data){
-            $('#id_jabatan').val(data.id_jabatan);
-            $('#nama').val(data.nama_jabatan);
-        }
-    });
-}
+    function Edit(ID) {
+        var cari = ID;
+        $.ajax({
+            type: "POST",
+            url: "<?php echo site_url(); ?>/perusahaan/edit_jabatan",
+            data: "cari=" + cari,
+            dataType: "json",
+            success: function(data) {
+                $('#id_jabatan').val(data.id_jabatan);
+                $('#nama').val(data.nama_jabatan);
+            }
+        });
+    }
 </script>
 <div class="row">
     <div class="col-md-6">
-        <?php if($this->session->flashdata('msg')): ?>
+        <?php if ($this->session->flashdata('msg')): ?>
             <div class="alert alert-success alert-dismissible" id="success-alert">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-check"></i> Alert!</h4>
@@ -24,13 +24,13 @@ function Edit(ID){
         <?php endif; ?>
         <div class="box">
             <div class="box-header">
-                <a class="btn btn-app" id="tambah" data-toggle="modal" data-target="#modal">
-                    <i class="fa fa-plus"></i>
-                    Tambah
-                </a>
                 <a class="btn btn-app" href="<?php echo base_url(); ?>perusahaan/master_perusahaan/<?php echo $id_p; ?>">
                     <i class="fa fa-arrow-left"></i>
                     Kembali
+                </a>
+                <a class="btn btn-app" id="tambah" data-toggle="modal" data-target="#modal">
+                    <i class="fa fa-plus"></i>
+                    Tambah
                 </a>
             </div>
             <div class="box-body">
@@ -44,16 +44,16 @@ function Edit(ID){
                     </thead>
                     <tbody>
                         <?php
-                            $no     = 1;
-                            $data   = $this->enterprise_model->list_jabatan($id_p);
-                            foreach($data->result() as $dt){
+                        $no     = 1;
+                        $data   = $this->enterprise_model->list_jabatan($id_p);
+                        foreach ($data->result() as $dt) {
                         ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
                                 <td><?php echo $dt->nama_jabatan; ?></td>
                                 <td>
                                     <!-- edit -->
-                                    <a class="btn bg-olive btn-flat" href="#modal" onclick="javascript:Edit('<?php echo $dt->id_jabatan;?>')" data-toggle="modal" title="Edit">
+                                    <a class="btn bg-olive btn-flat" href="#modal" onclick="javascript:Edit('<?php echo $dt->id_jabatan; ?>')" data-toggle="modal" title="Edit">
                                         <i class="fa fa-pencil"></i>
                                     </a>
                                     <!-- hapus -->
@@ -64,7 +64,7 @@ function Edit(ID){
                             </tr>
                         <?php
                             $no++;
-                            }
+                        }
                         ?>
                     </tbody>
                 </table>

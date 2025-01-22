@@ -2,6 +2,10 @@
     <div class="box">
         <form role="form" method="POST" action="<?php echo base_url(); ?>data_karyawan/simpan_karyawan" enctype="multipart/form-data">
             <div class="box-header">
+                <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
+                    <i class="fa fa-arrow-left"></i>
+                    Kembali
+                </button>
             </div>
             <div class="box-body">
                 <ul class="nav nav-pills">
@@ -14,7 +18,7 @@
                 </ul>
                 <div class="tab-content">
                     <div id="menu1" class="tab-pane fade in active">
-                        <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/Penilaian_ 3_7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
+                        <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/penilaian_ 3-7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
                     </div>
                     <div id="menu2" class="tab-pane fade">
                         <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/Contoh_Penilaian_3_7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>

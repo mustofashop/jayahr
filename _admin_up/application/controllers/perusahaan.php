@@ -1766,18 +1766,18 @@ class Perusahaan extends CI_Controller
         if ($logged_in != TRUE || empty($logged_in)) {
             redirect(base_url('login'));
         } else {
-            $id_jenis_form                = $this->input->post('id_jenis_form');
-            $nama_value              = $this->input->post('nama_value');
+            $id_periode                = $this->input->post('id_periode');
+            $periode_tahun              = $this->input->post('periode_tahun');
 
-            if ($id_jenis_form == '') {
+            if ($id_periode == '') {
                 $id_periode  = '0';
             } else {
-                $id_periode  = $id_jenis_form;
+                $id_periode  = $id_periode;
             }
 
             $id['id_periode'] = $id_periode;
 
-            $dt['nama_value']   = $nama_value;
+            $dt['periode_tahun']   = $periode_tahun;
 
             $q = $this->db->get_where("mst_periode", $id);
             $row = $q->num_rows();

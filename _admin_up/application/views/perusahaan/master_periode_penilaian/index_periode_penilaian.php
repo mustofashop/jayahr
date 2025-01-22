@@ -24,6 +24,10 @@
         <?php endif; ?>
         <div class="box">
             <div class="box-header">
+                <a class="btn btn-app" href="<?php echo base_url(); ?>perusahaan/master_periode/<?php echo $id_p; ?>">
+                    <i class="fa fa-arrow-left"></i>
+                    Kembali
+                </a>
                 <a class="btn btn-app" id="tambah" data-toggle="modal" data-target="#modal1"><i class="fa fa-plus"></i> Tambah</a>
             </div>
             <div class="box-body">

@@ -133,12 +133,18 @@ class Pengaturan_pkk extends CI_Controller
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-
             $d['class']     = '';
             $d['header']    = 'Laporan Penilaian Karyawan Kontrak';
             $d['content']   = 'member/karyawan_kontrak/laporan_penilaian_kontrak';
             $this->load->view('master', $d);
         }
+        $nama_lengkap              = $this->input->post('nama_lengkap');
+        $nrp              = $this->input->post('nip');
+        $department          = $this->input->post('department');
+
+        $dt['nama_lengkap']       = $nama_lengkap;
+        $dt['nip']       = $nrp;
+        $dt['department']   = $department;
     }
 
     public function penilaian_pkk()
@@ -266,6 +272,22 @@ class Pengaturan_pkk extends CI_Controller
             $d['content'] = 'member/karyawan_kontrak/penilaian/form_penilaian_3_7';
 
             // Load view
+            $this->load->view('master', $d);
+        }
+    }
+
+    //nilai pkk
+
+    // Menampilkan form penilaian
+    public function nilai_pkk()
+    {
+        $masuk  = $this->session->userdata('masuk_k');
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+            $d['class']     = '';
+            $d['header']    = 'Karyawan Kontrak';
+            $d['content']   = 'member/karyawan_kontrak/penilaian/nilai';
             $this->load->view('master', $d);
         }
     }
