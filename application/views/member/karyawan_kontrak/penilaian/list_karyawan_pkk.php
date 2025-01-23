@@ -23,8 +23,8 @@
                             <td>No</td>
                             <td>NRP</td>
                             <td>Nama Karyawan</td>
-                            <td>Unit</td>
-                            <td>Job Grade</td>
+                            <td>Status</td>
+                            <td>PKK</td>
                             <td>Aksi</td>
                         </tr>
                     </thead>
@@ -36,22 +36,49 @@
                         $nrp    = $this->session->userdata('nrp');
                         $data   = $this->master_model->list_member_pkk_2($nrp);
                         foreach ($data->result() as $dt) {
+                            $cek_pkk = $this->master_model->cek_nilai_1_2($dt->nip,  $dt->insert_by);
+                            $cek_fpkk = $this->master_model->cek_sent_nilai_1_2($dt->nip, $dt->insert_by);
+                            $hasil = $cek_pkk->row()->hasil;
+                            $cek = $cek_pkk->row()->cek;
                         ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
                                 <td><?php echo $dt->nip; ?></td>
                                 <td><?php echo $dt->nama_lengkap; ?></td>
-                                <td><?php echo $dt->department; ?></td>
-                                <td><?php echo $dt->job_grade; ?></td>
+                                <td><?php echo $dt->status_jaya; ?></td>
+                                <td><?php
+                                    if ($cek_fpkk->num_rows() > 0 && $cek == 0) {
+                                        if ($cek_fpkk->row()->f_sent == '0') { ?>
+                                            <p style="color:red"><b> <?php echo $hasil . ' (Belum Submit)'; ?> </b></p>
+                                        <?php } else { ?>
+                                            <p style="color:green"> <?php echo $hasil . ' (Sudah Submit)'; ?> </p>
+                                    <?php }
+                                    } else {
+                                        echo 'Belum Diisi';
+                                    }
+                                    ?>
+                                </td>
                                 <td>
                                     <!-- view -->
                                     <?php if ($dt->flag_jenis_form == 1) { ?>
-                                        <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
-                                            <i class="fa fa-plus"></i>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            1
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            2
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            3
                                         </a>
                                     <?php } elseif ($dt->flag_jenis_form == 2) { ?>
-                                        <a class="btn bg-blue btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_3_7/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
-                                            <i class="fa fa-plus"></i>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_3_7/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            1
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            2
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            3
                                         </a>
                                     <?php } ?>
                                 </td>
@@ -66,3 +93,23 @@
         </div>
     </div>
 </div>
+<style>
+    .circle-btn {
+        width: 40px;
+        /* Atur ukuran tombol */
+        height: 40px;
+        /* Ukuran harus sama agar membentuk lingkaran */
+        border-radius: 50%;
+        /* Membentuk lingkaran */
+        text-align: center;
+        /* Memastikan teks berada di tengah */
+        display: inline-flex;
+        /* Flex untuk center */
+        justify-content: center;
+        /* Center horizontal */
+        align-items: center;
+        /* Center vertical */
+        padding: 0;
+        /* Hapus padding bawaan */
+    }
+</style>

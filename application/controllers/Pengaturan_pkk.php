@@ -138,13 +138,6 @@ class Pengaturan_pkk extends CI_Controller
             $d['content']   = 'member/karyawan_kontrak/laporan_penilaian_kontrak';
             $this->load->view('master', $d);
         }
-        $nama_lengkap              = $this->input->post('nama_lengkap');
-        $nrp              = $this->input->post('nip');
-        $department          = $this->input->post('department');
-
-        $dt['nama_lengkap']       = $nama_lengkap;
-        $dt['nip']       = $nrp;
-        $dt['department']   = $department;
     }
 
     public function penilaian_pkk()
@@ -213,13 +206,14 @@ class Pengaturan_pkk extends CI_Controller
             $d['lokasi']    = $lokasi;
             $d['bagian']    = $bagian;
             $d['class']     = '';
+            // $d['header']    = 'List Karyawan | ' . $nama_jenis . '|' . $nama_periode;
             $d['header']    = 'List Karyawan | ' . $nama_jenis;
             $d['content']   = 'member/karyawan_kontrak/penilaian/list_karyawan_pkk';
             $this->load->view('master', $d);
         }
     }
 
-    public function form_penilaian_1_2($id_karyawan, $nrp, $id_periode, $flag_jenis_form)
+    public function form_penilaian_1_2($id_karyawan, $nrp, $id_periode, $flag_jenis_form, $id_p_periode)
     {
         $masuk  = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
@@ -231,13 +225,15 @@ class Pengaturan_pkk extends CI_Controller
             } else {
                 $nama_kr    = '';
             }
-            $detail_nrp  = $this->master_model->detail_nrp($nrp);
-            $detail_periode_penilaian  = $this->master_model->detail_periode($id_periode);
-            $jenis_form = $this->master_model->detail_jenis_form($flag_jenis_form);
+            $detail_nrp                 = $this->master_model->detail_nrp($nrp);
+            $detail_periode             = $this->master_model->detail_periode($id_periode);
+            $jenis_form                 = $this->master_model->detail_jenis_form($flag_jenis_form);
+            $detail_periode_penilaian   = $this->master_model->detail_periode_penilaian($id_p_periode);
             $d['id_k']              = $id_karyawan;
             $d['idp_nrp']           = $nrp;
             $d['id_periode']        = $id_periode;
             $d['flag_jenis_form']   = $flag_jenis_form;
+            $d['id_p_periode']      = $id_p_periode;
             $d['class']             = '';
             $d['header']            = 'Isi PKK Kel 1_2 | ' . $nama_kr;
             $d['content']           = 'member/karyawan_kontrak/penilaian/form_penilaian_1_2';

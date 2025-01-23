@@ -9,11 +9,26 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
+	public function lap_nilai_pkk($nrp)
+	{
+		$q = $this->db->query("SELECT nama_lengkap, nip, department from mst_karyawan where nip = '$nrp'");
+		return $q;
+	}
+
+
 	public function detail_periode($id_periode)
 	{
 		$q = $this->db->query("SELECT id_periode, periode_tahun
         FROM mst_periode
         WHERE id_periode = '$id_periode'");
+		return $q;
+	}
+
+	public function detail_periode_penilaian($id_p_periode)
+	{
+		$q = $this->db->query("SELECT id_p_periode, flag_penilaian
+        FROM mst_periode_penilaian
+        WHERE id_p_periode = '$id_p_periode'");
 		return $q;
 	}
 
@@ -40,7 +55,8 @@ class Master_model extends CI_Model
 	public function list_member_pkk_2($nrp)
 	{
 		$q = $this->db->query("SELECT distinct a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
-		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.flag_jenis_form, b.id_periode
+		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, 
+		b.flag_jenis_form, b.id_periode, b.id_p_periode, b.insert_by
 		FROM mst_karyawan a
 		JOIN trans_pkk b ON a.nip = b.nrp
 		where (spv1 = '$nrp' OR spv2 = '$nrp' OR spv3 = '$nrp')
@@ -115,6 +131,29 @@ class Master_model extends CI_Model
 		return $this->db->get();
 	}
 
+	public function cek_sent_nilai_1_2($nrp, $insert_by)
+	{
+		$q = $this->db->query("SELECT distinct flag_sent as f_sent
+		FROM trans_kel_1_2
+		where nrp = '$nrp'
+		and insert_by = '$insert_by'");
+		return $q;
+	}
+
+	public function cek_nilai_1_2($nrp, $insert_by)
+	{
+		$p = $this->db->query("SELECT 
+    pkk_jwb.jml_jwb || '/' || pkk_mst.jml_pkk AS hasil,
+    pkk_mst.jml_pkk - pkk_jwb.jml_jwb AS cek
+FROM 
+    (SELECT COUNT(DISTINCT id_p_periode) AS jml_jwb 
+     FROM trans_kel_1_2 
+     WHERE nrp = '$nrp' AND insert_by = '$insert_by') AS pkk_jwb,
+    (SELECT COUNT(DISTINCT id_p_periode) AS jml_pkk 
+     FROM trans_kel_1_2) AS pkk_mst");
+
+		return $p;
+	}
 	//USERS
 	public function get_user($id_karyawan)
 	{

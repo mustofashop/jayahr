@@ -61,9 +61,15 @@
                                             <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="C"> C</label>
                                             <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="D"> D</label>
                                             <input type="hidden" name="id_nilai_pkk[]" value="<?php echo $dt->id_nilai_pkk; ?>">
+                                            <input type="hidden" name="bobot[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->bobot; ?>">
+                                            <input type="hidden" name="isi_nilai_a[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_a; ?>">
+                                            <input type="hidden" name="isi_nilai_b[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_b; ?>">
+                                            <input type="hidden" name="isi_nilai_c[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_c; ?>">
+                                            <input type="hidden" name="isi_nilai_d[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_d; ?>">
                                             <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                             <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
                                             <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
+                                            <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
                                         </td>
                                     </tr>
                                 <?php $no++;
