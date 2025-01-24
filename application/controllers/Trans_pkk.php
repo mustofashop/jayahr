@@ -6,25 +6,52 @@ class Trans_pkk extends CI_Controller
 {
     public function save_set_pkk()
     {
-        $masuk  = $this->session->userdata('masuk_k');
+        $masuk = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            $dt['id_periode']       = $this->input->post('id_periode');
-            $dt['id_jenis_form']    = $this->input->post('id_jenis_form');
-            $dt['id_p_periode']     = $this->input->post('id_p_periode');
-            $dt['flag_jenis_form']  = $this->input->post('flag_jenis_form');
-            $dt['flag_penilaian']   = $this->input->post('flag_penilaian');
-            $dt['flag_sent']        = 1;
-            $dt['nrp']              = $this->input->post('nrp');
-            $dt['insert_by']        = $this->session->userdata('nrp');
-            $dt['insert_date']      = date("Y-m-d");
-            $this->db->insert("trans_pkk", $dt);
+            // Validasi data input
+            $id_p_periode       = $this->input->post('id_p_periode');
+            $id_periode         = $this->input->post('id_periode');
+            $flag_penilaian     = $this->input->post('flag_penilaian');
+            $id_jenis_form      = $this->input->post('id_jenis_form');
+            $flag_jenis_form    = $this->input->post('flag_jenis_form');
+            $nrp = $this->input->post('nrp');
 
+            if (empty($id_p_periode) || empty($id_periode) || empty($flag_penilaian) || empty($nrp)) {
+                $this->session->set_flashdata('msg', 'Data tidak lengkap, gagal menyimpan!');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+
+            // Ambil nilai flag_penilaian berdasarkan id_p_periode yang dipilih
+            $flag_penilaian_selected = isset($flag_penilaian[$id_p_periode]) ? $flag_penilaian[$id_p_periode] : null;
+
+            if ($flag_penilaian_selected === null) {
+                $this->session->set_flashdata('error', 'Flag Penilaian tidak ditemukan!');
+                redirect('controller_name/form_page'); // Redirect kembali ke halaman form
+            }
+            $data = [
+                'id_p_periode'    => $id_p_periode,
+                'id_periode'      => $id_periode,
+                'flag_penilaian'  => $flag_penilaian_selected,
+                'nrp'             => $nrp,
+                'id_jenis_form'   => $id_jenis_form,
+                'flag_jenis_form' => $flag_jenis_form,
+                'flag_Sent'       => 1,
+                'insert_date'     => date('Y-m-d H:i:s'),
+                'insert_by'       => $this->session->userdata('nrp')
+            ];
+
+
+            // Insert ke tabel trans_pkk
+            $this->db->insert("trans_pkk", $data);
+
+            // Redirect dengan pesan sukses
             $this->session->set_flashdata('msg', 'Pengaturan Sukses disimpan');
             redirect($_SERVER['HTTP_REFERER']);
         }
     }
+
 
     public function simpan_nilai_1_2()
     {

@@ -27,7 +27,7 @@
                     <tbody>
                         <?php
                         $no     = 1;
-                        $data = $this->master_model->isi_pkk($atasan);
+                        $data = $this->master_model->list_isi_pkk($atasan);
                         if ($data->num_rows() > 0) {
                             foreach ($data->result() as $dt) { ?>
                                 <tr>
@@ -65,20 +65,6 @@
                                             <i class="fa fa-times text-danger"></i> <!-- SPV2 belum mengisi -->
                                         <?php } ?>
                                     </td>
-                                    <!-- <td>
-                                        <?php if ($dt->spv1 == $atasan && $dt->insert_by == $dt->spv1 && $dt->flag_sent == 1) { ?>
-                                            <i class="fa fa-check text-success"></i>
-                                        <?php } else { ?>
-                                            <i class="fa fa-times text-danger"></i>
-                                        <?php } ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($dt->spv2 == $atasan && $dt->insert_by == $dt->spv2 && $dt->flag_sent == 1) { ?>
-                                            <i class="fa fa-check text-success"></i>
-                                        <?php } else { ?>
-                                            <i class="fa fa-times text-danger"></i>
-                                        <?php } ?>
-                                    </td> -->
                                     <td>
                                     </td>
                                 </tr>

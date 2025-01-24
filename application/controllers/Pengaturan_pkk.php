@@ -88,9 +88,9 @@ class Pengaturan_pkk extends CI_Controller
             } else {
                 $nama_kr    = '';
             }
-            $detail_nrp  = $this->master_model->detail_nrp($nrp);
+            $detail_nrp     = $this->master_model->detail_nrp($nrp);
             $d['id_k']      = $id_karyawan;
-            $d['idp_nrp']        = $nrp;
+            $d['idp_nrp']   = $nrp;
             $d['class']     = '';
             $d['header']    = 'Setting PKK | ' . $nama_kr;
             $d['content']   = 'member/karyawan_kontrak/set_pkk';
@@ -104,8 +104,8 @@ class Pengaturan_pkk extends CI_Controller
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            $insert_by         = $this->session->userdata('nrp');
-            $d['atasan']         = $insert_by;
+            $insert_by      = $this->session->userdata('nrp');
+            $d['atasan']    = $insert_by;
             $d['class']     = '';
             $d['header']    = 'Setting PKK';
             $d['content']   = 'member/karyawan_kontrak/pengisian_pkk';
@@ -286,6 +286,15 @@ class Pengaturan_pkk extends CI_Controller
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
+            $nrp            = $this->session->userdata('nrp');
+            $id_karyawan    = $this->session->userdata('id_karyawan');
+            $data           = $this->master_model->lap_nilai($nrp);
+            $penilaian      = $this->master_model->hasil_nilai($nrp);
+            $data_pkk       = $this->master_model->detail_karyawan_full($id_karyawan);
+            $d['data']      = $data;
+            $d['penilaian'] = $penilaian;
+            $d['nrp']       = $nrp;
+            $d['data_pkk']  = $data_pkk;
             $d['class']     = '';
             $d['header']    = 'Karyawan Kontrak';
             $d['content']   = 'member/karyawan_kontrak/penilaian/nilai';

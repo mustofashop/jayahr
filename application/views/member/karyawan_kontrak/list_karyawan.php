@@ -25,17 +25,20 @@
                             <td>Nama Karyawan</td>
                             <td>Unit</td>
                             <td>Job Grade</td>
+                            <td>Submit</td>
                             <td>Aksi</td>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $no     = '1';
-                        $status = '0'; //0 = available, 1 = resign, 2 = phk, 3 = hapus 
-                        //jenis (1 = karyawan tetap, 2 = project, 3 kontrak)
-                        $nrp    = $this->session->userdata('nrp');
-                        $data   = $this->master_model->list_member_pkk($nrp);
+                        $status = '0';
+                        $data   = $this->master_model->list_member_pkk();
                         foreach ($data->result() as $dt) {
+                            $cek_pkk = $this->master_model->cek_submit_pkk($dt->nip);
+                            $cek_fpkk = $this->master_model->cek_sent_set_pkk($dt->nip);
+                            $hasil = $cek_pkk->row()->hasil;
+                            $cek = $cek_pkk->row()->cek;
                         ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
@@ -43,11 +46,33 @@
                                 <td><?php echo $dt->nama_lengkap; ?></td>
                                 <td><?php echo $dt->department; ?></td>
                                 <td><?php echo $dt->job_grade; ?></td>
+                                <td><?php
+                                    if ($cek_fpkk->num_rows() > 0 && $cek == 0) {
+                                        if ($cek_fpkk->row()->f_sent == '0') { ?>
+                                            <p style="color:red"><b> <?php echo $hasil . ' (Belum Submit)'; ?> </b></p>
+                                        <?php } else { ?>
+                                            <p style="color:green"> <?php echo $hasil . ' (Sudah Submit)'; ?> </p>
+                                    <?php }
+                                    } else {
+                                        echo 'Belum Diisi';
+                                    }
+                                    ?>
+                                </td>
                                 <td>
-                                    <!-- view -->
-                                    <a class="btn bg-green btn-flat" href="<?php echo base_url(); ?>Pengaturan_pkk/setting_pkk/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
-                                        <i class="fa fa-pencil"></i>
-                                    </a>
+                                    <?php if ($hasil === '3/3') { ?>
+                                        <!-- Tombol Tidak Aktif dengan Pesan -->
+                                        <button class="btn bg-blue btn-flat" onclick="alert('Maaf semua nilai sudah di submit'); return false;">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                    <?php } else { ?>
+                                        <!-- Tombol Aktif -->
+                                        <a
+                                            class="btn bg-green btn-flat"
+                                            href="<?php echo base_url(); ?>Pengaturan_pkk/setting_pkk/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>"
+                                            title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                    <?php } ?>
                                 </td>
                             </tr>
                         <?php

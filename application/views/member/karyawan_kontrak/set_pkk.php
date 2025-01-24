@@ -41,9 +41,8 @@
                                     <td><?php echo $dt->nama_value; ?></td>
                                     <td>
                                         <input type="radio" name="id_p_periode" value="<?php echo $dt->id_p_periode; ?>">
-                                        <!-- <input type="hidden" name="id_trans_pkk" value="<?php echo $dt->id_trans_pkk; ?>"> -->
                                         <input type="hidden" name="id_periode" value="<?php echo $dt->id_periode; ?>">
-                                        <input type="hidden" name="flag_penilaian" value="<?php echo $dt->flag_penilaian; ?>">
+                                        <input type="hidden" name="flag_penilaian[<?php echo $dt->id_p_periode; ?>]" value="<?php echo $dt->flag_penilaian; ?>">
                                         <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
                                     </td>
                                 </tr>

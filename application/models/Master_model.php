@@ -40,14 +40,14 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
-	public function list_member_pkk($nrp)
+	public function list_member_pkk()
 	{
 
 		$q = $this->db->query("SELECT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
 		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir
 		FROM mst_karyawan a
-		where (spv1 = '$nrp' OR spv2 = '$nrp' OR spv3 = '$nrp')
-		and flag_hapus = '0' and jenis_karyawan = '3'
+		JOIN trans_pkk b ON a.nip = b.nrp
+		where  a.jenis_karyawan = '3'
 		order by nama_lengkap ASC");
 		return $q;
 	}
@@ -103,6 +103,15 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
+	public function list_isi_pkk()
+	{
+		$q = $this->db->query("SELECT a.*, b.nama_lengkap, b.spv1, b.spv2
+		FROM trans_pkk a
+		JOIN mst_karyawan b ON a.nrp = b.nip
+		 order by id_trans_pkk asc");
+		return $q;
+	}
+
 	public function get_menu3_data()
 	{
 		$this->db->select('*');
@@ -143,16 +152,99 @@ class Master_model extends CI_Model
 	public function cek_nilai_1_2($nrp, $insert_by)
 	{
 		$p = $this->db->query("SELECT 
-    pkk_jwb.jml_jwb || '/' || pkk_mst.jml_pkk AS hasil,
-    pkk_mst.jml_pkk - pkk_jwb.jml_jwb AS cek
-FROM 
-    (SELECT COUNT(DISTINCT id_p_periode) AS jml_jwb 
-     FROM trans_kel_1_2 
-     WHERE nrp = '$nrp' AND insert_by = '$insert_by') AS pkk_jwb,
-    (SELECT COUNT(DISTINCT id_p_periode) AS jml_pkk 
-     FROM trans_kel_1_2) AS pkk_mst");
-
+		pkk_jwb.jml_jwb || '/' || pkk_mst.jml_pkk AS hasil,
+		pkk_mst.jml_pkk - pkk_jwb.jml_jwb AS cek
+	FROM 
+		(SELECT COUNT(DISTINCT id_p_periode) AS jml_jwb 
+		FROM trans_kel_1_2 
+		WHERE nrp = '$nrp' AND insert_by = '$insert_by') AS pkk_jwb,
+		(SELECT COUNT(DISTINCT id_p_periode) AS jml_pkk 
+		FROM trans_kel_1_2) AS pkk_mst");
 		return $p;
+	}
+
+	public function cek_sent_set_pkk($nrp)
+	{
+		$q = $this->db->query("SELECT distinct flag_sent as f_sent
+		FROM trans_pkk
+		where nrp = '$nrp'");
+		return $q;
+	}
+
+	public function cek_submit_pkk($nrp)
+	{
+		$p = $this->db->query("SELECT 
+		pkk_jwb.jml_jwb || '/' || pkk_mst.jml_pkk AS hasil,
+		pkk_mst.jml_pkk - pkk_jwb.jml_jwb AS cek
+	FROM 
+		(SELECT COUNT(DISTINCT id_p_periode) AS jml_jwb 
+		FROM trans_pkk 
+		WHERE nrp = '$nrp') AS pkk_jwb,
+		(SELECT COUNT(DISTINCT id_p_periode) AS jml_pkk 
+		FROM trans_pkk) AS pkk_mst");
+		return $p;
+	}
+
+	public function lap_nilai($nrp)
+	{
+		$q = $this->db->query("SELECT 
+			a.isi_nilai_kel_1_2,
+			a.nilai_akhir,
+			a.text_tambahan,
+			b.nama_lengkap AS karyawan_nama, 
+			b.spv1, 
+			spv1_data.nama_lengkap AS spv1_nama, -- Nama Supervisor 1
+			b.spv2, 
+			spv2_data.nama_lengkap AS spv2_nama, -- Nama Supervisor 2
+			b.department, 
+			b.job_grade,
+			b.tgl_hire, 
+			c.nama_value, 
+			d.flag_penilaian,
+			(SELECT SUM(a2.nilai_akhir)
+    FROM trans_kel_1_2 a2
+    WHERE a2.nrp = a.nrp AND a2.insert_by = a.insert_by) AS total_nilai_akhir
+	FROM 
+		trans_kel_1_2 a
+	JOIN 
+		mst_karyawan b ON a.nrp = b.nip
+	LEFT JOIN 
+		mst_karyawan spv1_data ON b.spv1 = spv1_data.nip -- Join ke tabel yang sama untuk spv1
+	LEFT JOIN 
+		mst_karyawan spv2_data ON b.spv2 = spv2_data.nip -- Join ke tabel yang sama untuk spv2
+	JOIN 
+		mst_penilaian_1_2 c ON a.id_nilai_pkk = c.id_nilai_pkk
+	JOIN 
+		mst_periode_penilaian d ON a.id_p_periode = d.id_p_periode
+	WHERE 
+		a.nrp = '$nrp'");
+		return $q;
+	}
+
+	public function hasil_nilai($nrp)
+	{
+		$q = $this->db->query("SELECT 
+		c.nama_value AS aspek_dinilai,                  -- Aspek yang dinilai
+		a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  -- Nilai kualitatif dari atasan langsung
+		a.nilai_akhir AS nilai_atasan_langsung,         -- Nilai akhir dari atasan langsung
+		a.text_tambahan AS text_tambahan_atasan_langsung, -- Text tambahan dari atasan langsung
+		a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung, -- Nilai kualitatif dari atasan tidak langsung
+		a2.nilai_akhir AS nilai_atasan_tidak_langsung,  -- Nilai akhir dari atasan tidak langsung
+		a2.text_tambahan AS text_tambahan_atasan_tidak_langsung, -- Text tambahan dari atasan tidak langsung
+		SUM(a.nilai_akhir) OVER() AS total_nilai_atasan_langsung, -- Total nilai dari atasan langsung
+		SUM(a2.nilai_akhir) OVER() AS total_nilai_atasan_tidak_langsung -- Total nilai dari atasan tidak langsung
+	FROM 
+		trans_kel_1_2 a
+	LEFT JOIN 
+		trans_kel_1_2 a2 ON a.id_nilai_pkk = a2.id_nilai_pkk 
+		AND a.nrp = a2.nrp 
+		AND a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = a.nrp)
+	JOIN 
+		mst_penilaian_1_2 c ON a.id_nilai_pkk = c.id_nilai_pkk
+	WHERE 
+		a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
+		AND a.nrp = '$nrp'");
+		return $q;
 	}
 	//USERS
 	public function get_user($id_karyawan)
@@ -216,6 +308,18 @@ FROM
 		$q = $this->db->query("SELECT nama_lengkap, nip
 		FROM mst_karyawan 
 		where id_karyawan = '$id_karyawan'");
+		return $q;
+	}
+	public function detail_karyawan_kontrak($id_karyawan)
+	{
+		$q = $this->db->query("SELECT nama_lengkap, nip, id_karyawan
+		FROM mst_karyawan where jenis_karyawan = '3' and id_karyawan = '$id_karyawan'");
+		return $q;
+	}
+	public function list_penilaian($id_karyawan)
+	{
+		$q = $this->db->query("SELECT nama_lengkap,nip, department
+		FROM mst_karyawan where jenis_karyawan = '3' and id_karyawan = '$id_karyawan'");
 		return $q;
 	}
 	public function detail_karyawan2($nrp)
