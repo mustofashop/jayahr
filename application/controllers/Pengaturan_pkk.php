@@ -291,6 +291,11 @@ class Pengaturan_pkk extends CI_Controller
             $data           = $this->master_model->lap_nilai($nrp);
             $penilaian      = $this->master_model->hasil_nilai($nrp);
             $data_pkk       = $this->master_model->detail_karyawan_full($id_karyawan);
+            // Ambil data untuk setiap menu
+            $d['menu3'] = $this->master_model->get_menu3_data();
+            $d['menu4'] = $this->master_model->get_menu4_data();
+            $d['menu5'] = $this->master_model->get_menu5_data();
+            $d['menu6'] = $this->master_model->get_menu6_data();
             $d['data']      = $data;
             $d['penilaian'] = $penilaian;
             $d['nrp']       = $nrp;
