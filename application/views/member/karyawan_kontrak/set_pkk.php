@@ -75,7 +75,7 @@
                                     <td></td>
                                     <td>
                                         <input type="radio" name="id_jenis_form" value="<?php echo $dt2->id_jenis_form; ?>">
-                                        <input type="hidden" name="flag_jenis_form" value="<?php echo $dt2->flag_jenis_form; ?>">
+                                        <input type="hidden" name="flag_jenis_form[<?php echo $dt2->id_jenis_form; ?>]" value="<?php echo $dt2->flag_jenis_form; ?>">
                                     </td>
                                 </tr>
                             <?php }

@@ -33,10 +33,8 @@
                     <tbody>
                         <?php
                         $no     = '1';
-                        $status = '0'; //0 = available, 1 = resign, 2 = phk, 3 = hapus 
-                        //jenis (1 = karyawan tetap, 2 = project, 3 kontrak)
-                        $nrp    = $this->session->userdata('nrp');
-                        $data   = $this->master_model->list_member_pkk($nrp);
+                        $status = '0';
+                        $data = $this->master_model->list_member_rekap_pkk($unit);
                         foreach ($data->result() as $dt) {
                         ?>
                             <tr>

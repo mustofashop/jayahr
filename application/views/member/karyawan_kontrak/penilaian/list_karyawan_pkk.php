@@ -80,6 +80,36 @@
                                         <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
                                             3
                                         </a>
+                                    <?php } elseif ($dt->flag_jenis_form == 3) { ?>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_3_7/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            1
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            2
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            3
+                                        </a>
+                                    <?php } elseif ($dt->flag_jenis_form == 4) { ?>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_3_7/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            1
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            2
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            3
+                                        </a>
+                                    <?php } elseif ($dt->flag_jenis_form == 5) { ?>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_3_7/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            1
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            2
+                                        </a>
+                                        <a class="btn bg-blue circle-btn" href="<?php echo base_url(); ?>Pengaturan_pkk/form_penilaian_1_2/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt->id_periode; ?>/<?php echo $dt->flag_jenis_form; ?>/<?php echo $dt->id_p_periode; ?>" title="Set PKK <?php echo $dt->nama_lengkap; ?>">
+                                            3
+                                        </a>
                                     <?php } ?>
                                 </td>
                             </tr>

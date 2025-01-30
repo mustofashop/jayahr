@@ -1,29 +1,50 @@
+<?php if ($this->session->flashdata('msg')) : ?>
+    <div class="alert alert-success alert-dismissible" id="success-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h4><i class="icon fa fa-check"></i> Alert!</h4>
+        <?php echo $this->session->flashdata('msg'); ?>
+    </div>
+<?php endif; ?>
+<?php if ($this->session->flashdata('msg_error')) : ?>
+    <div class="alert alert-danger alert-dismissible" id="success-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h4><i class="icon fa fa-exclamation"></i> Alert!</h4>
+        <?php echo $this->session->flashdata('msg_error'); ?>
+    </div>
+<?php endif; ?>
+
 <body>
     <div class="box">
-        <form role="form" method="POST" action="<?php echo base_url(); ?>Trans_pkk/simpan_nilai_3_7" enctype="multipart/form-data">
-            <div class="box-header">
-                <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
-                    <i class="fa fa-arrow-left"></i>
-                    Kembali
-                </button>
-            </div>
-            <div class="box-body">
-                <ul class="nav nav-pills">
-                    <li class="active"><a data-toggle="tab" href="#menu1">Kriteria Penilaian</a></li>
-                    <li><a data-toggle="tab" href="#menu2">Contoh</a></li>
-                    <li><a data-toggle="tab" href="#menu3">Form A</a></li>
-                    <li><a data-toggle="tab" href="#menu4">Form B</a></li>
-                    <li><a data-toggle="tab" href="#menu5">Form Penilaian</a></li>
-                    <li><a data-toggle="tab" href="#menu6">Feedback Karyawan</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div id="menu1" class="tab-pane fade in active">
-                        <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/Contoh_penilaian_3_7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
-                    </div>
-                    <div id="menu2" class="tab-pane fade">
-                        <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/Contoh_Penilaian_3_7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
-                    </div>
-                    <div id="menu3" class="tab-pane fade">
+        <div class="box-header">
+            <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
+                <i class="fa fa-arrow-left"></i>
+                Kembali
+            </button>
+        </div>
+        <div class="box-body">
+            <ul class="nav nav-pills">
+                <li class="active"><a data-toggle="tab" href="#menu1">Kriteria Penilaian</a></li>
+                <li><a data-toggle="tab" href="#menu2">Contoh</a></li>
+                <li><a data-toggle="tab" href="#menu3">Form A</a></li>
+                <li><a data-toggle="tab" href="#menu4">Form B</a></li>
+                <li><a data-toggle="tab" href="#menu5">Form Penilaian</a></li>
+                <li><a data-toggle="tab" href="#menu6">Feedback Karyawan</a></li>
+            </ul>
+            <div class="tab-content">
+
+                <!-- MENU 1: Kriteria Penilaian -->
+                <div id="menu1" class="tab-pane fade in active">
+                    <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/Contoh_penilaian_3_7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
+                </div>
+
+                <!-- MENU 2: Contoh -->
+                <div id="menu2" class="tab-pane fade">
+                    <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/Contoh_Penilaian_3_7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
+                </div>
+
+                <!-- FORM A: MENU 3 -->
+                <div id="menu3" class="tab-pane fade">
+                    <form role="form" method="POST" action="<?php echo base_url(); ?>Trans_pkk/simpan_form_a">
                         <h4><b>II. Penilaian Kinerja Karyawan</b></h4>
                         <table border="1" style="width: 100%; text-align: center;">
                             <tr>
@@ -46,9 +67,9 @@
                                     <br>
                                     (hasil bisa dilihat dari kualitas keakuratan, dll)
                                 </td>
-                                <td><textarea name="hasil_kualitatif" style="width: 100%; height: 100px;"></textarea></td>
-                                <td><input type="text" name="persen_kualitatif" style="width: 100%;"></td>
-                                <td><textarea name="deviasi_kualitatif" style="width: 100%; height: 100px;"></textarea></td>
+                                <td><textarea name="hasil_nilai_a" style="width: 100%; height: 100px;"></textarea></td>
+                                <td><input type="text" name="persen_a" style="width: 100%;"></td>
+                                <td><textarea name="deviasi_nilai_a" style="width: 100%; height: 100px;"></textarea></td>
                             </tr>
                             <tr>
                                 <td style="text-align: left;">
@@ -57,9 +78,9 @@
                                     <br>
                                     (hasil bisa dilihat dari jumlah, nilai, lama waktu, dll)
                                 </td>
-                                <td><textarea name="hasil_kuantitatif" style="width: 100%; height: 100px;"></textarea></td>
-                                <td><input type="text" name="persen_kuantitatif" style="width: 100%;"></td>
-                                <td><textarea name="deviasi_kuantitatif" style="width: 100%; height: 100px;"></textarea></td>
+                                <td><textarea name="hasil_nilai_b" style="width: 100%; height: 100px;"></textarea></td>
+                                <td><input type="text" name="persen_b" style="width: 100%;"></td>
+                                <td><textarea name="deviasi_b" style="width: 100%; height: 100px;"></textarea></td>
                             </tr>
                             <tr>
                                 <th colspan="4"> 2. <?php echo $row1->nama_value; ?></th>
@@ -71,14 +92,26 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <td><textarea name="deskripsi_tugas_tambahan" style="width: 100%; height: 100px;"></textarea></td>
-                                <td><textarea name="hasil_tugas_tambahan" style="width: 100%; height: 100px;"></textarea></td>
-                                <td><input type="text" name="persen_tugas_tambahan" style="width: 100%;"></td>
-                                <td><textarea name="deviasi_tugas_tambahan" style="width: 100%; height: 100px;"></textarea></td>
+                                <td><textarea name="tugas_tambahan" style="width: 100%; height: 100px;"></textarea></td>
+                                <td><textarea name="hasil_tgs_tambahan" style="width: 100%; height: 100px;"></textarea></td>
+                                <td><input type="text" name="persen_tambahan" style="width: 100%;"></td>
+                                <td><textarea name="deviasi_tambahan" style="width: 100%; height: 100px;"></textarea></td>
+                                <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
+                                <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
+                                <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
+                                <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
                             </tr>
                         </table>
-                    </div>
-                    <div id="menu4" class="tab-pane fade">
+                        <!-- Tombol Submit -->
+                        <div class="form-group text-right" style="margin-top: 20px;">
+                            <button type="submit" class="btn bg-green btn-success btn-flat-margin">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- FORM B: MENU 4 -->
+                <div id="menu4" class="tab-pane fade">
+                    <form role="form" method="POST" action="<?php echo base_url(); ?>Trans_pkk/simpan_form_b">
                         <h4><b>Penjelasan dan Kesimpulan</b></h4>
                         <table border="1" style="width: 100%;">
                             <?php
@@ -91,7 +124,7 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row2->description; ?></p>
-                                    <textarea name="penjelasan_hasil_kinerja" style="width: 100%; height: 150px;"></textarea>
+                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;"></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -100,28 +133,40 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row1->description; ?></p>
-                                    <textarea name="kesimpulan_hasil_penilaian" style="width: 100%; height: 150px;"></textarea>
+                                    <textarea name="penjelasan" style="width: 100%; height: 150px;"></textarea>
+                                    <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
+                                    <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
+                                    <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
+                                    <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
                                 </td>
                             </tr>
                         </table>
-                    </div>
-                    <div id="menu5" class="tab-pane fade">
+                        <!-- Tombol Submit -->
+                        <div class="form-group text-right" style="margin-top: 20px;">
+                            <button type="submit" class="btn bg-green btn-success btn-flat-margin">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- FORM PENILAIAN & FEEDBACK -->
+                <div id="menu5" class="tab-pane fade">
+                    <form role="form" method="POST" action="<?php echo base_url(); ?>Trans_pkk/simpan_penilaian_feedback">
                         <table border="1" style="width: 100%; text-align: center;">
                             <!-- Bagian A. KINERJA -->
                             <tr>
                                 <th colspan="2">A. KINERJA</th>
                             </tr>
                             <?php
-                            $count_kinerja = 1; // Nomor untuk Penilaian Kinerja
+                            $count_kinerja = 1;
                             foreach ($menu5_data->result() as $dt1) {
                                 if (strtolower($dt1->nama_value) == 'tugas pokok' || strtolower($dt1->nama_value) == 'tugas tambahan') {
                             ?>
                                     <tr>
                                         <td style="text-align: left;" colspan="2"><?php echo $count_kinerja . '. ' . $dt1->nama_value; ?></td>
-                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="A"> A</td>
-                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="B"> B</td>
-                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="C"> C</td>
-                                        <td><input type="radio" name="kinerja_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kinerja; ?>" value="D"> D</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="A" required> A</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="B"> B</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="C"> C</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="D"> D</td>
                                     </tr>
                             <?php
                                     $count_kinerja++;
@@ -134,16 +179,21 @@
                                 <th colspan="2">B. KOMPETENSI</th>
                             </tr>
                             <?php
-                            $count_kompetensi = 1; // Nomor untuk Penilaian Kompetensi
+                            $count_kompetensi = 1;
                             foreach ($menu5_data->result() as $dt1) {
-                                if (!in_array(strtolower($dt1->nama_value), ['tugas pokok', 'tugas tambahan'])) { // Filter kompetensi selain Kinerja
+                                if (!in_array(strtolower($dt1->nama_value), ['tugas pokok', 'tugas tambahan'])) {
                             ?>
                                     <tr>
                                         <td style="text-align: left;" colspan="2"><?php echo $count_kompetensi . '. ' . $dt1->nama_value; ?></td>
-                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="A"> A</td>
-                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="B"> B</td>
-                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="C"> C</td>
-                                        <td><input type="radio" name="kompetensi_<?php echo $dt1->id_form_penilaian; ?>_<?php echo $count_kompetensi; ?>" value="D"> D</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="A" required> A</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="B"> B</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="C"> C</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="D"> D</td>
+                                        <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
+                                        <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
+                                        <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
+                                        <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
+
                                     </tr>
                             <?php
                                     $count_kompetensi++;
@@ -151,39 +201,41 @@
                             }
                             ?>
                         </table>
-                        <p style="text-align: left;">Keterangan: * = Hanya untuk karyawan yang memiliki bawahan</p>
+                        <!-- Tombol Submit -->
                         <div class="form-group text-right" style="margin-top: 20px;">
                             <button type="submit" class="btn bg-green btn-success btn-flat-margin">Submit</button>
                         </div>
-                    </div>
-                    <div id="menu6" class="tab-pane fade">
-                        <h4><b>V. Pendapat / Komentar</b></h4>
-                        <table border="1" style="width: 100%;">
-                            <?php
-                            $row1 = $menu6->row(0); // Mengambil baris pertama (index 0)
-                            $row2 = $menu6->row(1); // Mengambil baris kedua (index 1)
-                            ?>
-                            <tr>
-                                <th>1. <?php echo $row1->nama_value; ?></th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut di atas</p>
-                                    <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;">"Isi dari feedback yang sudah dikirimkan karyawan"</textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>2. <?php echo $row2->nama_value; ?></th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <textarea name="komentar_atasan" style="width: 100%; height: 150px;"></textarea>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
                 </div>
+
+                <!-- FORM FEEDBACK (Masih di dalam form yang sama) -->
+                <div id="menu6" class="tab-pane fade">
+                    <h4><b>V. Pendapat / Komentar</b></h4>
+                    <table border="1" style="width: 100%;">
+                        <?php
+                        $row1 = $menu6->row(0);
+                        $row2 = $menu6->row(1);
+                        ?>
+                        <tr>
+                            <th>1. <?php echo $row1->nama_value; ?></th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut di atas</p>
+                                <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>2. <?php echo $row2->nama_value; ?></th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <textarea name="komentar_feedback" style="width: 100%; height: 150px;"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                </form> <!-- Tutup form di sini setelah menu6 -->
             </div>
-        </form>
+        </div>
     </div>
 </body>

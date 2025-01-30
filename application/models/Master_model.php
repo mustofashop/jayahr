@@ -15,6 +15,18 @@ class Master_model extends CI_Model
 		return $q;
 	}
 
+	public function get_form_a_data($nrp)
+	{
+		$this->db->select('*');
+		$this->db->from('trans_form_a');
+		$this->db->where('nrp', $nrp);
+		$this->db->where("(hasil_nilai_a IS NOT NULL OR hasil_nilai_b IS NOT NULL OR tugas_tambahan IS NOT NULL)");
+		$query = $this->db->get();
+
+		return $query->row_array(); // Ambil hanya satu baris data
+	}
+
+
 
 	public function detail_periode($id_periode)
 	{
@@ -46,7 +58,6 @@ class Master_model extends CI_Model
 		$q = $this->db->query("SELECT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
 		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir
 		FROM mst_karyawan a
-		JOIN trans_pkk b ON a.nip = b.nrp
 		where  a.jenis_karyawan = '3'
 		order by nama_lengkap ASC");
 		return $q;
@@ -536,13 +547,31 @@ class Master_model extends CI_Model
 		order by nama_lengkap asc");
 		return $q;
 	}
-	public function detail_bagian($unit)
+
+	public function list_member_rekap_pkk($unit)
 	{
-		$q  = $this->db->query("SELECT nama_bagian
-        FROM mst_bagian
-        WHERE id_bagian = '$unit'")->row();
+
+		$q = $this->db->query("SELECT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
+		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.id_bagian
+		FROM mst_karyawan a
+		LEFT JOIN mst_bagian b on a.department = b.nama_bagian
+		where jenis_karyawan = '3'
+		and b.id_bagian = '$unit'
+		order by nama_lengkap asc");
 		return $q;
 	}
+	public function detail_bagian($unit)
+	{
+		if (!is_numeric($unit)) {
+			die("Error: ID bagian harus berupa angka.");
+		}
+
+		$sql = "SELECT nama_bagian FROM mst_bagian WHERE id_bagian = ?";
+		$q = $this->db->query($sql, array((int)$unit))->row();
+
+		return $q;
+	}
+
 
 	public function list_idp_belum($thn)
 	{

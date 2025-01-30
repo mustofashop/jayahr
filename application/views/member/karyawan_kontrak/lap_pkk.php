@@ -8,14 +8,12 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="">Karyawan</label>
-                        <select name="karyawan" class="form-control select2" required="required" style="width:100%;">
-                            <option value="">-- Pilih Karyawan Kontrak --</option>
+                        <select name="unit" class="form-control select2" required="required" style="width:100%;">
+                            <option value="">-- Pilih Bagian --</option>
                             <?php
-                            $nrp         = $this->session->userdata('nrp');
-                            $k  = $this->master_model->list_member_pkk($nrp);
-                            foreach ($k->result() as $dk) {
+                            foreach ($unit->result() as $l) {
                             ?>
-                                <option value="<?php echo $dk->id_karyawan; ?>"><?php echo $dk->nama_lengkap; ?></option>
+                                <option value="<?php echo $l->id_bagian; ?>"><?php echo $l->nama_bagian; ?> </option>
                             <?php
                             }
                             ?>
