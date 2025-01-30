@@ -202,12 +202,17 @@ class Master_model extends CI_Model
 			a.isi_nilai_kel_1_2,
 			a.nilai_akhir,
 			a.text_tambahan,
+			b.nip,
 			b.nama_lengkap AS karyawan_nama, 
 			b.spv1, 
 			spv1_data.nama_lengkap AS spv1_nama, -- Nama Supervisor 1
 			b.spv2, 
 			spv2_data.nama_lengkap AS spv2_nama, -- Nama Supervisor 2
 			b.department, 
+			b.jenis_kelamin,
+			b.tgl_lahir,
+			b.status_jaya,
+			b.company,
 			b.job_grade,
 			b.tgl_hire, 
 			c.nama_value, 
