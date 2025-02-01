@@ -56,7 +56,7 @@ class Trans_pkk extends CI_Controller
 
             // Redirect dengan pesan sukses
             $this->session->set_flashdata('msg', 'Pengaturan Sukses disimpan');
-            redirect($_SERVER['HTTP_REFERER']);
+            redirect(base_url('Pengaturan_pkk/list_karyawan'));
         }
     }
 
@@ -113,78 +113,65 @@ class Trans_pkk extends CI_Controller
             }
 
             $this->session->set_flashdata('msg', 'Nilai Sukses disimpan');
-            redirect($_SERVER['HTTP_REFERER']);
+            redirect(base_url('Pengaturan_pkk/list_karyawan_pkk'));
         }
     }
 
-    public function simpan_form_a()
+    public function simpan_nilai_3_7()
     {
         $masuk  = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            $dt = [
-                'id_periode'            => $this->input->post('id_periode'),
-                'id_p_periode'          => $this->input->post('id_p_periode'),
-                'flag_jenis_form'       => $this->input->post('flag_jenis_form'),
-                'hasil_nilai_a'         => $this->input->post('hasil_nilai_a'),
-                'persen_a'              => $this->input->post('persen_a'),
-                'deviasi_nilai_a'       => $this->input->post('deviasi_nilai_a'),
-                'hasil_nilai_b'         => $this->input->post('hasil_nilai_b'),
-                'persen_b'              => $this->input->post('persen_b'),
-                'deviasi_b'             => $this->input->post('deviasi_b'),
-                'tugas_tambahan'        => $this->input->post('tugas_tambahan'),
-                'hasil_tgs_tambahan'    => $this->input->post('hasil_tgs_tambahan'),
-                'persen_tambahan'       => $this->input->post('persen_tambahan'),
-                'deviasi_tambahan'      => $this->input->post('deviasi_tambahan'),
-                'tahun'                 => date('Y'),
-                'nrp'                   => $this->input->post('nrp'),
-                'insert_by'             => $this->session->userdata('nrp')
-            ];
-            $this->db->insert("trans_form_a", $dt);
-            // $nrp = $this->session->userdata('nrp');
-            // $form_a_data = $this->master_model->get_form_a_data($nrp);
+            $id_periode      = $this->input->post('id_periode');
+            $flag_jenis_form = $this->input->post('flag_jenis_form');
+            $id_p_periode    = $this->input->post('id_p_periode');
+            $nrp             = $this->input->post('nrp');
+            $insert_by       = $this->session->userdata('nrp');
 
-            // if (!empty($form_a_data)) {
-            //     $this->session->set_userdata('form_a_data', $form_a_data);
-            // } else {
-            //     $this->session->unset_userdata('form_a_data');
-            // }
+            // 1️⃣ **Simpan Form A jika ada input**
+            if ($this->input->post('hasil_nilai_a')) {
+                $dt_a = [
+                    'id_periode'            => $id_periode,
+                    'id_p_periode'          => $id_p_periode,
+                    'hasil_nilai_a'         => $this->input->post('hasil_nilai_a'),
+                    'persen_a'              => $this->input->post('persen_a'),
+                    'deviasi_nilai_a'       => $this->input->post('deviasi_nilai_a'),
+                    'hasil_nilai_b'         => $this->input->post('hasil_nilai_b'),
+                    'persen_b'              => $this->input->post('persen_b'),
+                    'deviasi_b'             => $this->input->post('deviasi_b'),
+                    'tugas_tambahan'        => $this->input->post('tugas_tambahan'),
+                    'hasil_tgs_tambahan'    => $this->input->post('hasil_tgs_tambahan'),
+                    'persen_tambahan'       => $this->input->post('persen_tambahan'),
+                    'deviasi_tambahan'      => $this->input->post('deviasi_tambahan'),
+                    'tahun'                 => date('Y'),
+                    'insert_date'           => date("Y-m-d"),
+                    'nrp'                   => $nrp,
+                    'flag_jenis_form'       => $flag_jenis_form,
+                    'insert_by'             => $insert_by
+                ];
+                $this->db->insert("trans_form_a", $dt_a);
+                $this->session->set_flashdata('msg', 'Form A Sukses Disimpan');
+            }
 
-            $this->session->set_flashdata('msg', 'Form A Sukses Disimpan');
-            redirect($_SERVER['HTTP_REFERER']);
-        }
-    }
+            // 2️⃣ **Simpan Form B jika ada input**
+            if ($this->input->post('kesimpulan')) {
+                $dt_b = [
+                    'kesimpulan'            => $this->input->post('kesimpulan'),
+                    'penjelasan'            => $this->input->post('penjelasan'),
+                    'id_periode'            => $id_periode,
+                    'id_p_periode'          => $id_p_periode,
+                    'tahun'                 => date('Y'),
+                    'insert_date'           => date("Y-m-d"),
+                    'nrp'                   => $nrp,
+                    'flag_jenis_form'       => $flag_jenis_form,
+                    'insert_by'             => $insert_by
+                ];
+                $this->db->insert("trans_form_b", $dt_b);
+                $this->session->set_flashdata('msg', 'Form B Sukses Disimpan');
+            }
 
-    public function simpan_form_b()
-    {
-        $masuk  = $this->session->userdata('masuk_k');
-        if ($masuk != TRUE) {
-            redirect(base_url('login'));
-        } else {
-            $dt = [
-                'kesimpulan'            => $this->input->post('kesimpulan'),
-                'penjelasan'            => $this->input->post('penjelasan'),
-                'id_periode'            => $this->input->post('id_periode'),
-                'id_p_periode'          => $this->input->post('id_p_periode'),
-                'flag_jenis_form'       => $this->input->post('flag_jenis_form'),
-                'tahun'                 => date('Y'),
-                'nrp'                   => $this->input->post('nrp'),
-                'insert_by'             => $this->session->userdata('nrp')
-            ];
-            $this->db->insert("trans_form_b", $dt);
-
-            $this->session->set_flashdata('msg', 'Form B Sukses Disimpan');
-            redirect($_SERVER['HTTP_REFERER']);
-        }
-    }
-
-    public function simpan_penilaian_feedback()
-    {
-        $masuk = $this->session->userdata('masuk_k');
-        if ($masuk != TRUE) {
-            redirect(base_url('login'));
-        } else {
+            // 3️⃣ **Simpan Penilaian Feedback jika ada flag_jenis_form**
             $id_periode        = $this->input->post('id_periode');
             $id_p_periode      = $this->input->post('id_p_periode');
             $flag_jenis_form   = $this->input->post('flag_jenis_form');
@@ -258,21 +245,20 @@ class Trans_pkk extends CI_Controller
                         $this->db->insert("trans_kel_3_7", $dt);
                     }
                 }
+                $this->session->set_flashdata('msg', 'Penilaian berhasil disimpan');
             }
-
-            $this->session->set_flashdata('msg', 'Penilaian berhasil disimpan');
-            redirect($_SERVER['HTTP_REFERER']);
+            redirect(base_url('Pengaturan_pkk/list_karyawan_pkk'));
         }
     }
 
+
     function download_data_pkk($nrp)
     {
-        $logged_in          = $this->session->userdata('logged_in');
+        $masuk  = $this->session->userdata('masuk_k');
         $this->load->helpers('print_rekap_helper');
-        if ($logged_in != TRUE || empty($logged_in)) {
+        if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-
             $data   = $this->master_model->lap_nilai($nrp);
             if ($data->num_rows() > 0) {
                 $row = $data->row();
@@ -413,7 +399,7 @@ class Trans_pkk extends CI_Controller
 
                 $pdf->Output('D', 'Laporan_Penilaian_Kel_1_2.pdf');
             } else {
-                $this->session->set_flashdata('msg_error', 'Data karyawan tidak ada');
+                $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
                 redirect($_SERVER['HTTP_REFERER']);
             }
         }

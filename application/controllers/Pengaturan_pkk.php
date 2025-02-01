@@ -179,47 +179,12 @@ class Pengaturan_pkk extends CI_Controller
             } else {
                 $nama_jenis = 'Kontrak';
             }
-            $perusahaan     = 12;
-            $detail_pr      = $this->master_model->get_detail_perusahaan($perusahaan);
-            if ($detail_pr->num_rows() > 0) {
-                $nama_pr    = $detail_pr->row()->nama_perusahaan;
-            } else {
-                $nama_pr    = '';
-            }
-            $id_lokasi      = $this->input->get('lokasi');
-            if ($id_lokasi == "" || empty($id_lokasi)) {
-                $lokasi     = 0;
-                $nama_lk    = '';
-            } else {
-                $detail_lk  = $this->master_model->detail_lokasi($id_lokasi);
-                if ($detail_lk->num_rows() > 0) {
-                    $nama_lk =  ' | ' . $detail_lk->row()->nama_lokasi;
-                } else {
-                    $nama_lk = '';
-                }
-                $lokasi     = $id_lokasi;
-            }
-            $id_bagian      = $this->input->get('bagian');
-            if ($id_bagian == "" || empty($id_bagian)) {
-                $bagian     = 0;
-                $nama_bg    = '';
-            } else {
-                $detail_bg  = $this->master_model->detail_bagian($id_bagian);
-                if ($detail_bg->num_rows() > 0) {
-                    $nama_bg = ' | ' . $detail_bg->row()->nama_bagian;
-                } else {
-                    $nama_bg = '';
-                }
-                $bagian     = $id_bagian;
-            }
-            $d['jenis']     = $jenis;
-            $d['perusahaan'] = $perusahaan;
-            $d['lokasi']    = $lokasi;
-            $d['bagian']    = $bagian;
-            $d['class']     = '';
-            // $d['header']    = 'List Karyawan | ' . $nama_jenis . '|' . $nama_periode;
-            $d['header']    = 'List Karyawan | ' . $nama_jenis;
-            $d['content']   = 'member/karyawan_kontrak/penilaian/list_karyawan_pkk';
+            $set_pkk                  = $this->master_model->list_isi_pkk();
+            $d['jenis']               = $jenis;
+            $d['set_pkk']             = $set_pkk;
+            $d['class']               = '';
+            $d['header']              = 'List Karyawan | ' . $nama_jenis;
+            $d['content']             = 'member/karyawan_kontrak/penilaian/list_karyawan_pkk';
             $this->load->view('master', $d);
         }
     }
@@ -240,14 +205,14 @@ class Pengaturan_pkk extends CI_Controller
             $detail_periode             = $this->master_model->detail_periode($id_periode);
             $jenis_form                 = $this->master_model->detail_jenis_form($flag_jenis_form);
             $detail_periode_penilaian   = $this->master_model->detail_periode_penilaian($id_p_periode);
-            $d['id_k']              = $id_karyawan;
-            $d['idp_nrp']           = $nrp;
-            $d['id_periode']        = $id_periode;
-            $d['flag_jenis_form']   = $flag_jenis_form;
-            $d['id_p_periode']      = $id_p_periode;
-            $d['class']             = '';
-            $d['header']            = 'Isi PKK Kel 1_2 | ' . $nama_kr;
-            $d['content']           = 'member/karyawan_kontrak/penilaian/form_penilaian_1_2';
+            $d['id_k']                  = $id_karyawan;
+            $d['idp_nrp']               = $nrp;
+            $d['id_periode']            = $id_periode;
+            $d['flag_jenis_form']       = $flag_jenis_form;
+            $d['id_p_periode']          = $id_p_periode;
+            $d['class']                 = '';
+            $d['header']                = 'Isi PKK Kel 1_2 | ' . $nama_kr;
+            $d['content']               = 'member/karyawan_kontrak/penilaian/form_penilaian_1_2';
             $this->load->view('master', $d);
         }
     }
@@ -306,15 +271,21 @@ class Pengaturan_pkk extends CI_Controller
             $data           = $this->master_model->lap_nilai($nrp);
             $penilaian      = $this->master_model->hasil_nilai($nrp);
             $data_pkk       = $this->master_model->detail_karyawan_full($id_karyawan);
-            // Ambil data untuk setiap menu
-            $d['menu3'] = $this->master_model->get_menu3_data();
-            $d['menu4'] = $this->master_model->get_menu4_data();
-            $d['menu5'] = $this->master_model->get_menu5_data();
-            $d['menu6'] = $this->master_model->get_menu6_data();
+
+            // Ambil flag_jenis_form dari hasil query
+            $row = $data->row(); // Ambil satu baris data dari query
+            $flag_jenis_form = isset($row->flag_jenis_form) ? $row->flag_jenis_form : 0;
+
+            // Masukkan flag ke dalam data yang dikirim ke view
+            $d['menu3']     = $this->master_model->get_menu3_data();
+            $d['menu4']     = $this->master_model->get_menu4_data();
+            $d['menu5']     = $this->master_model->get_menu5_data();
+            $d['menu6']     = $this->master_model->get_menu6_data();
             $d['data']      = $data;
             $d['penilaian'] = $penilaian;
             $d['nrp']       = $nrp;
             $d['data_pkk']  = $data_pkk;
+            $d['flag_jenis_form'] = $flag_jenis_form; // Simpan flag_jenis_form dalam array data
             $d['class']     = '';
             $d['header']    = 'Karyawan Kontrak';
             $d['content']   = 'member/karyawan_kontrak/penilaian/nilai';

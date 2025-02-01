@@ -37,8 +37,12 @@
                         foreach ($data->result() as $dt) {
                             $cek_pkk = $this->master_model->cek_submit_pkk($dt->nip);
                             $cek_fpkk = $this->master_model->cek_sent_set_pkk($dt->nip);
-                            $hasil = $cek_pkk->row()->hasil;
-                            $cek = $cek_pkk->row()->cek;
+
+                            // Pastikan row() tidak NULL sebelum mengakses propertinya
+                            $row_cek_pkk = $cek_pkk->row();
+                            $hasil = isset($row_cek_pkk->hasil) ? $row_cek_pkk->hasil : '0/3';
+                            $cek = isset($row_cek_pkk->cek) ? $row_cek_pkk->cek : '0';
+
                         ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
@@ -66,8 +70,7 @@
                                         </button>
                                     <?php } else { ?>
                                         <!-- Tombol Aktif -->
-                                        <a
-                                            class="btn bg-green btn-flat"
+                                        <a class="btn bg-green btn-flat"
                                             href="<?php echo base_url(); ?>Pengaturan_pkk/setting_pkk/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>"
                                             title="Set PKK <?php echo $dt->nama_lengkap; ?>">
                                             <i class="fa fa-pencil"></i>
@@ -80,6 +83,7 @@
                         }
                         ?>
                     </tbody>
+
                 </table>
             </div>
         </div>

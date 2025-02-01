@@ -4,7 +4,7 @@
             <!-- <div class="box-header">
             
             </div> -->
-            <form role="form" method="GET" action="<?php echo base_url(); ?>Pengaturan_pkk/list_karyawan_pkk/">
+            <form role="form" method="GET" action="<?php echo base_url(); ?>Pengaturan_pkk/list_karyawan_pkk">
                 <div class="box-body">
                     <!-- jenis -->
                     <div class="form-group">
