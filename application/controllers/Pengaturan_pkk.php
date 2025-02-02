@@ -270,6 +270,10 @@ class Pengaturan_pkk extends CI_Controller
             $id_karyawan    = $this->session->userdata('id_karyawan');
             $data           = $this->master_model->lap_nilai($nrp);
             $penilaian      = $this->master_model->hasil_nilai($nrp);
+            $data2          = $this->master_model->lap_nilai_3_7($nrp);
+            $penilaian2     = $this->master_model->hasil_nilai_3_7($nrp);
+            $form_a         = $this->master_model->nilai_form_a($nrp);
+            $form_b         = $this->master_model->nilai_form_b($nrp);
             $data_pkk       = $this->master_model->detail_karyawan_full($id_karyawan);
 
             // Ambil flag_jenis_form dari hasil query
@@ -283,6 +287,10 @@ class Pengaturan_pkk extends CI_Controller
             $d['menu6']     = $this->master_model->get_menu6_data();
             $d['data']      = $data;
             $d['penilaian'] = $penilaian;
+            $d['data2']     = $data2;
+            $d['penilaian2'] = $penilaian2;
+            $d['form_a']    = $form_a;
+            $d['form_b']    = $form_b;
             $d['nrp']       = $nrp;
             $d['data_pkk']  = $data_pkk;
             $d['flag_jenis_form'] = $flag_jenis_form; // Simpan flag_jenis_form dalam array data

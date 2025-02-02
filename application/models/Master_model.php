@@ -255,11 +255,6 @@ FROM
 			b.spv2, 
 			spv2_data.nama_lengkap AS spv2_nama, -- Nama Supervisor 2
 			b.department, 
-			b.jenis_kelamin,
-			b.tgl_lahir,
-			b.status_jaya,
-			b.company,
-			b.job_grade,
 			b.tgl_hire, 
 			c.nama_value, 
 			d.flag_penilaian,
@@ -324,15 +319,15 @@ SELECT
     -- Total keseluruhan nilai atasan tidak langsung
     SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
 
-FROM atasan_langsung al
-LEFT JOIN atasan_tidak_langsung atl 
-    ON al.id_nilai_pkk = atl.id_nilai_pkk 
-    AND al.nrp = atl.nrp
-JOIN mst_penilaian_1_2 c 
-    ON al.id_nilai_pkk = c.id_nilai_pkk
-WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-ORDER BY al.id_nilai_pkk
-");
+	FROM atasan_langsung al
+	LEFT JOIN atasan_tidak_langsung atl 
+		ON al.id_nilai_pkk = atl.id_nilai_pkk 
+		AND al.nrp = atl.nrp
+	JOIN mst_penilaian_1_2 c 
+		ON al.id_nilai_pkk = c.id_nilai_pkk
+	WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
+	ORDER BY al.id_nilai_pkk
+	");
 		return $q;
 	}
 
@@ -359,6 +354,105 @@ ORDER BY al.id_nilai_pkk
 		return $query->row(); // Mengembalikan satu baris hasil
 	}
 
+	public function lap_nilai_3_7($nrp)
+	{
+		$q = $this->db->query("SELECT 
+        a.isi_form_penilaian,
+        a.hasil_nilai,
+        a.flag_jenis_form,
+        b.nip,
+        b.nama_lengkap AS karyawan_nama, 
+        b.spv1, 
+        spv1_data.nama_lengkap AS spv1_nama, 
+        b.spv2, 
+        spv2_data.nama_lengkap AS spv2_nama, 
+        b.department, 
+        b.tgl_hire, 
+        c.nama_value, 
+        d.flag_penilaian,
+        (SELECT SUM(CAST(NULLIF(REPLACE(a2.hasil_nilai, ',', '.'), '') AS NUMERIC)) 
+         FROM trans_kel_3_7 a2
+         WHERE a2.nrp = a.nrp AND a2.insert_by = a.insert_by) AS total_nilai_akhir
+		FROM 
+			trans_kel_3_7 a
+		JOIN 
+			mst_karyawan b ON a.nrp = b.nip
+		LEFT JOIN 
+			mst_karyawan spv1_data ON b.spv1 = spv1_data.nip 
+		LEFT JOIN 
+			mst_karyawan spv2_data ON b.spv2 = spv2_data.nip 
+		JOIN 
+			mst_penilaian_3_7_form_penilaian c ON a.id_form_penilaian = c.id_form_penilaian
+		JOIN 
+			mst_periode_penilaian d ON a.id_p_periode = d.id_p_periode
+		WHERE 
+			a.nrp = '$nrp'");
+
+		return $q;
+	}
+
+
+
+	public function hasil_nilai_3_7($nrp)
+	{
+		$q = $this->db->query("WITH atasan_langsung AS (
+				SELECT 
+					a.id_form_penilaian,
+					a.nrp,
+					a.isi_form_penilaian AS isi_nilai_atasan_langsung,  
+					a.hasil_nilai AS nilai_atasan_langsung,
+					ROW_NUMBER() OVER (PARTITION BY a.id_form_penilaian, a.nrp ORDER BY a.insert_date DESC) AS rn
+				FROM trans_kel_3_7 a
+				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
+				AND a.nrp = '$nrp'
+			),
+			atasan_tidak_langsung AS (
+				SELECT 
+					a2.id_form_penilaian,
+					a2.nrp,
+					a2.isi_form_penilaian AS isi_nilai_atasan_tidak_langsung,  
+					a2.hasil_nilai AS nilai_atasan_tidak_langsung,
+					ROW_NUMBER() OVER (PARTITION BY a2.id_form_penilaian, a2.nrp ORDER BY a2.insert_date DESC) AS rn
+				FROM trans_kel_3_7 a2
+				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
+				AND a2.nrp = '$nrp'
+			)
+			SELECT
+				c.nama_value AS aspek_dinilai,                  
+				al.isi_nilai_atasan_langsung,  
+				al.nilai_atasan_langsung,         
+				atl.isi_nilai_atasan_tidak_langsung, 
+				atl.nilai_atasan_tidak_langsung,
+				
+				SUM(COALESCE(CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_langsung,
+
+				SUM(COALESCE(CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_tidak_langsung
+
+				FROM atasan_langsung al
+				LEFT JOIN atasan_tidak_langsung atl 
+					ON al.id_form_penilaian = atl.id_form_penilaian 
+					AND al.nrp = atl.nrp
+				JOIN mst_penilaian_3_7_form_penilaian c 
+					ON al.id_form_penilaian = c.id_form_penilaian
+				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
+				ORDER BY al.id_form_penilaian
+				");
+		return $q;
+	}
+
+	public function nilai_form_a($nrp)
+	{
+		$q = $this->db->query("SELECT * FROM trans_form_a 
+        WHERE nrp = '$nrp'");
+		return $q;
+	}
+
+	public function nilai_form_b($nrp)
+	{
+		$q = $this->db->query("SELECT * FROM trans_form_b 
+        WHERE nrp = '$nrp'");
+		return $q;
+	}
 
 	public function get_trans_pkk_by_nrp($nrp)
 	{
