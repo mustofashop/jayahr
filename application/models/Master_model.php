@@ -281,53 +281,52 @@ FROM
 	public function hasil_nilai($nrp)
 	{
 		$q = $this->db->query("WITH atasan_langsung AS (
-    SELECT 
-        a.id_nilai_pkk,
-        a.nrp,
-        a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
-        a.nilai_akhir AS nilai_atasan_langsung,
-        a.text_tambahan AS text_tambahan_atasan_langsung,
-        ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
-    FROM trans_kel_1_2 a
-    WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-      AND a.nrp = '$nrp'
-),
-atasan_tidak_langsung AS (
-    SELECT 
-        a2.id_nilai_pkk,
-        a2.nrp,
-        a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
-        a2.nilai_akhir AS nilai_atasan_tidak_langsung,
-        a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
-        ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
-    FROM trans_kel_1_2 a2
-    WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-      AND a2.nrp = '$nrp'
-)
-SELECT
-    c.nama_value AS aspek_dinilai,                  
-    al.isi_nilai_atasan_langsung,  
-    al.nilai_atasan_langsung,         
-    al.text_tambahan_atasan_langsung, -- Menampilkan text_tambahan dari atasan langsung
-    atl.isi_nilai_atasan_tidak_langsung, 
-    atl.nilai_atasan_tidak_langsung,
-    atl.text_tambahan_atasan_tidak_langsung, -- Menampilkan text_tambahan dari atasan tidak langsung
-    
-    -- Total keseluruhan nilai atasan langsung
-    SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
-    
-    -- Total keseluruhan nilai atasan tidak langsung
-    SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
+				SELECT 
+					a.id_nilai_pkk,
+					a.nrp,
+					a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
+					a.nilai_akhir AS nilai_atasan_langsung,
+					a.text_tambahan AS text_tambahan_atasan_langsung,
+					ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
+				FROM trans_kel_1_2 a
+				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
+				AND a.nrp = '$nrp'
+			),
+			atasan_tidak_langsung AS (
+				SELECT 
+					a2.id_nilai_pkk,
+					a2.nrp,
+					a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
+					a2.nilai_akhir AS nilai_atasan_tidak_langsung,
+					a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
+					ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
+				FROM trans_kel_1_2 a2
+				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
+				AND a2.nrp = '$nrp'
+			)
+			SELECT
+				c.nama_value AS aspek_dinilai,                  
+				al.isi_nilai_atasan_langsung,  
+				al.nilai_atasan_langsung,         
+				al.text_tambahan_atasan_langsung, -- Menampilkan text_tambahan dari atasan langsung
+				atl.isi_nilai_atasan_tidak_langsung, 
+				atl.nilai_atasan_tidak_langsung,
+				atl.text_tambahan_atasan_tidak_langsung, -- Menampilkan text_tambahan dari atasan tidak langsung
+				
+				-- Total keseluruhan nilai atasan langsung
+				SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
+				
+				-- Total keseluruhan nilai atasan tidak langsung
+				SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
 
-	FROM atasan_langsung al
-	LEFT JOIN atasan_tidak_langsung atl 
-		ON al.id_nilai_pkk = atl.id_nilai_pkk 
-		AND al.nrp = atl.nrp
-	JOIN mst_penilaian_1_2 c 
-		ON al.id_nilai_pkk = c.id_nilai_pkk
-	WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-	ORDER BY al.id_nilai_pkk
-	");
+				FROM atasan_langsung al
+				LEFT JOIN atasan_tidak_langsung atl 
+					ON al.id_nilai_pkk = atl.id_nilai_pkk 
+					AND al.nrp = atl.nrp
+				JOIN mst_penilaian_1_2 c 
+					ON al.id_nilai_pkk = c.id_nilai_pkk
+				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
+				ORDER BY al.id_nilai_pkk");
 		return $q;
 	}
 
@@ -390,8 +389,6 @@ SELECT
 
 		return $q;
 	}
-
-
 
 	public function hasil_nilai_3_7($nrp)
 	{
@@ -463,6 +460,72 @@ SELECT
 
 		return $query->result_array(); // Ubah menjadi array asosiatif
 	}
+
+	public function get_nilai_1_2_terisi($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_kel_1_2');
+
+		$nilai_terisi = [
+			'nilai' => [],
+			'text_tambahan' => ''
+		];
+
+		foreach ($query->result() as $row) {
+			$nilai_terisi['nilai'][$row->id_nilai_pkk] = $row->isi_nilai_kel_1_2;
+			$nilai_terisi['text_tambahan'] = $row->text_tambahan; // Ambil hanya satu nilai text_tambahan
+		}
+
+		return $nilai_terisi;
+	}
+
+	public function get_nilai_3_7_terisi($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_kel_3_7');
+
+		$nilai_terisi = [];
+		foreach ($query->result() as $row) {
+			$nilai_terisi[$row->id_form_penilaian] = $row->isi_form_penilaian;
+		}
+
+		return $nilai_terisi;
+	}
+
+	public function get_form_A($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_form_a');
+
+		if ($query->num_rows() > 0) {
+			return $query->row(); // Mengembalikan satu baris data
+		}
+		return null; // Jika tidak ada data, kembalikan null
+	}
+
+
+	public function get_form_B($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->select('*');
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_form_b');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
+
+
 	//USERS
 	public function get_user($id_karyawan)
 	{

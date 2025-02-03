@@ -32,6 +32,7 @@
                         <?php
                         $no     = 1;
                         $nrp    = $this->session->userdata('nrp');
+                        $atasan = $this->session->userdata('nrp');
                         $data   = $this->master_model->list_member_pkk_2($nrp);
                         $dt2    = $set_pkk->row();
                         foreach ($data->result() as $dt) {
@@ -69,7 +70,7 @@
                                             $form_link = ($flag_jenis_form == 1) ? "form_penilaian_1_2" : "form_penilaian_3_7";
                                     ?>
                                             <a class="btn bg-blue circle-btn"
-                                                href="<?php echo base_url(); ?>Pengaturan_pkk/<?php echo $form_link; ?>/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt2->id_periode; ?>/<?php echo $flag_jenis_form; ?>/<?php echo $i; ?>"
+                                                href="<?php echo base_url(); ?>Pengaturan_pkk/<?php echo $form_link; ?>/<?php echo $dt->id_karyawan; ?>/<?php echo $dt->nip; ?>/<?php echo $dt2->id_periode; ?>/<?php echo $flag_jenis_form; ?>/<?php echo $i; ?>/<?php echo $atasan; ?>"
                                                 title="Set PKK <?php echo $dt->nama_lengkap; ?>">
                                                 <?php echo $i; ?>
                                             </a>

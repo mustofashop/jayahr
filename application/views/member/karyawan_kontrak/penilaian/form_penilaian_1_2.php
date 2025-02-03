@@ -50,16 +50,19 @@
                                 $no = 1;
                                 $data = $this->master_model->get_penilaian_1_2();
                                 foreach ($data->result() as $dt) {
+                                    // Cek apakah ada nilai sebelumnya
+                                    $nilai_saat_ini = isset($nilai_terisi[$dt->id_nilai_pkk]) ? $nilai_terisi[$dt->id_nilai_pkk] : '';
                                 ?>
                                     <tr>
                                         <td><?php echo $no; ?></td>
                                         <td><?php echo $dt->nama_value; ?></td>
                                         <td><?php echo $dt->bobot; ?>%</td>
                                         <td>
-                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="A"> A</label>
-                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="B"> B</label>
-                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="C"> C</label>
-                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="D"> D</label>
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="A" <?php echo ($nilai_saat_ini == 'A') ? 'checked' : ''; ?>> A</label>
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="B" <?php echo ($nilai_saat_ini == 'B') ? 'checked' : ''; ?>> B</label>
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="C" <?php echo ($nilai_saat_ini == 'C') ? 'checked' : ''; ?>> C</label>
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="D" <?php echo ($nilai_saat_ini == 'D') ? 'checked' : ''; ?>> D</label>
+
                                             <input type="hidden" name="id_nilai_pkk[]" value="<?php echo $dt->id_nilai_pkk; ?>">
                                             <input type="hidden" name="bobot[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->bobot; ?>">
                                             <input type="hidden" name="isi_nilai_a[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_a; ?>">
@@ -67,9 +70,9 @@
                                             <input type="hidden" name="isi_nilai_c[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_c; ?>">
                                             <input type="hidden" name="isi_nilai_d[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_d; ?>">
                                             <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
+                                            <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
                                             <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
                                             <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
-                                            <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
                                         </td>
                                     </tr>
                                 <?php $no++;
@@ -79,7 +82,7 @@
                         </table>
                         <div class="form-group">
                             <label for="aspek_tambahan">Aspek Tambahan (Mohon diuraikan, bila ada):</label>
-                            <textarea name="text_tambahan" id="text_tambahan" class="form-control" rows="3"></textarea>
+                            <textarea name="text_tambahan" id="text_tambahan" class="form-control" rows="3"><?php echo isset($text_tambahan) ? htmlspecialchars($text_tambahan) : ''; ?></textarea>
                         </div>
                         <div class="form-group text-right" style="margin-top: 20px;">
                             <button type="submit" class="btn bg-green btn-success btn-flat-margin">Submit</button>

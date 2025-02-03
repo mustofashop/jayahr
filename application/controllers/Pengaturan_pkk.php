@@ -189,7 +189,7 @@ class Pengaturan_pkk extends CI_Controller
         }
     }
 
-    public function form_penilaian_1_2($id_karyawan, $nrp, $id_periode, $flag_jenis_form, $id_p_periode)
+    public function form_penilaian_1_2($id_karyawan, $nrp, $id_periode, $flag_jenis_form, $id_p_periode, $atasan)
     {
         $masuk  = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
@@ -205,11 +205,16 @@ class Pengaturan_pkk extends CI_Controller
             $detail_periode             = $this->master_model->detail_periode($id_periode);
             $jenis_form                 = $this->master_model->detail_jenis_form($flag_jenis_form);
             $detail_periode_penilaian   = $this->master_model->detail_periode_penilaian($id_p_periode);
+            $insert_by                  = $this->session->userdata('nrp');
+            $nilai_data                 = $this->master_model->get_nilai_1_2_terisi($nrp, $id_p_periode, $atasan);
             $d['id_k']                  = $id_karyawan;
             $d['idp_nrp']               = $nrp;
             $d['id_periode']            = $id_periode;
             $d['flag_jenis_form']       = $flag_jenis_form;
             $d['id_p_periode']          = $id_p_periode;
+            $d['nilai_terisi']          = $nilai_data['nilai']; // Nilai per kriteria
+            $d['text_tambahan']         = $nilai_data['text_tambahan']; // Text tambahan
+            $d['atasan']                = $insert_by;
             $d['class']                 = '';
             $d['header']                = 'Isi PKK Kel 1_2 | ' . $nama_kr;
             $d['content']               = 'member/karyawan_kontrak/penilaian/form_penilaian_1_2';
@@ -217,7 +222,7 @@ class Pengaturan_pkk extends CI_Controller
         }
     }
 
-    public function form_penilaian_3_7($id_karyawan, $nrp, $id_periode, $flag_jenis_form, $id_p_periode)
+    public function form_penilaian_3_7($id_karyawan, $nrp, $id_periode, $flag_jenis_form, $id_p_periode, $atasan)
     {
         $masuk = $this->session->userdata('masuk_k');
         if ($masuk != TRUE) {
@@ -236,12 +241,18 @@ class Pengaturan_pkk extends CI_Controller
             $detail_periode             = $this->master_model->detail_periode($id_periode);
             $jenis_form                 = $this->master_model->detail_jenis_form($flag_jenis_form);
             $detail_periode_penilaian   = $this->master_model->detail_periode_penilaian($id_p_periode);
+            $insert_by                  = $this->session->userdata('nrp');
+            // Ambil data nilai yang sudah diisi
+            $d['nilai_terisi']      = $this->master_model->get_nilai_3_7_terisi($nrp, $id_p_periode, $atasan);
+            $d['form_a']            = $this->master_model->get_form_A($nrp, $id_p_periode, $atasan);
+            $d['form_b']            = $this->master_model->get_form_B($nrp, $id_p_periode, $atasan);
             // Data tambahan
             $d['id_k']              = $id_karyawan;
             $d['idp_nrp']           = $nrp;
             $d['id_periode']        = $id_periode;
             $d['flag_jenis_form']   = $flag_jenis_form;
             $d['id_p_periode']      = $id_p_periode;
+            $d['atasan']            = $insert_by;
             // Ambil data untuk setiap menu
             $d['menu3']             = $this->master_model->get_menu3_data();
             $d['menu4']             = $this->master_model->get_menu4_data();
