@@ -519,7 +519,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"></textarea>
+                            <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"><?php echo isset($fb_k->isi_feedback) ? htmlspecialchars($fb_k->isi_feedback) : 'Nilai Belum Di Isi !'; ?></textarea>
                         </td>
                     </tr>
                     <tr>
@@ -527,7 +527,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <textarea name="komentar_atasan" style="width: 100%; height: 150px;"></textarea>
+                            <textarea name="komentar_atasan" style="width: 100%; height: 150px;"><?php echo isset($fb_a->isi_feedback) ? htmlspecialchars($fb_a->isi_feedback) : 'Nilai Belum Di Isi !'; ?></textarea>
                         </td>
                     </tr>
                 </table>
@@ -558,30 +558,4 @@
             </div>
         </div>
     </form>
-<?php endif; ?>
-
-<!-- download KEL 1-2-->
-<?php if ($flag_jenis_form == 1): ?>
-    <center>
-        <a class="btn bg-red btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk/<?php echo $nrp ?>">
-            <i class="fa fa-download"></i>
-            Download data
-        </a>
-        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel/<?php echo $nrp ?>">
-            <i class="fa fa-download"></i>
-            Download data
-        </a>
-    </center>
-<?php else: ?>
-    <!-- download KEL 3-7-->
-    <center>
-        <a class="btn bg-red btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_3_7/<?php echo $nrp ?>">
-            <i class="fa fa-download"></i>
-            Download data
-        </a>
-        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel/<?php echo $nrp ?>">
-            <i class="fa fa-download"></i>
-            Download data
-        </a>
-    </center>
 <?php endif; ?>

@@ -285,8 +285,8 @@ class Pengaturan_pkk extends CI_Controller
             $penilaian      = $this->master_model->hasil_nilai($nrp);
             $data2          = $this->master_model->lap_nilai_3_7($nrp);
             $penilaian2     = $this->master_model->hasil_nilai_3_7($nrp);
-            $form_a         = $this->master_model->nilai_form_a($nrp);
-            $form_b         = $this->master_model->nilai_form_b($nrp);
+            $form_a         = $this->master_model->nilai_form_a1($nrp);
+            $form_b         = $this->master_model->nilai_form_b1($nrp);
             $data_pkk       = $this->master_model->detail_karyawan_full($id_karyawan);
 
             // Ambil flag_jenis_form dari hasil query
@@ -298,6 +298,8 @@ class Pengaturan_pkk extends CI_Controller
             $d['menu4']     = $this->master_model->get_menu4_data();
             $d['menu5']     = $this->master_model->get_menu5_data();
             $d['menu6']     = $this->master_model->get_menu6_data();
+            $d['fb_k']      = $this->master_model->get_fb_karyawan1($nrp);
+            $d['fb_a']      = $this->master_model->get_fb_atasan1($nrp);
             $d['data']      = $data;
             $d['penilaian'] = $penilaian;
             $d['data2']     = $data2;
@@ -328,12 +330,14 @@ class Pengaturan_pkk extends CI_Controller
             } else {
                 $data2          = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
                 $penilaian2     = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
-                $form_a         = $this->master_model->nilai_form_a($nrp);
-                $form_b         = $this->master_model->nilai_form_b($nrp);
+                $form_a         = $this->master_model->nilai_form_a($nrp, $periode);
+                $form_b         = $this->master_model->nilai_form_b($nrp, $periode);
                 $d['data2']      = $data2;
                 $d['penilaian2'] = $penilaian2;
                 $d['form_a']    = $form_a;
                 $d['form_b']    = $form_b;
+                $d['fb_k']      = $this->master_model->get_fb_karyawan($nrp, $periode);
+                $d['fb_a']      = $this->master_model->get_fb_atasan($nrp, $periode);
             }
             $data_pkk       = $this->master_model->detail_karyawan1($nrp);
             // Masukkan flag ke dalam data yang dikirim ke view

@@ -605,17 +605,31 @@ FROM
 		return $q;
 	}
 
-	public function nilai_form_a($nrp)
+	public function nilai_form_a1($nrp)
 	{
 		$q = $this->db->query("SELECT * FROM trans_form_a 
-        WHERE nrp = '$nrp'");
+        WHERE nrp = '$nrp' and id_p_periode = 1");
 		return $q;
 	}
 
-	public function nilai_form_b($nrp)
+	public function nilai_form_b1($nrp)
 	{
 		$q = $this->db->query("SELECT * FROM trans_form_b 
-        WHERE nrp = '$nrp'");
+        WHERE nrp = '$nrp' and id_p_periode = 1");
+		return $q;
+	}
+
+	public function nilai_form_a($nrp, $periode)
+	{
+		$q = $this->db->query("SELECT * FROM trans_form_a 
+        WHERE nrp = '$nrp' and id_p_periode = '$periode'");
+		return $q;
+	}
+
+	public function nilai_form_b($nrp, $periode)
+	{
+		$q = $this->db->query("SELECT * FROM trans_form_b 
+        WHERE nrp = '$nrp' and id_p_periode = '$periode'");
 		return $q;
 	}
 
@@ -693,6 +707,32 @@ FROM
 		$this->db->where('insert_by', $atasan);
 		$this->db->where('id_p_periode', $id_p_periode);
 		$query = $this->db->get('trans_form_b');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
+	public function get_fb_karyawan1($nrp)
+	{
+		$this->db->select('*');
+		$this->db->where('nrp', $nrp);
+		$this->db->where('id_p_periode', 1);
+		$query = $this->db->get('trans_fb_karyawan');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
+	public function get_fb_atasan1($nrp)
+	{
+		$this->db->select('*');
+		$this->db->where('nrp', $nrp);
+		$this->db->where('id_p_periode', 1);
+		$query = $this->db->get('trans_fb_atasan');
 
 		if ($query->num_rows() > 0) {
 			return $query->row();
