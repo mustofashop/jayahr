@@ -31,8 +31,8 @@
                         if ($data->num_rows() > 0) {
                             foreach ($data->result() as $dt) {
                                 $cek_flag_sent = $this->master_model->get_fb_karyawan($dt->nrp, $dt->id_p_periode);
-                                $submit_kel_1_2 = $this->master_model->get_submit_1_2($dt->nrp, $dt->id_p_periode);
-                                $submit_kel_3_7 = $this->master_model->get_submit_3_7($dt->nrp, $dt->id_p_periode);
+                                $submit_kel_1_2 = $this->master_model->get_submit_1_2($dt->nrp, $dt->id_p_periode, $dt->insert_by);
+                                $submit_kel_3_7 = $this->master_model->get_submit_3_7($dt->nrp, $dt->id_p_periode, $dt->insert_by);
                         ?>
                                 <tr>
                                     <td><?php echo $no; ?></td>
@@ -55,7 +55,9 @@
                                     <td>
                                         <!-- Kolom SPV1 -->
                                         <?php
-                                        $spv1_submit = ($dt->flag_jenis_form == 1) ? $submit_kel_1_2 : $submit_kel_3_7;
+                                        $spv1_submit = ($dt->flag_jenis_form == 1) ?
+                                            $this->master_model->get_submit_1_2($dt->nrp, $dt->id_p_periode, $dt->spv1) :
+                                            $this->master_model->get_submit_3_7($dt->nrp, $dt->id_p_periode, $dt->spv1);
 
                                         if (!empty($spv1_submit) && isset($spv1_submit->flag_sent) && $spv1_submit->flag_sent == 1) { ?>
                                             <i class="fa fa-check text-success"></i> <!-- SPV1 sudah mengisi -->
@@ -67,7 +69,9 @@
                                     <td>
                                         <!-- Kolom SPV2 -->
                                         <?php
-                                        $spv2_submit = ($dt->flag_jenis_form == 1) ? $submit_kel_1_2 : $submit_kel_3_7;
+                                        $spv2_submit = ($dt->flag_jenis_form == 1) ?
+                                            $this->master_model->get_submit_1_2($dt->nrp, $dt->id_p_periode, $dt->spv2) :
+                                            $this->master_model->get_submit_3_7($dt->nrp, $dt->id_p_periode, $dt->spv2);
 
                                         if (!empty($spv2_submit) && isset($spv2_submit->flag_sent) && $spv2_submit->flag_sent == 1) { ?>
                                             <i class="fa fa-check text-success"></i> <!-- SPV2 sudah mengisi -->

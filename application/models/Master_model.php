@@ -766,11 +766,12 @@ FROM
 		}
 		return ''; // Jika tidak ada data, kembalikan string kosong
 	}
-	public function get_submit_1_2($nrp, $id_p_periode)
+	public function get_submit_1_2($nrp, $id_p_periode, $atasan)
 	{
 		$this->db->where('nrp', $nrp);
 		$this->db->where('id_p_periode', $id_p_periode);
 		$this->db->where('flag_jenis_form', 1);
+		$this->db->where('insert_by', $atasan); // Mengecek SPV tertentu
 		$query = $this->db->get('trans_kel_1_2');
 
 		if ($query->num_rows() > 0) {
@@ -779,11 +780,12 @@ FROM
 		return ''; // Jika tidak ada data, kembalikan string kosong
 	}
 
-	public function get_submit_3_7($nrp, $id_p_periode)
+	public function get_submit_3_7($nrp, $id_p_periode, $atasan)
 	{
 		$this->db->where('nrp', $nrp);
 		$this->db->where('id_p_periode', $id_p_periode);
 		$this->db->where('flag_jenis_form !=', 1);
+		$this->db->where('insert_by', $atasan); // Mengecek SPV tertentu
 		$query = $this->db->get('trans_kel_3_7');
 
 		if ($query->num_rows() > 0) {
