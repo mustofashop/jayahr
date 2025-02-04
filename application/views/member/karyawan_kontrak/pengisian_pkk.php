@@ -29,7 +29,11 @@
                         $no     = 1;
                         $data = $this->master_model->list_isi_pkk($atasan);
                         if ($data->num_rows() > 0) {
-                            foreach ($data->result() as $dt) { ?>
+                            foreach ($data->result() as $dt) {
+                                $cek_flag_sent = $this->master_model->get_fb_karyawan($dt->nrp, $dt->id_p_periode);
+                                $submit_kel_1_2 = $this->master_model->get_submit_1_2($dt->nrp, $dt->id_p_periode);
+                                $submit_kel_3_7 = $this->master_model->get_submit_3_7($dt->nrp, $dt->id_p_periode);
+                        ?>
                                 <tr>
                                     <td><?php echo $no; ?></td>
                                     <td><?php echo $dt->nrp; ?></td>
@@ -41,7 +45,6 @@
                                     <?php } elseif ($dt->flag_penilaian == 3) { ?>
                                         <td>3</td>
                                     <?php } ?>
-
                                     <td>
                                         <?php if ($dt->flag_sent == 1) { ?>
                                             <i class="fa fa-check text-success"></i> <!-- SPV1 sudah mengisi -->
@@ -51,21 +54,35 @@
                                     <!-- Checkbox otomatis dicentang berdasarkan nilai dari database -->
                                     <td>
                                         <!-- Kolom SPV1 -->
-                                        <?php if ($dt->spv1  && $dt->flag_sent == 1) { ?>
+                                        <?php
+                                        $spv1_submit = ($dt->flag_jenis_form == 1) ? $submit_kel_1_2 : $submit_kel_3_7;
+
+                                        if (!empty($spv1_submit) && isset($spv1_submit->flag_sent) && $spv1_submit->flag_sent == 1) { ?>
                                             <i class="fa fa-check text-success"></i> <!-- SPV1 sudah mengisi -->
                                         <?php } else { ?>
                                             <i class="fa fa-times text-danger"></i> <!-- SPV1 belum mengisi -->
                                         <?php } ?>
                                     </td>
+
                                     <td>
                                         <!-- Kolom SPV2 -->
-                                        <?php if ($dt->spv2  && $dt->flag_sent == 1) { ?>
+                                        <?php
+                                        $spv2_submit = ($dt->flag_jenis_form == 1) ? $submit_kel_1_2 : $submit_kel_3_7;
+
+                                        if (!empty($spv2_submit) && isset($spv2_submit->flag_sent) && $spv2_submit->flag_sent == 1) { ?>
                                             <i class="fa fa-check text-success"></i> <!-- SPV2 sudah mengisi -->
                                         <?php } else { ?>
                                             <i class="fa fa-times text-danger"></i> <!-- SPV2 belum mengisi -->
                                         <?php } ?>
                                     </td>
+
                                     <td>
+                                        <?php
+                                        if (!empty($cek_flag_sent) && isset($cek_flag_sent->flag_sent) && $cek_flag_sent->flag_sent == 1) { ?>
+                                            <i class="fa fa-check text-success"> Setuju</i> <!-- Tampilkan ceklis hijau jika flag_sent == 1 -->
+                                        <?php } else { ?>
+                                            <i class="fa fa-times text-danger"></i> <!-- Tampilkan silang merah jika flag_sent kosong atau bukan 1 -->
+                                        <?php } ?>
                                     </td>
                                 </tr>
                             <?php }

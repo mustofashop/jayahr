@@ -749,8 +749,9 @@ FROM
 
 		if ($query->num_rows() > 0) {
 			return $query->row();
+		} else {
+			return ''; // Jika tidak ada data, kembalikan string kosong
 		}
-		return ''; // Jika tidak ada data, kembalikan string kosong
 	}
 
 	public function get_fb_atasan($nrp, $id_p_periode)
@@ -759,6 +760,31 @@ FROM
 		$this->db->where('nrp', $nrp);
 		$this->db->where('id_p_periode', $id_p_periode);
 		$query = $this->db->get('trans_fb_atasan');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+	public function get_submit_1_2($nrp, $id_p_periode)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$this->db->where('flag_jenis_form', 1);
+		$query = $this->db->get('trans_kel_1_2');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
+	public function get_submit_3_7($nrp, $id_p_periode)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$this->db->where('flag_jenis_form !=', 1);
+		$query = $this->db->get('trans_kel_3_7');
 
 		if ($query->num_rows() > 0) {
 			return $query->row();
