@@ -328,16 +328,16 @@ class Pengaturan_pkk extends CI_Controller
                 $d['data']      = $data;
                 $d['penilaian'] = $penilaian;
             } else {
-                $data2          = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
-                $penilaian2     = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
-                $form_a         = $this->master_model->nilai_form_a($nrp, $periode);
-                $form_b         = $this->master_model->nilai_form_b($nrp, $periode);
+                $data2           = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
+                $penilaian2      = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
+                $form_a          = $this->master_model->nilai_form_a($nrp, $periode);
+                $form_b          = $this->master_model->nilai_form_b($nrp, $periode);
                 $d['data2']      = $data2;
                 $d['penilaian2'] = $penilaian2;
-                $d['form_a']    = $form_a;
-                $d['form_b']    = $form_b;
-                $d['fb_k']      = $this->master_model->get_fb_karyawan($nrp, $periode);
-                $d['fb_a']      = $this->master_model->get_fb_atasan($nrp, $periode);
+                $d['form_a']     = $form_a;
+                $d['form_b']     = $form_b;
+                $d['fb_k']       = $this->master_model->get_fb_karyawan($nrp, $periode);
+                $d['fb_a']       = $this->master_model->get_fb_atasan($nrp, $periode);
             }
             $data_pkk       = $this->master_model->detail_karyawan1($nrp);
             // Masukkan flag ke dalam data yang dikirim ke view

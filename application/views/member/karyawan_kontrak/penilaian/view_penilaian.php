@@ -1016,7 +1016,29 @@
                     </tr>
                 </table>
             </div>
-            <!-- <br><br>
+            <!-- <br><br> -->
         </div>
     <?php endif; ?>
 <?php endif; ?>
+
+<center>
+    <?php if ($flag_jenis_form == 'form_penilaian_1_2') : ?>
+        <a class="btn bg-red btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk/<?php echo $nrp ?>/<?php echo $periode; ?>">
+            <i class="fa fa-download"></i>
+            Download data
+        </a>
+        <a class="btn bg-green btn-flat margin text-center" href="#">
+            <i class="fa fa-download"></i>
+            Download data
+        </a>
+    <?php else : ?>
+        <a class="btn bg-red btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_3_7/<?php echo $nrp ?>/<?php echo $periode; ?>">
+            <i class="fa fa-download"></i>
+            Download data
+        </a>
+        <a class="btn bg-green btn-flat margin text-center" href="#">
+            <i class="fa fa-download"></i>
+            Download data
+        </a>
+    <?php endif; ?>
+</center>

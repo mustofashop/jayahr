@@ -314,395 +314,769 @@ class Trans_pkk extends CI_Controller
         }
     }
 
-
-    function download_data_pkk($nrp)
+    function download_data_pkk($nrp, $periode)
     {
         $masuk  = $this->session->userdata('masuk_k');
         $this->load->helpers('print_rekap_helper');
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            $data   = $this->master_model->lap_nilai($nrp);
-            if ($data->num_rows() > 0) {
-                $row = $data->row();
-                $pdf = new reportProduct();
-                $pdf->setKriteria("cetak_laporan");
-                $pdf->setNama("CETAK DATA KARYAWAN");
-                $pdf->AliasNbPages();
-                $pdf->AddPage("P", "A4");
-                $A4[0] = 210;
-                $A4[1] = 297;
-                $Q[0] = 216;
-                $Q[1] = 279;
-                $pdf->SetTitle('LAPORAN PENILAIAN PRESTASI KERJA');
-                $pdf->SetCreator('Jaya HR');
+            if ($periode = 'all') {
+                $data1   = $this->master_model->get_trans_pkk($nrp);
+                foreach ($data1->result() as $value) {
+                    $data   = $this->master_model->lap_nilai_periode($value->nrp, $value->id_p_periode);
+                    if ($data->num_rows() > 0) {
+                        $row = $data->row();
+                        $pdf = new reportProduct();
+                        $pdf->setKriteria("cetak_laporan");
+                        $pdf->setNama("CETAK DATA KARYAWAN");
+                        $pdf->AliasNbPages();
+                        $pdf->AddPage("P", "A4");
+                        $A4[0] = 210;
+                        $A4[1] = 297;
+                        $Q[0] = 216;
+                        $Q[1] = 279;
+                        $pdf->SetTitle('LAPORAN PENILAIAN PRESTASI KERJA');
+                        $pdf->SetCreator('Jaya HR');
 
-                $h = 7;
-                $pdf->SetFont('Times', 'B', 14);
-                $pdf->SetX(6);
-                $pdf->SetX(6);
-                $pdf->SetFont('Times', '', 10);
-                $pdf->Ln(5);
+                        $h = 7;
+                        $pdf->SetFont('Times', 'B', 14);
+                        $pdf->SetX(6);
+                        $pdf->SetX(6);
+                        $pdf->SetFont('Times', '', 10);
+                        $pdf->Ln(5);
 
-                //Column widths
-                $pdf->SetFont('Arial', 'B', 14);
-                $pdf->SetX(6);
-                $pdf->Cell(200, 4, 'LAPORAN PENILAIAN PRESTASI KERJA', 0, 0, 'C');
-                $pdf->Cell(10, 4, '', 0, 1);
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(190, 5, 'KARYAWAN KONTRAK KELOMPOK I - II', 0, 1, 'C');
-                $pdf->Ln(5);
-                $w = array(10, 35, 30, 65, 20, 35);
+                        //Column widths
+                        $pdf->SetFont('Arial', 'B', 14);
+                        $pdf->SetX(6);
+                        $pdf->Cell(200, 4, 'LAPORAN PENILAIAN PRESTASI KERJA', 0, 0, 'C');
+                        $pdf->Cell(10, 4, '', 0, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(190, 5, 'KARYAWAN KONTRAK KELOMPOK I - II', 0, 1, 'C');
+                        $pdf->Ln(5);
+                        $w = array(10, 35, 30, 65, 20, 35);
 
-                // Lebar Kolom
-                $colWidths = [10, 70, 30, 20, 30, 20];
+                        // Lebar Kolom
+                        $colWidths = [10, 70, 30, 20, 30, 20];
 
-                // Informasi Karyawan
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Nama', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->karyawan_nama) ? $row->karyawan_nama : 'Tidak Ada Data', 1, 1);
+                        // Informasi Karyawan
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Nama', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->karyawan_nama) ? $row->karyawan_nama : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Jabatan', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->job_grade) ? $row->job_grade : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Jabatan', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->job_grade) ? $row->job_grade : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Tanggal Masuk', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->tgl_hire) ? $row->tgl_hire : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Tanggal Masuk', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->tgl_hire) ? $row->tgl_hire : 'Tidak Ada Data', 1, 1);
 
-                $pdf->Ln(5);
+                        $pdf->Ln(5);
 
-                // Informasi Penilai
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Atasan Langsung', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->spv1_nama) ? $row->spv1_nama : 'Tidak Ada Data', 1, 1);
+                        // Informasi Penilai
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Atasan Langsung', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->spv1_nama) ? $row->spv1_nama : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Atasan Tidak Langsung', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->spv2_nama) ? $row->spv2_nama : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Atasan Tidak Langsung', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->spv2_nama) ? $row->spv2_nama : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Unit', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->department) ? $row->department : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Unit', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->department) ? $row->department : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Periode Penilaian', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->flag_penilaian) ? $row->flag_penilaian : 'Tidak Ada Data', 1, 1);
-                $pdf->Ln(5);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Periode Penilaian', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->flag_penilaian) ? $row->flag_penilaian : 'Tidak Ada Data', 1, 1);
+                        $pdf->Ln(5);
 
 
-                // Tabel Penilaian
-                $pdf->SetFont('Arial', 'B', 10);
-                $header = ['No', 'Aspek yang Dinilai', 'AL', 'Nilai AL', 'ATL', 'Nilai ATL'];
-                $colWidths = [10, 100, 20, 20, 20, 20];
-                foreach ($header as $i => $col) {
-                    $pdf->Cell($colWidths[$i], 10, $col, 1, 0, 'C');
+                        // Tabel Penilaian
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $header = ['No', 'Aspek yang Dinilai', 'AL', 'Nilai AL', 'ATL', 'Nilai ATL'];
+                        $colWidths = [10, 100, 20, 20, 20, 20];
+                        foreach ($header as $i => $col) {
+                            $pdf->Cell($colWidths[$i], 10, $col, 1, 0, 'C');
+                        }
+                        $pdf->Ln();
+
+                        $pdf->SetFont('Arial', '', 10);
+                        $no = 1;
+                        $penilaian = $this->master_model->hasil_nilai_periode($value->nrp, $value->id_p_periode);
+                        foreach ($penilaian->result() as $row) {
+                            $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
+                            $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
+                            $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
+                            $pdf->Cell($colWidths[3], 7, number_format($row->nilai_atasan_langsung, 1), 1, 0, 'C');
+                            $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
+                            $pdf->Cell($colWidths[5], 7, number_format($row->nilai_atasan_tidak_langsung, 1), 1, 0, 'C');
+                            $pdf->Ln();
+                        }
+                        // Total dan Hasil Akhir
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Total', 1);
+                        $pdf->Cell($colWidths[2] + $colWidths[3], 7, number_format($row->total_nilai_atasan_langsung, 1), 1, 0, 'C');
+                        $pdf->Cell($colWidths[4] + $colWidths[5], 7, number_format($row->total_nilai_atasan_tidak_langsung, 1), 1, 0, 'C');
+                        $pdf->Ln();
+
+                        $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Hasil Akhir', 1);
+                        $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(($row->total_nilai_atasan_langsung * 0.6) + ($row->total_nilai_atasan_tidak_langsung * 0.4), 1), 1, 0, 'C');
+                        $pdf->Ln(12);
+
+                        // Tabel Kriteria Penilaian
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(35, 7, 'Kriteria', 1, 0, 'C');
+                        $pdf->Cell(35, 7, 'Nilai', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Keterangan', 1, 1, 'C');
+
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(35, 7, 'A', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '90 s.d. 100', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Istimewa', 1, 1, 'C');
+                        $pdf->Cell(35, 7, 'B', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '80 s.d. 89', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Baik', 1, 1, 'C');
+                        $pdf->Cell(35, 7, 'C', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '40 s.d. 79', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Cukup', 1, 1, 'C');
+                        $pdf->Cell(35, 7, 'D', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '40 s.d. 59', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Kurang', 1, 1, 'C');
+                        $pdf->Ln(5);
+
+                        // Aspek Tambahan
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(190, 7, 'Aspek-aspek Tambahan (mohon diuraikan bila ada):', 1, 1, 'L');
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->MultiCell(190, 7, 'Atasan Langsung:' . (isset($row->text_tambahan_atasan_langsung) ? $row->text_tambahan_atasan_langsung : 'Tidak Ada Data'), 1);
+                        $pdf->MultiCell(190, 7, 'Atasan Tidak Langsung:' . (isset($row->text_tambahan_atasan_tidak_langsung) ? $row->text_tambahan_atasan_tidak_langsung : 'Tidak Ada Data'), 1);
+                        $pdf->Output('D', 'Laporan_Penilaian_Kel_1_2.pdf');
+                    } else {
+                        $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
+                        redirect($_SERVER['HTTP_REFERER']);
+                    }
                 }
-                $pdf->Ln();
-
-                $pdf->SetFont('Arial', '', 10);
-                $no = 1;
-                $penilaian = $this->master_model->hasil_nilai($nrp);
-                foreach ($penilaian->result() as $row) {
-                    $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
-                    $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
-                    $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
-                    $pdf->Cell($colWidths[3], 7, number_format($row->nilai_atasan_langsung, 1), 1, 0, 'C');
-                    $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
-                    $pdf->Cell($colWidths[5], 7, number_format($row->nilai_atasan_tidak_langsung, 1), 1, 0, 'C');
-                    $pdf->Ln();
-                }
-                // Total dan Hasil Akhir
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Total', 1);
-                $pdf->Cell($colWidths[2] + $colWidths[3], 7, number_format($row->total_nilai_atasan_langsung, 1), 1, 0, 'C');
-                $pdf->Cell($colWidths[4] + $colWidths[5], 7, number_format($row->total_nilai_atasan_tidak_langsung, 1), 1, 0, 'C');
-                $pdf->Ln();
-
-                $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Hasil Akhir', 1);
-                $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(($row->total_nilai_atasan_langsung * 0.6) + ($row->total_nilai_atasan_tidak_langsung * 0.4), 1), 1, 0, 'C');
-                $pdf->Ln(12);
-
-                // Tabel Kriteria Penilaian
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(35, 7, 'Kriteria', 1, 0, 'C');
-                $pdf->Cell(35, 7, 'Nilai', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Keterangan', 1, 1, 'C');
-
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(35, 7, 'A', 1, 0, 'C');
-                $pdf->Cell(35, 7, '90 s.d. 100', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Istimewa', 1, 1, 'C');
-                $pdf->Cell(35, 7, 'B', 1, 0, 'C');
-                $pdf->Cell(35, 7, '80 s.d. 89', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Baik', 1, 1, 'C');
-                $pdf->Cell(35, 7, 'C', 1, 0, 'C');
-                $pdf->Cell(35, 7, '40 s.d. 79', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Cukup', 1, 1, 'C');
-                $pdf->Cell(35, 7, 'D', 1, 0, 'C');
-                $pdf->Cell(35, 7, '40 s.d. 59', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Kurang', 1, 1, 'C');
-                $pdf->Ln(5);
-
-                // Aspek Tambahan
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(190, 7, 'Aspek-aspek Tambahan (mohon diuraikan bila ada):', 1, 1, 'L');
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->MultiCell(190, 7, 'Atasan Langsung:
-                ' . (isset($row->text_tambahan_atasan_langsung) ? $row->text_tambahan_atasan_langsung : 'Tidak Ada Data'), 1);
-                $pdf->MultiCell(190, 7, 'Atasan Tidak Langsung:
-                ' . (isset($row->text_tambahan_atasan_tidak_langsung) ? $row->text_tambahan_atasan_tidak_langsung : 'Tidak Ada Data'), 1);
-
-                $pdf->Output('D', 'Laporan_Penilaian_Kel_1_2.pdf');
             } else {
-                $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
-                redirect($_SERVER['HTTP_REFERER']);
+                $data   = $this->master_model->lap_nilai_periode($nrp, $periode);
+                if ($data->num_rows() > 0) {
+                    $row = $data->row();
+                    $pdf = new reportProduct();
+                    $pdf->setKriteria("cetak_laporan");
+                    $pdf->setNama("CETAK DATA KARYAWAN");
+                    $pdf->AliasNbPages();
+                    $pdf->AddPage("P", "A4");
+                    $A4[0] = 210;
+                    $A4[1] = 297;
+                    $Q[0] = 216;
+                    $Q[1] = 279;
+                    $pdf->SetTitle('LAPORAN PENILAIAN PRESTASI KERJA');
+                    $pdf->SetCreator('Jaya HR');
+
+                    $h = 7;
+                    $pdf->SetFont('Times', 'B', 14);
+                    $pdf->SetX(6);
+                    $pdf->SetX(6);
+                    $pdf->SetFont('Times', '', 10);
+                    $pdf->Ln(5);
+
+                    //Column widths
+                    $pdf->SetFont('Arial', 'B', 14);
+                    $pdf->SetX(6);
+                    $pdf->Cell(200, 4, 'LAPORAN PENILAIAN PRESTASI KERJA', 0, 0, 'C');
+                    $pdf->Cell(10, 4, '', 0, 1);
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(190, 5, 'KARYAWAN KONTRAK KELOMPOK I - II', 0, 1, 'C');
+                    $pdf->Ln(5);
+                    $w = array(10, 35, 30, 65, 20, 35);
+
+                    // Lebar Kolom
+                    $colWidths = [10, 70, 30, 20, 30, 20];
+
+                    // Informasi Karyawan
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Nama', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->karyawan_nama) ? $row->karyawan_nama : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Jabatan', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->job_grade) ? $row->job_grade : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Tanggal Masuk', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->tgl_hire) ? $row->tgl_hire : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->Ln(5);
+
+                    // Informasi Penilai
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Atasan Langsung', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->spv1_nama) ? $row->spv1_nama : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Atasan Tidak Langsung', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->spv2_nama) ? $row->spv2_nama : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Unit', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->department) ? $row->department : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Periode Penilaian', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->flag_penilaian) ? $row->flag_penilaian : 'Tidak Ada Data', 1, 1);
+                    $pdf->Ln(5);
+
+                    // Tabel Penilaian
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $header = ['No', 'Aspek yang Dinilai', 'AL', 'Nilai AL', 'ATL', 'Nilai ATL'];
+                    $colWidths = [10, 100, 20, 20, 20, 20];
+                    foreach ($header as $i => $col) {
+                        $pdf->Cell($colWidths[$i], 10, $col, 1, 0, 'C');
+                    }
+                    $pdf->Ln();
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $no = 1;
+                    $penilaian = $this->master_model->hasil_nilai_periode($nrp, $periode);
+                    foreach ($penilaian->result() as $row) {
+                        $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
+                        $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
+                        $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
+                        $pdf->Cell($colWidths[3], 7, number_format($row->nilai_atasan_langsung, 1), 1, 0, 'C');
+                        $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
+                        $pdf->Cell($colWidths[5], 7, number_format($row->nilai_atasan_tidak_langsung, 1), 1, 0, 'C');
+                        $pdf->Ln();
+                    }
+                    // Total dan Hasil Akhir
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Total', 1);
+                    $pdf->Cell($colWidths[2] + $colWidths[3], 7, number_format($row->total_nilai_atasan_langsung, 1), 1, 0, 'C');
+                    $pdf->Cell($colWidths[4] + $colWidths[5], 7, number_format($row->total_nilai_atasan_tidak_langsung, 1), 1, 0, 'C');
+                    $pdf->Ln();
+
+                    $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Hasil Akhir', 1);
+                    $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(($row->total_nilai_atasan_langsung * 0.6) + ($row->total_nilai_atasan_tidak_langsung * 0.4), 1), 1, 0, 'C');
+                    $pdf->Ln(12);
+
+                    // Tabel Kriteria Penilaian
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(35, 7, 'Kriteria', 1, 0, 'C');
+                    $pdf->Cell(35, 7, 'Nilai', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Keterangan', 1, 1, 'C');
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(35, 7, 'A', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '90 s.d. 100', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Istimewa', 1, 1, 'C');
+                    $pdf->Cell(35, 7, 'B', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '80 s.d. 89', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Baik', 1, 1, 'C');
+                    $pdf->Cell(35, 7, 'C', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '40 s.d. 79', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Cukup', 1, 1, 'C');
+                    $pdf->Cell(35, 7, 'D', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '40 s.d. 59', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Kurang', 1, 1, 'C');
+                    $pdf->Ln(5);
+
+                    // Aspek Tambahan
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(190, 7, 'Aspek-aspek Tambahan (mohon diuraikan bila ada):', 1, 1, 'L');
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->MultiCell(190, 7, 'Atasan Langsung:' . (isset($row->text_tambahan_atasan_langsung) ? $row->text_tambahan_atasan_langsung : 'Tidak Ada Data'), 1);
+                    $pdf->MultiCell(190, 7, 'Atasan Tidak Langsung:' . (isset($row->text_tambahan_atasan_tidak_langsung) ? $row->text_tambahan_atasan_tidak_langsung : 'Tidak Ada Data'), 1);
+                    $pdf->Output('D', 'Laporan_Penilaian_Kel_1_2.pdf');
+                } else {
+                    $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
+                    redirect($_SERVER['HTTP_REFERER']);
+                }
             }
         }
     }
 
-    function download_data_pkk_3_7($nrp)
+    function download_data_pkk_3_7($nrp, $periode)
     {
         $masuk  = $this->session->userdata('masuk_k');
         $this->load->helpers('print_rekap_helper');
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            $data   = $this->master_model->lap_nilai_3_7($nrp);
-            if ($data->num_rows() > 0) {
-                $row = $data->row();
-                $pdf = new reportProduct();
-                $pdf->setKriteria("cetak_laporan");
-                $pdf->setNama("CETAK DATA KARYAWAN");
-                $pdf->AliasNbPages();
-                $pdf->AddPage("P", "A4");
-                $A4[0] = 210;
-                $A4[1] = 297;
-                $Q[0] = 216;
-                $Q[1] = 279;
-                $pdf->SetTitle('LAPORAN PENILAIAN PRESTASI KERJA');
-                $pdf->SetCreator('Jaya HR');
+            if ($periode == 'all') {
+                $data1   = $this->master_model->get_trans_pkk($nrp);
+                foreach ($data1->result() as $dt) {
+                    $data   = $this->master_model->lap_nilai_3_7_periode($dt->nrp, $dt->id_p_periode);
+                    if ($data->num_rows() > 0) {
+                        $row = $data->row();
+                        $pdf = new reportProduct();
+                        $pdf->setKriteria("cetak_laporan");
+                        $pdf->setNama("CETAK DATA KARYAWAN");
+                        $pdf->AliasNbPages();
+                        $pdf->AddPage("P", "A4");
+                        $A4[0] = 210;
+                        $A4[1] = 297;
+                        $Q[0] = 216;
+                        $Q[1] = 279;
+                        $pdf->SetTitle('LAPORAN PENILAIAN PRESTASI KERJA');
+                        $pdf->SetCreator('Jaya HR');
 
-                $h = 7;
-                $pdf->SetFont('Times', 'B', 14);
-                $pdf->SetX(6);
-                $pdf->SetX(6);
-                $pdf->SetFont('Times', '', 10);
-                $pdf->Ln(5);
+                        $h = 7;
+                        $pdf->SetFont('Times', 'B', 14);
+                        $pdf->SetX(6);
+                        $pdf->SetX(6);
+                        $pdf->SetFont('Times', '', 10);
+                        $pdf->Ln(5);
 
-                //Column widths
-                $pdf->SetFont('Arial', 'B', 14);
-                $pdf->SetX(6);
-                $pdf->Cell(200, 4, 'LAPORAN PENILAIAN PRESTASI KERJA', 0, 0, 'C');
-                $pdf->Cell(10, 4, '', 0, 1);
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(190, 5, 'KARYAWAN KONTRAK KELOMPOK III - VII', 0, 1, 'C');
-                $pdf->Ln(5);
-                $w = array(10, 35, 30, 65, 20, 35);
+                        //Column widths
+                        $pdf->SetFont('Arial', 'B', 14);
+                        $pdf->SetX(6);
+                        $pdf->Cell(200, 4, 'LAPORAN PENILAIAN PRESTASI KERJA', 0, 0, 'C');
+                        $pdf->Cell(10, 4, '', 0, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(190, 5, 'KARYAWAN KONTRAK KELOMPOK III - VII', 0, 1, 'C');
+                        $pdf->Ln(5);
+                        $w = array(10, 35, 30, 65, 20, 35);
 
-                // Lebar Kolom
-                $colWidths = [10, 70, 30, 20, 30, 20];
+                        // Lebar Kolom
+                        $colWidths = [10, 70, 30, 20, 30, 20];
 
-                // Informasi Karyawan
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Nama', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->karyawan_nama) ? $row->karyawan_nama : 'Tidak Ada Data', 1, 1);
+                        // Informasi Karyawan
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Nama', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->karyawan_nama) ? $row->karyawan_nama : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Jabatan', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->job_grade) ? $row->job_grade : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Jabatan', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->job_grade) ? $row->job_grade : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Tanggal Masuk', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->tgl_hire) ? $row->tgl_hire : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Tanggal Masuk', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->tgl_hire) ? $row->tgl_hire : 'Tidak Ada Data', 1, 1);
 
-                $pdf->Ln(5);
+                        $pdf->Ln(5);
 
-                // Informasi Penilai
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Atasan Langsung', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->spv1_nama) ? $row->spv1_nama : 'Tidak Ada Data', 1, 1);
+                        // Informasi Penilai
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Atasan Langsung', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->spv1_nama) ? $row->spv1_nama : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Atasan Tidak Langsung', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->spv2_nama) ? $row->spv2_nama : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Atasan Tidak Langsung', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->spv2_nama) ? $row->spv2_nama : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Unit', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->department) ? $row->department : 'Tidak Ada Data', 1, 1);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Unit', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->department) ? $row->department : 'Tidak Ada Data', 1, 1);
 
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(50, 7, 'Periode Penilaian', 1);
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(60, 7, isset($row->flag_penilaian) ? $row->flag_penilaian : 'Tidak Ada Data', 1, 1);
-                $pdf->Ln(5);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(50, 7, 'Periode Penilaian', 1);
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(60, 7, isset($row->flag_penilaian) ? $row->flag_penilaian : 'Tidak Ada Data', 1, 1);
+                        $pdf->Ln(5);
 
+                        // Tabel Penilaian
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $header = ['No', 'Aspek yang Dinilai', 'AL', 'Nilai AL', 'ATL', 'Nilai ATL'];
+                        $colWidths = [10, 100, 20, 20, 20, 20];
+                        foreach ($header as $i => $col) {
+                            $pdf->Cell($colWidths[$i], 10, $col, 1, 0, 'C');
+                        }
+                        $pdf->Ln();
 
-                // Tabel Penilaian
-                $pdf->SetFont('Arial', 'B', 10);
-                $header = ['No', 'Aspek yang Dinilai', 'AL', 'Nilai AL', 'ATL', 'Nilai ATL'];
-                $colWidths = [10, 100, 20, 20, 20, 20];
-                foreach ($header as $i => $col) {
-                    $pdf->Cell($colWidths[$i], 10, $col, 1, 0, 'C');
+                        $pdf->SetFont('Arial', '', 10);
+                        $no = 1;
+                        $penilaian = $this->master_model->hasil_nilai_3_7_periode($dt->nrp, $dt->id_p_periode);
+                        foreach ($penilaian->result() as $row) {
+                            $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
+                            $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
+                            $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
+                            $pdf->Cell($colWidths[3], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
+                            $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
+                            $pdf->Cell($colWidths[5], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
+                            $pdf->Ln();
+                        }
+                        // Total dan Hasil Akhir
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Total', 1);
+                        $pdf->Cell($colWidths[2] + $colWidths[3], 7, is_numeric($row->total_nilai_atasan_langsung) ? number_format($row->total_nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
+                        $pdf->Cell($colWidths[4] + $colWidths[5], 7, is_numeric($row->total_nilai_atasan_langsung) ? number_format($row->total_nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
+                        $pdf->Ln();
+
+                        $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Hasil Akhir', 1);
+                        // Pastikan nilai numerik sebelum perhitungan
+                        $total_nilai_atasan_langsung = is_numeric($row->total_nilai_atasan_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_langsung) : 0;
+                        $total_nilai_atasan_tidak_langsung = is_numeric($row->total_nilai_atasan_tidak_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_tidak_langsung) : 0;
+
+                        // Hitung hasil akhir
+                        $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
+
+                        // Cetak ke PDF dengan number_format
+                        $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(floatval($hasil_akhir), 1), 1, 0, 'C');
+
+                        $pdf->Ln(12);
+
+                        // Tabel Kriteria Penilaian
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(35, 7, 'Kriteria', 1, 0, 'C');
+                        $pdf->Cell(35, 7, 'Nilai', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Keterangan', 1, 1, 'C');
+
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->Cell(35, 7, 'A', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '90 s.d. 100', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Istimewa', 1, 1, 'C');
+                        $pdf->Cell(35, 7, 'B', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '80 s.d. 89', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Baik', 1, 1, 'C');
+                        $pdf->Cell(35, 7, 'C', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '40 s.d. 79', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Cukup', 1, 1, 'C');
+                        $pdf->Cell(35, 7, 'D', 1, 0, 'C');
+                        $pdf->Cell(35, 7, '40 s.d. 59', 1, 0, 'C');
+                        $pdf->Cell(40, 7, 'Kurang', 1, 1, 'C');
+                        $pdf->Ln(5);
+
+                        $pdf->AddPage();
+                        $pdf->SetFont("Arial", 'B', 12);
+
+                        // Judul
+                        $pdf->Cell(0, 7, 'Penilaian Kinerja Karyawan', 0, 1, 'L');
+                        $pdf->Ln(3);
+
+                        // Header Tabel
+                        $pdf->SetFont("Arial", 'B', 10);
+                        $header = ["RENCANA KERJA", "KESIMPULAN HASIL", "%", "KESIMPULAN DEVIASI"];
+                        $col_widths = [90, 40, 20, 40]; // Menyesuaikan lebar kolom agar Kesimpulan Deviasi tidak terpotong
+
+                        foreach ($header as $i => $col) {
+                            $pdf->Cell($col_widths[$i], 10, $col, 1, 0, 'C');
+                        }
+                        $pdf->Ln();
+
+                        $pdf->SetFont("Arial", '', 10);
+                        $pdf->Cell(array_sum($col_widths), 8, "A. KINERJA", 1, 1, 'L');
+                        $pdf->Cell(array_sum($col_widths), 8, "(Didasarkan Sasaran Pekerjaan)", 1, 1, 'L');
+                        $pdf->Cell(array_sum($col_widths), 8, "1. Tugas Pokok", 1, 1, 'L');
+
+                        $penilaian = $this->master_model->nilai_form_a($dt->nrp, $dt->id_p_periode)->row();
+                        $penilaian2 = $this->master_model->nilai_form_b($dt->nrp, $dt->id_p_periode)->row();
+                        $row1 = $this->master_model->get_menu4_data()->row(0); // Mengambil baris pertama
+                        $row2 = $this->master_model->get_menu4_data()->row(1); // Mengambil baris kedua
+                        $row3 = $this->master_model->get_menu6_data()->row(0); // Mengambil baris pertama
+                        $row4 = $this->master_model->get_menu6_data()->row(1); // Mengambil baris kedua
+                        $height = 8;
+
+                        // Row 1: "a. Sesuai tugas karyawan"
+                        $pdf->Cell($col_widths[0], $height, "a. Sesuai tugas karyawan", 1, 0, 'L');
+                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_a) ? $penilaian->persen_a : '0', 1, 0, 'C');
+                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_nilai_a) ? $penilaian->deviasi_nilai_a : 'N/A', 1, 1, 'C');
+
+                        // Row 2: "b. Sasaran Pekerjaan Secara Kuantitatif"
+                        $pdf->Cell($col_widths[0], $height, "b. Sasaran Pekerjaan Secara Kuantitatif", 1, 0, 'L');
+                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_b) ? $penilaian->hasil_nilai_b : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_b) ? $penilaian->persen_b : '0', 1, 0, 'C');
+                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_b) ? $penilaian->deviasi_b : 'N/A', 1, 1, 'C');
+
+                        $pdf->Cell(array_sum($col_widths), 8, "2. Tugas Tambahan", 1, 1, 'L');
+
+                        // Row 3: Menyesuaikan agar kolom sejajar dengan header
+                        $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : '0', 1, 1, 'C');
+
+                        // Kesimpulan Atas Hasil Seluruh Penilaian - Sebagai Text Area
+                        // Kesimpulan Atas Hasil Seluruh Penilaian - Mengambil data dari database dan menambahkan deskripsi
+                        $pdf->Ln(5);
+                        $pdf->SetFont("Arial", 'B', 10);
+                        $pdf->Cell(0, 7, isset($row2->nama_value) ? $row2->nama_value : '', 0, 1, 'L');
+                        $pdf->SetFont("Arial", 'I', 9);
+                        $pdf->MultiCell(0, 10, isset($row2->description) ? $row2->description : '', 0);
+                        $pdf->SetFont("Arial", '', 10);
+                        $pdf->MultiCell(0, 20, isset($penilaian2->kesimpulan) ? $penilaian2->kesimpulan : '', 1);
+                        $pdf->Ln(2);
+
+                        // Penjelasan Hasil Kinerja Karyawan - Mengambil data dari database dan menambahkan deskripsi
+                        $pdf->Ln(5);
+                        $pdf->SetFont("Arial", 'B', 10);
+                        $pdf->Cell(0, 7, isset($row1->nama_value) ? $row1->nama_value : '', 0, 1, 'L');
+                        $pdf->SetFont("Arial", 'I', 9);
+                        $pdf->MultiCell(0, 10, isset($row1->description) ? $row1->description : '', 0);
+                        $pdf->SetFont("Arial", '', 10);
+                        $pdf->MultiCell(0, 20, isset($penilaian2->penjelasan) ? $penilaian2->penjelasan : '', 1);
+                        $pdf->Ln(2);
+
+                        // Pendapat / Komentar - Sebagai Text Area
+                        $pdf->Ln(5);
+                        $pdf->SetFont("Arial", 'B', 10);
+                        $pdf->Cell(0, 7, isset($row3->nama_value) ? $row3->nama_value : '', 0, 1, 'L');
+                        $pdf->SetFont("Arial", 'I', 9);
+                        $pdf->MultiCell(0, 10, isset($row3->description) ? $row3->description : '', 0);
+                        $pdf->SetFont("Arial", '', 10);
+                        $pdf->MultiCell(0, 20, isset($penilaian2->pendapat) ? $penilaian2->pendapat : '', 1);
+
+                        // Komentar Atasan Penilai - Sebagai Text Area
+                        $pdf->Ln(5);
+                        $pdf->SetFont("Arial", 'B', 10);
+                        $pdf->Cell(0, 7, isset($row4->nama_value) ? $row4->nama_value : '', 0, 1, 'L');
+                        $pdf->SetFont("Arial", '', 10);
+                        $pdf->MultiCell(0, 20, isset($penilaian2->komentar_atasan) ? $penilaian2->komentar_atasan : '', 1);
+                        $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
+                    } else {
+                        $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
+                        redirect($_SERVER['HTTP_REFERER']);
+                    }
                 }
-                $pdf->Ln();
-
-                $pdf->SetFont('Arial', '', 10);
-                $no = 1;
-                $penilaian = $this->master_model->hasil_nilai_3_7($nrp);
-                foreach ($penilaian->result() as $row) {
-                    $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
-                    $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
-                    $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
-                    $pdf->Cell($colWidths[3], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
-                    $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
-                    $pdf->Cell($colWidths[5], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
-                    $pdf->Ln();
-                }
-                // Total dan Hasil Akhir
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Total', 1);
-                $pdf->Cell($colWidths[2] + $colWidths[3], 7, is_numeric($row->total_nilai_atasan_langsung) ? number_format($row->total_nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
-                $pdf->Cell($colWidths[4] + $colWidths[5], 7, is_numeric($row->total_nilai_atasan_langsung) ? number_format($row->total_nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
-                $pdf->Ln();
-
-                $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Hasil Akhir', 1);
-                // Pastikan nilai numerik sebelum perhitungan
-                $total_nilai_atasan_langsung = is_numeric($row->total_nilai_atasan_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_langsung) : 0;
-                $total_nilai_atasan_tidak_langsung = is_numeric($row->total_nilai_atasan_tidak_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_tidak_langsung) : 0;
-
-                // Hitung hasil akhir
-                $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
-
-                // Cetak ke PDF dengan number_format
-                $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(floatval($hasil_akhir), 1), 1, 0, 'C');
-
-                $pdf->Ln(12);
-
-                // Tabel Kriteria Penilaian
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(35, 7, 'Kriteria', 1, 0, 'C');
-                $pdf->Cell(35, 7, 'Nilai', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Keterangan', 1, 1, 'C');
-
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(35, 7, 'A', 1, 0, 'C');
-                $pdf->Cell(35, 7, '90 s.d. 100', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Istimewa', 1, 1, 'C');
-                $pdf->Cell(35, 7, 'B', 1, 0, 'C');
-                $pdf->Cell(35, 7, '80 s.d. 89', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Baik', 1, 1, 'C');
-                $pdf->Cell(35, 7, 'C', 1, 0, 'C');
-                $pdf->Cell(35, 7, '40 s.d. 79', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Cukup', 1, 1, 'C');
-                $pdf->Cell(35, 7, 'D', 1, 0, 'C');
-                $pdf->Cell(35, 7, '40 s.d. 59', 1, 0, 'C');
-                $pdf->Cell(40, 7, 'Kurang', 1, 1, 'C');
-                $pdf->Ln(5);
-
-                $pdf->AddPage();
-                $pdf->SetFont("Arial", 'B', 12);
-
-                // Judul
-                $pdf->Cell(0, 7, 'Penilaian Kinerja Karyawan', 0, 1, 'L');
-                $pdf->Ln(3);
-
-                // Header Tabel
-                $pdf->SetFont("Arial", 'B', 10);
-                $header = ["RENCANA KERJA", "KESIMPULAN HASIL", "%", "KESIMPULAN DEVIASI"];
-                $col_widths = [90, 40, 20, 40]; // Menyesuaikan lebar kolom agar Kesimpulan Deviasi tidak terpotong
-
-                foreach ($header as $i => $col) {
-                    $pdf->Cell($col_widths[$i], 10, $col, 1, 0, 'C');
-                }
-                $pdf->Ln();
-
-                $pdf->SetFont("Arial", '', 10);
-                $pdf->Cell(array_sum($col_widths), 8, "A. KINERJA", 1, 1, 'L');
-                $pdf->Cell(array_sum($col_widths), 8, "(Didasarkan Sasaran Pekerjaan)", 1, 1, 'L');
-                $pdf->Cell(array_sum($col_widths), 8, "1. Tugas Pokok", 1, 1, 'L');
-
-                $penilaian = $this->master_model->nilai_form_a($nrp)->row();
-                $penilaian2 = $this->master_model->nilai_form_b($nrp)->row();
-                $row1 = $this->master_model->get_menu4_data()->row(0); // Mengambil baris pertama
-                $row2 = $this->master_model->get_menu4_data()->row(1); // Mengambil baris kedua
-                $row3 = $this->master_model->get_menu6_data()->row(0); // Mengambil baris pertama
-                $row4 = $this->master_model->get_menu6_data()->row(1); // Mengambil baris kedua
-                $height = 8;
-
-                // Row 1: "a. Sesuai tugas karyawan"
-                $pdf->Cell($col_widths[0], $height, "a. Sesuai tugas karyawan", 1, 0, 'L');
-                $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'N/A', 1, 0, 'C');
-                $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_a) ? $penilaian->persen_a : '0', 1, 0, 'C');
-                $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_nilai_a) ? $penilaian->deviasi_nilai_a : 'N/A', 1, 1, 'C');
-
-                // Row 2: "b. Sasaran Pekerjaan Secara Kuantitatif"
-                $pdf->Cell($col_widths[0], $height, "b. Sasaran Pekerjaan Secara Kuantitatif", 1, 0, 'L');
-                $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_b) ? $penilaian->hasil_nilai_b : 'N/A', 1, 0, 'C');
-                $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_b) ? $penilaian->persen_b : '0', 1, 0, 'C');
-                $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_b) ? $penilaian->deviasi_b : 'N/A', 1, 1, 'C');
-
-                $pdf->Cell(array_sum($col_widths), 8, "2. Tugas Tambahan", 1, 1, 'L');
-
-                // Row 3: Menyesuaikan agar kolom sejajar dengan header
-                $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'N/A', 1, 0, 'C');
-                $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'N/A', 1, 0, 'C');
-                $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : 'N/A', 1, 0, 'C');
-                $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : '0', 1, 1, 'C');
-
-                // Kesimpulan Atas Hasil Seluruh Penilaian - Sebagai Text Area
-                // Kesimpulan Atas Hasil Seluruh Penilaian - Mengambil data dari database dan menambahkan deskripsi
-                $pdf->Ln(5);
-                $pdf->SetFont("Arial", 'B', 10);
-                $pdf->Cell(0, 7, isset($row2->nama_value) ? $row2->nama_value : '', 0, 1, 'L');
-                $pdf->SetFont("Arial", 'I', 9);
-                $pdf->MultiCell(0, 10, isset($row2->description) ? $row2->description : '', 0);
-                $pdf->SetFont("Arial", '', 10);
-                $pdf->MultiCell(0, 20, isset($penilaian2->kesimpulan) ? $penilaian2->kesimpulan : '', 1);
-                $pdf->Ln(2);
-
-                // Penjelasan Hasil Kinerja Karyawan - Mengambil data dari database dan menambahkan deskripsi
-                $pdf->Ln(5);
-                $pdf->SetFont("Arial", 'B', 10);
-                $pdf->Cell(0, 7, isset($row1->nama_value) ? $row1->nama_value : '', 0, 1, 'L');
-                $pdf->SetFont("Arial", 'I', 9);
-                $pdf->MultiCell(0, 10, isset($row1->description) ? $row1->description : '', 0);
-                $pdf->SetFont("Arial", '', 10);
-                $pdf->MultiCell(0, 20, isset($penilaian2->penjelasan) ? $penilaian2->penjelasan : '', 1);
-                $pdf->Ln(2);
-
-                // Pendapat / Komentar - Sebagai Text Area
-                $pdf->Ln(5);
-                $pdf->SetFont("Arial", 'B', 10);
-                $pdf->Cell(0, 7, isset($row3->nama_value) ? $row3->nama_value : '', 0, 1, 'L');
-                $pdf->SetFont("Arial", 'I', 9);
-                $pdf->MultiCell(0, 10, isset($row3->description) ? $row3->description : '', 0);
-                $pdf->SetFont("Arial", '', 10);
-                $pdf->MultiCell(0, 20, isset($penilaian2->pendapat) ? $penilaian2->pendapat : '', 1);
-
-                // Komentar Atasan Penilai - Sebagai Text Area
-                $pdf->Ln(5);
-                $pdf->SetFont("Arial", 'B', 10);
-                $pdf->Cell(0, 7, isset($row4->nama_value) ? $row4->nama_value : '', 0, 1, 'L');
-                $pdf->SetFont("Arial", '', 10);
-                $pdf->MultiCell(0, 20, isset($penilaian2->komentar_atasan) ? $penilaian2->komentar_atasan : '', 1);
-                $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
             } else {
-                $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
-                redirect($_SERVER['HTTP_REFERER']);
+                $data   = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
+                if ($data->num_rows() > 0) {
+                    $row = $data->row();
+                    $pdf = new reportProduct();
+                    $pdf->setKriteria("cetak_laporan");
+                    $pdf->setNama("CETAK DATA KARYAWAN");
+                    $pdf->AliasNbPages();
+                    $pdf->AddPage("P", "A4");
+                    $A4[0] = 210;
+                    $A4[1] = 297;
+                    $Q[0] = 216;
+                    $Q[1] = 279;
+                    $pdf->SetTitle('LAPORAN PENILAIAN PRESTASI KERJA');
+                    $pdf->SetCreator('Jaya HR');
+
+                    $h = 7;
+                    $pdf->SetFont('Times', 'B', 14);
+                    $pdf->SetX(6);
+                    $pdf->SetX(6);
+                    $pdf->SetFont('Times', '', 10);
+                    $pdf->Ln(5);
+
+                    //Column widths
+                    $pdf->SetFont('Arial', 'B', 14);
+                    $pdf->SetX(6);
+                    $pdf->Cell(200, 4, 'LAPORAN PENILAIAN PRESTASI KERJA', 0, 0, 'C');
+                    $pdf->Cell(10, 4, '', 0, 1);
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(190, 5, 'KARYAWAN KONTRAK KELOMPOK III - VII', 0, 1, 'C');
+                    $pdf->Ln(5);
+                    $w = array(10, 35, 30, 65, 20, 35);
+
+                    // Lebar Kolom
+                    $colWidths = [10, 70, 30, 20, 30, 20];
+
+                    // Informasi Karyawan
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Nama', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->karyawan_nama) ? $row->karyawan_nama : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Jabatan', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->job_grade) ? $row->job_grade : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Tanggal Masuk', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->tgl_hire) ? $row->tgl_hire : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->Ln(5);
+
+                    // Informasi Penilai
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Atasan Langsung', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->spv1_nama) ? $row->spv1_nama : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Atasan Tidak Langsung', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->spv2_nama) ? $row->spv2_nama : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Unit', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->department) ? $row->department : 'Tidak Ada Data', 1, 1);
+
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(50, 7, 'Periode Penilaian', 1);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(60, 7, isset($row->flag_penilaian) ? $row->flag_penilaian : 'Tidak Ada Data', 1, 1);
+                    $pdf->Ln(5);
+
+                    // Tabel Penilaian
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $header = ['No', 'Aspek yang Dinilai', 'AL', 'Nilai AL', 'ATL', 'Nilai ATL'];
+                    $colWidths = [10, 100, 20, 20, 20, 20];
+                    foreach ($header as $i => $col) {
+                        $pdf->Cell($colWidths[$i], 10, $col, 1, 0, 'C');
+                    }
+                    $pdf->Ln();
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $no = 1;
+                    $penilaian = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
+                    foreach ($penilaian->result() as $row) {
+                        $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
+                        $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
+                        $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
+                        $pdf->Cell($colWidths[3], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
+                        $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
+                        $pdf->Cell($colWidths[5], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
+                        $pdf->Ln();
+                    }
+                    // Total dan Hasil Akhir
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Total', 1);
+                    $pdf->Cell($colWidths[2] + $colWidths[3], 7, is_numeric($row->total_nilai_atasan_langsung) ? number_format($row->total_nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
+                    $pdf->Cell($colWidths[4] + $colWidths[5], 7, is_numeric($row->total_nilai_atasan_langsung) ? number_format($row->total_nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
+                    $pdf->Ln();
+
+                    $pdf->Cell($colWidths[0] + $colWidths[1], 7, 'Hasil Akhir', 1);
+                    // Pastikan nilai numerik sebelum perhitungan
+                    $total_nilai_atasan_langsung = is_numeric($row->total_nilai_atasan_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_langsung) : 0;
+                    $total_nilai_atasan_tidak_langsung = is_numeric($row->total_nilai_atasan_tidak_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_tidak_langsung) : 0;
+
+                    // Hitung hasil akhir
+                    $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
+
+                    // Cetak ke PDF dengan number_format
+                    $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(floatval($hasil_akhir), 1), 1, 0, 'C');
+
+                    $pdf->Ln(12);
+
+                    // Tabel Kriteria Penilaian
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(35, 7, 'Kriteria', 1, 0, 'C');
+                    $pdf->Cell(35, 7, 'Nilai', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Keterangan', 1, 1, 'C');
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(35, 7, 'A', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '90 s.d. 100', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Istimewa', 1, 1, 'C');
+                    $pdf->Cell(35, 7, 'B', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '80 s.d. 89', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Baik', 1, 1, 'C');
+                    $pdf->Cell(35, 7, 'C', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '40 s.d. 79', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Cukup', 1, 1, 'C');
+                    $pdf->Cell(35, 7, 'D', 1, 0, 'C');
+                    $pdf->Cell(35, 7, '40 s.d. 59', 1, 0, 'C');
+                    $pdf->Cell(40, 7, 'Kurang', 1, 1, 'C');
+                    $pdf->Ln(5);
+
+                    $pdf->AddPage();
+                    $pdf->SetFont("Arial", 'B', 12);
+
+                    // Judul
+                    $pdf->Cell(0, 7, 'Penilaian Kinerja Karyawan', 0, 1, 'L');
+                    $pdf->Ln(3);
+
+                    // Header Tabel
+                    $pdf->SetFont("Arial", 'B', 10);
+                    $header = ["RENCANA KERJA", "KESIMPULAN HASIL", "%", "KESIMPULAN DEVIASI"];
+                    $col_widths = [90, 40, 20, 40]; // Menyesuaikan lebar kolom agar Kesimpulan Deviasi tidak terpotong
+
+                    foreach ($header as $i => $col) {
+                        $pdf->Cell($col_widths[$i], 10, $col, 1, 0, 'C');
+                    }
+                    $pdf->Ln();
+
+                    $pdf->SetFont("Arial", '', 10);
+                    $pdf->Cell(array_sum($col_widths), 8, "A. KINERJA", 1, 1, 'L');
+                    $pdf->Cell(array_sum($col_widths), 8, "(Didasarkan Sasaran Pekerjaan)", 1, 1, 'L');
+                    $pdf->Cell(array_sum($col_widths), 8, "1. Tugas Pokok", 1, 1, 'L');
+
+                    $penilaian = $this->master_model->nilai_form_a($nrp, $periode)->row();
+                    $penilaian2 = $this->master_model->nilai_form_b($nrp, $periode)->row();
+                    $row1 = $this->master_model->get_menu4_data()->row(0); // Mengambil baris pertama
+                    $row2 = $this->master_model->get_menu4_data()->row(1); // Mengambil baris kedua
+                    $row3 = $this->master_model->get_menu6_data()->row(0); // Mengambil baris pertama
+                    $row4 = $this->master_model->get_menu6_data()->row(1); // Mengambil baris kedua
+                    $height = 8;
+
+                    // Row 1: "a. Sesuai tugas karyawan"
+                    $pdf->Cell($col_widths[0], $height, "a. Sesuai tugas karyawan", 1, 0, 'L');
+                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_a) ? $penilaian->persen_a : '0', 1, 0, 'C');
+                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_nilai_a) ? $penilaian->deviasi_nilai_a : 'N/A', 1, 1, 'C');
+
+                    // Row 2: "b. Sasaran Pekerjaan Secara Kuantitatif"
+                    $pdf->Cell($col_widths[0], $height, "b. Sasaran Pekerjaan Secara Kuantitatif", 1, 0, 'L');
+                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_b) ? $penilaian->hasil_nilai_b : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_b) ? $penilaian->persen_b : '0', 1, 0, 'C');
+                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_b) ? $penilaian->deviasi_b : 'N/A', 1, 1, 'C');
+
+                    $pdf->Cell(array_sum($col_widths), 8, "2. Tugas Tambahan", 1, 1, 'L');
+
+                    // Row 3: Menyesuaikan agar kolom sejajar dengan header
+                    $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : '0', 1, 1, 'C');
+
+                    // Kesimpulan Atas Hasil Seluruh Penilaian - Sebagai Text Area
+                    // Kesimpulan Atas Hasil Seluruh Penilaian - Mengambil data dari database dan menambahkan deskripsi
+                    $pdf->Ln(5);
+                    $pdf->SetFont("Arial", 'B', 10);
+                    $pdf->Cell(0, 7, isset($row2->nama_value) ? $row2->nama_value : '', 0, 1, 'L');
+                    $pdf->SetFont("Arial", 'I', 9);
+                    $pdf->MultiCell(0, 10, isset($row2->description) ? $row2->description : '', 0);
+                    $pdf->SetFont("Arial", '', 10);
+                    $pdf->MultiCell(0, 20, isset($penilaian2->kesimpulan) ? $penilaian2->kesimpulan : '', 1);
+                    $pdf->Ln(2);
+
+                    // Penjelasan Hasil Kinerja Karyawan - Mengambil data dari database dan menambahkan deskripsi
+                    $pdf->Ln(5);
+                    $pdf->SetFont("Arial", 'B', 10);
+                    $pdf->Cell(0, 7, isset($row1->nama_value) ? $row1->nama_value : '', 0, 1, 'L');
+                    $pdf->SetFont("Arial", 'I', 9);
+                    $pdf->MultiCell(0, 10, isset($row1->description) ? $row1->description : '', 0);
+                    $pdf->SetFont("Arial", '', 10);
+                    $pdf->MultiCell(0, 20, isset($penilaian2->penjelasan) ? $penilaian2->penjelasan : '', 1);
+                    $pdf->Ln(2);
+
+                    // Pendapat / Komentar - Sebagai Text Area
+                    $pdf->Ln(5);
+                    $pdf->SetFont("Arial", 'B', 10);
+                    $pdf->Cell(0, 7, isset($row3->nama_value) ? $row3->nama_value : '', 0, 1, 'L');
+                    $pdf->SetFont("Arial", 'I', 9);
+                    $pdf->MultiCell(0, 10, isset($row3->description) ? $row3->description : '', 0);
+                    $pdf->SetFont("Arial", '', 10);
+                    $pdf->MultiCell(0, 20, isset($penilaian2->pendapat) ? $penilaian2->pendapat : '', 1);
+
+                    // Komentar Atasan Penilai - Sebagai Text Area
+                    $pdf->Ln(5);
+                    $pdf->SetFont("Arial", 'B', 10);
+                    $pdf->Cell(0, 7, isset($row4->nama_value) ? $row4->nama_value : '', 0, 1, 'L');
+                    $pdf->SetFont("Arial", '', 10);
+                    $pdf->MultiCell(0, 20, isset($penilaian2->komentar_atasan) ? $penilaian2->komentar_atasan : '', 1);
+                    $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
+                } else {
+                    $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
+                    redirect($_SERVER['HTTP_REFERER']);
+                }
             }
         }
     }
