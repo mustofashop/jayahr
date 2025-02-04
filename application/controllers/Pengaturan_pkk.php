@@ -367,15 +367,9 @@ class Pengaturan_pkk extends CI_Controller
                     $d['rowData']   = $rowData;
                     $d['periode']   = $periode;
                 } else {
-                    $data2          = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
-                    $penilaian2     = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
-                    $form_a         = $this->master_model->nilai_form_a($nrp);
-                    $form_b         = $this->master_model->nilai_form_b($nrp);
-                    $d['data']      = $data2;
-                    $d['data']      = $data2;
-                    $d['penilaian2'] = $penilaian2;
-                    $d['form_a']    = $form_a;
-                    $d['form_b']    = $form_b;
+                    $rowData        = $this->master_model->get_trans_pkk($nrp);
+                    $d['periode']   = $periode;
+                    $d['rowData']   = $rowData;
                 }
             } else {
                 if ($jenis_form == 'form_penilaian_1_2') {
@@ -395,14 +389,15 @@ class Pengaturan_pkk extends CI_Controller
                     $d['form_a']    = $form_a;
                     $d['form_b']    = $form_b;
                 }
-                $data_pkk       = $this->master_model->detail_karyawan1($nrp);
             }
+            $data_pkk       = $this->master_model->detail_karyawan1($nrp);
             // Masukkan flag ke dalam data yang dikirim ke view
             $d['menu3']     = $this->master_model->get_menu3_data();
             $d['menu4']     = $this->master_model->get_menu4_data();
             $d['menu5']     = $this->master_model->get_menu5_data();
             $d['menu6']     = $this->master_model->get_menu6_data();
             $d['nrp']       = $nrp;
+            $d['data_pkk']  = $data_pkk;
             $d['flag_jenis_form'] = $jenis_form; // Simpan flag_jenis_form dalam array data
             $d['class']     = '';
             $d['header']    = 'Laporan Penilaian Karyawan Kontrak';

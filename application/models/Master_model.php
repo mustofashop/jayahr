@@ -858,9 +858,7 @@ FROM
 	}
 	public function detail_karyawan1($nrp)
 	{
-		$q = $this->db->query("SELECT *
-		FROM mst_karyawan
-		where nip = '$nrp'");
+		$q = $this->db->query("SELECT * FROM mst_karyawan where nip = '$nrp'");
 		return $q;
 	}
 	public function list_karyawan($kategori, $id_perusahaan, $tatus)
