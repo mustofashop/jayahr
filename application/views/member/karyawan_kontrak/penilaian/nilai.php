@@ -13,14 +13,11 @@
     </div>
 <?php endif; ?>
 <?php if ($flag_jenis_form == 1): ?>
-    <div style="background-color:rgb(226, 224, 224); font-size: 30px; margin-bottom: 5px;">
-        <h2 style="background-color:rgb(226, 224, 224); font-size: 30px;">Penilaian Saya</h2>
-    </div>
     <center>
         <div class="form-group">
-            <button type="submit" class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 100px;" onclick="location.href='penilaian1.php'">Penilaian ke 1</button>
-            <button type="submit" class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 50px; margin-left: 50px;" onclick="location.href='penilaian2.php'">Penilaian ke 2</button>
-            <button type="submit" class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-left: 100px;" onclick="location.href='penilaian3.php'">Penilaian ke 3</button>
+            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 100px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/1'">Penilaian ke 1</a>
+            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 50px; margin-left: 50px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/2'">Penilaian ke 2</a>
+            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-left: 100px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/3'">Penilaian ke 3</a>
         </div>
     </center>
     <div style="border-bottom: 8px solid black; width: 100%;"></div>
@@ -231,14 +228,11 @@
 <?php else: ?>
 
     <!-- Jenis Form KELOMPOK III - VII -->
-    <div style="background-color:rgb(226, 224, 224); font-size: 30px; margin-bottom: 3px;">
-        <h2 style="background-color:rgb(226, 224, 224); font-size: 30px;">Penilaian Saya</h2>
-    </div>
     <center>
         <div class="form-group">
-            <button type="submit" class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 100px;" onclick="location.href='penilaian1.php'">Penilaian ke 1</button>
-            <button type="submit" class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 50px; margin-left: 50px;" onclick="location.href='penilaian2.php'">Penilaian ke 2</button>
-            <button type="submit" class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-left: 100px;" onclick="location.href='penilaian3.php'">Penilaian ke 3</button>
+            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 100px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/1'">Penilaian ke 1</a>
+            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 50px; margin-left: 50px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/2'">Penilaian ke 2</a>
+            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-left: 100px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/3'">Penilaian ke 3</a>
         </div>
     </center>
     <div style="border-bottom: 8px solid black; width: 100%;"></div>
