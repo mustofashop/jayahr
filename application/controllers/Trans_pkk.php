@@ -21,7 +21,7 @@ class Trans_pkk extends CI_Controller
             $flag_penilaian     = $this->input->post('flag_penilaian');
             $id_jenis_form      = $this->input->post('id_jenis_form');
             $flag_jenis_form    = $this->input->post('flag_jenis_form');
-            $nrp = $this->input->post('nrp');
+            $nrp                = $this->input->post('nrp');
 
             if (empty($id_p_periode) || empty($id_periode) || empty($flag_penilaian) || empty($nrp)) {
                 $this->session->set_flashdata('msg', 'Data tidak lengkap, gagal menyimpan!');
@@ -252,6 +252,65 @@ class Trans_pkk extends CI_Controller
                 $this->session->set_flashdata('msg', 'Penilaian berhasil disimpan');
             }
             redirect(base_url('Pengaturan_pkk/list_karyawan_pkk'));
+        }
+    }
+
+    public function fb_karyawan()
+    {
+        $masuk = $this->session->userdata('masuk_k');
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+            $id_p_periode       = $this->input->post('id_p_periode');
+            $nrp                = $this->input->post('nrp');
+            $isi_feedback       = $this->input->post('isi_feedback');
+
+            $data = [
+                'id_p_periode'    => $id_p_periode,
+                'nrp'             => $nrp,
+                'isi_feedback'    => $isi_feedback,
+                'insert_date'     => date('Y-m-d'),
+                'flag_sent'       => 1,
+            ];
+
+            // Insert ke tabel trans_pkk
+            $this->db->insert("trans_fb_karyawan", $data);
+
+            // Redirect dengan pesan sukses
+            $this->session->set_flashdata('msg', 'Feedback Sukses dikirim');
+            redirect(base_url('Pengaturan_pkk/nilai_pkk'));
+        }
+    }
+
+    public function fb_atasan()
+    {
+        if ($this->session->userdata('masuk_k') != TRUE) {
+            echo json_encode(["status" => "error", "message" => "Session expired, silakan login kembali"]);
+            return;
+        }
+
+        $id_p_periode = $this->input->post('id_p_periode');
+        $nrp = $this->input->post('nrp');
+        $isi_feedback = $this->input->post('isi_feedback'); // Ambil feedback dari AJAX
+
+        if (empty($id_p_periode) || empty($nrp) || empty($isi_feedback)) {
+            echo json_encode(["status" => "error", "message" => "Semua data harus diisi!"]);
+            return;
+        }
+
+        $data = [
+            'id_p_periode' => $id_p_periode,
+            'nrp'          => $nrp,
+            'isi_feedback' => $isi_feedback,
+            'insert_date'  => date('Y-m-d'),
+            'flag_sent'    => 1,
+            'insert_by'    => $this->session->userdata('nrp'),
+        ];
+
+        if ($this->db->insert("trans_fb_atasan", $data)) {
+            echo json_encode(["status" => "success", "message" => "Feedback berhasil disimpan!"]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Gagal menyimpan feedback"]);
         }
     }
 

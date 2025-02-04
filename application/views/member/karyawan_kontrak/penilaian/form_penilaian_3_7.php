@@ -199,7 +199,6 @@
                             <button type="submit" class="btn bg-green btn-success btn-flat-margin">Simpan</button>
                         </div>
                     </div>
-
                     <!-- FORM FEEDBACK (Masih di dalam form yang sama) -->
                     <div id="menu6" class="tab-pane fade">
                         <h4><b>V. Pendapat / Komentar</b></h4>
@@ -214,7 +213,7 @@
                             <tr>
                                 <td>
                                     <p>Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut di atas</p>
-                                    <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"></textarea>
+                                    <textarea name="isi_feedback" style="width: 100%; height: 150px;" readonly><?php echo isset($fb_k->isi_feedback) ? htmlspecialchars($fb_k->isi_feedback) : ''; ?></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -222,13 +221,71 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <textarea name="komentar_feedback" style="width: 100%; height: 150px;"></textarea>
+                                    <textarea id="isi_feedback" style="width: 100%; height: 150px;"><?php echo isset($fb_a->isi_feedback) ? htmlspecialchars($fb_a->isi_feedback) : ''; ?></textarea>
+                                    <input type="hidden" id="id_p_periode" value="<?php echo $id_p_periode; ?>">
+                                    <input type="hidden" id="nrp" value="<?php echo $idp_nrp; ?>">
                                 </td>
                             </tr>
                         </table>
+                        <!-- SUBMIT BUTTON UNTUK MENU 6 -->
+                        <div class="form-group text-right" style="margin-top: 10px;">
+                            <button type="button" id="simpanFeedback" class="btn bg-blue btn-primary btn-flat-margin">Simpan Feedback</button>
+                        </div>
                     </div>
+                    <!-- ALERT -->
+                    <div id="feedbackAlert" class="alert alert-success" style="display:none; margin-top: 10px;"></div>
                 </div> <!-- END TAB-CONTENT -->
             </form> <!-- END FORM -->
         </div>
     </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#simpanFeedback").click(function() {
+            var isi_feedback = $("#isi_feedback").val();
+            var id_p_periode = $("#id_p_periode").val();
+            var nrp = $("#nrp").val();
+
+            // Debugging: Cek apakah data dikirim
+            console.log("Data yang dikirim:", {
+                isi_feedback,
+                id_p_periode,
+                nrp
+            });
+
+            $.ajax({
+                url: "<?php echo base_url(); ?>Trans_pkk/fb_atasan",
+                type: "POST",
+                data: {
+                    isi_feedback: isi_feedback,
+                    id_p_periode: id_p_periode,
+                    nrp: nrp
+                },
+                dataType: "json",
+                success: function(response) {
+                    console.log("Respon dari server:", response);
+                    if (response.status === "success") {
+                        $("#feedbackAlert").text(response.message)
+                            .removeClass("alert-danger")
+                            .addClass("alert-success")
+                            .show().delay(2000).fadeOut(500, function() {
+                                // Redirect setelah sukses
+                                window.location.href = "<?php echo base_url(); ?>Pengaturan_pkk/list_karyawan_pkk";
+                            });
+                    } else {
+                        $("#feedbackAlert").text(response.message)
+                            .removeClass("alert-success")
+                            .addClass("alert-danger")
+                            .show().delay(3000).fadeOut();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $("#feedbackAlert").text("Terjadi kesalahan: " + error)
+                        .addClass("alert-danger")
+                        .show().delay(3000).fadeOut();
+                }
+            });
+        });
+    });
+</script>

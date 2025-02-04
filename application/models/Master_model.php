@@ -686,7 +686,6 @@ FROM
 		return null; // Jika tidak ada data, kembalikan null
 	}
 
-
 	public function get_form_B($nrp, $id_p_periode, $atasan)
 	{
 		$this->db->select('*');
@@ -694,6 +693,32 @@ FROM
 		$this->db->where('insert_by', $atasan);
 		$this->db->where('id_p_periode', $id_p_periode);
 		$query = $this->db->get('trans_form_b');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
+	public function get_fb_karyawan($nrp, $id_p_periode)
+	{
+		$this->db->select('*');
+		$this->db->where('nrp', $nrp);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_fb_karyawan');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
+	public function get_fb_atasan($nrp, $id_p_periode)
+	{
+		$this->db->select('*');
+		$this->db->where('nrp', $nrp);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_fb_atasan');
 
 		if ($query->num_rows() > 0) {
 			return $query->row();
