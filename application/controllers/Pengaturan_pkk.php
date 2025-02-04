@@ -381,8 +381,8 @@ class Pengaturan_pkk extends CI_Controller
                 } else {
                     $data2          = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
                     $penilaian2     = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
-                    $form_a         = $this->master_model->nilai_form_a($nrp);
-                    $form_b         = $this->master_model->nilai_form_b($nrp);
+                    $form_a         = $this->master_model->nilai_form_a($nrp, $periode);
+                    $form_b         = $this->master_model->nilai_form_b($nrp, $periode);
                     $d['periode']   = $periode;
                     $d['data']      = $data2;
                     $d['penilaian2'] = $penilaian2;
