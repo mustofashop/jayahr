@@ -556,20 +556,20 @@
 <?php endif; ?>
 
 <!-- download KEL 1-2-->
-<!-- <?php if ($flag_jenis_form == 1): ?>
+<?php if ($flag_jenis_form == 1): ?>
     <center>
         <a class="btn bg-red btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk/<?php echo $nrp ?>">
             <i class="fa fa-download"></i>
             Download data
         </a>
-        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_pdf/<?php echo $nrp ?>">
+        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel/<?php echo $nrp ?>">
             <i class="fa fa-download"></i>
             Download data
         </a>
     </center>
-<?php else: ?> -->
-<!-- download KEL 3-7-->
-<!-- <center>
+<?php else: ?>
+    <!-- download KEL 3-7-->
+    <center>
         <a class="btn bg-red btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_3_7/<?php echo $nrp ?>">
             <i class="fa fa-download"></i>
             Download data
@@ -579,4 +579,4 @@
             Download data
         </a>
     </center>
-<?php endif; ?> -->
+<?php endif; ?>

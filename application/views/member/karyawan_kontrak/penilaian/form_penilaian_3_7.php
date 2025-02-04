@@ -68,9 +68,9 @@
                                     (hasil bisa dilihat dari kualitas keakuratan, dll)
                                 </td>
                                 <!-- FORM A -->
-                                <td><textarea name="hasil_nilai_a" style="width: 100%; height: 100px;" required></textarea></td>
-                                <td><input type="text" name="persen_a" style="width: 100%;" required></td>
-                                <td><textarea name="deviasi_nilai_a" style="width: 100%; height: 100px;" required></textarea></td>
+                                <td><textarea name="hasil_nilai_a" style="width: 100%; height: 100px;" required><?php echo isset($form_a->hasil_nilai_a) ? htmlspecialchars($form_a->hasil_nilai_a) : ''; ?></textarea></td>
+                                <td><input type="text" name="persen_a" style="width: 100%; text-align: center;" required value="<?php echo isset($form_a->persen_a) ? htmlspecialchars($form_a->persen_a) : ''; ?>"></td>
+                                <td><textarea name="deviasi_nilai_a" style="width: 100%; height: 100px;" required><?php echo isset($form_a->deviasi_nilai_a) ? htmlspecialchars($form_a->deviasi_nilai_a) : ''; ?></textarea></td>
                             </tr>
                             <tr>
                                 <td style="text-align: left;">
@@ -79,9 +79,9 @@
                                     <br>
                                     (hasil bisa dilihat dari jumlah, nilai, lama waktu, dll)
                                 </td>
-                                <td><textarea name="hasil_nilai_b" style="width: 100%; height: 100px;" required></textarea></td>
-                                <td><input type="text" name="persen_b" style="width: 100%;" required></td>
-                                <td><textarea name="deviasi_b" style="width: 100%; height: 100px;" required></textarea></td>
+                                <td><textarea name="hasil_nilai_b" style="width: 100%; height: 100px;" required><?php echo isset($form_a->hasil_nilai_b) ? htmlspecialchars($form_a->hasil_nilai_b) : ''; ?></textarea></td>
+                                <td><input type="text" name="persen_b" style="width: 100%; text-align: center;" required value="<?php echo isset($form_a->persen_b) ? htmlspecialchars($form_a->persen_b) : ''; ?>"></td>
+                                <td><textarea name="deviasi_b" style="width: 100%; height: 100px;" required><?php echo isset($form_a->deviasi_b) ? htmlspecialchars($form_a->deviasi_b) : ''; ?></textarea></td>
                             </tr>
                             <tr>
                                 <th colspan="4"> 2. <?php echo $row1->nama_value; ?></th>
@@ -93,10 +93,10 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <td><textarea name="tugas_tambahan" style="width: 100%; height: 100px;" required></textarea></td>
-                                <td><textarea name="hasil_tgs_tambahan" style="width: 100%; height: 100px;" required></textarea></td>
-                                <td><input type="text" name="persen_tambahan" style="width: 100%;" required></td>
-                                <td><textarea name="deviasi_tambahan" style="width: 100%; height: 100px;" required></textarea></td>
+                                <td><textarea name="tugas_tambahan" style="width: 100%; height: 100px;" required><?php echo isset($form_a->tugas_tambahan) ? htmlspecialchars($form_a->tugas_tambahan) : ''; ?></textarea></td>
+                                <td><textarea name="hasil_tgs_tambahan" style="width: 100%; height: 100px;" required><?php echo isset($form_a->hasil_tgs_tambahan) ? htmlspecialchars($form_a->hasil_tgs_tambahan) : ''; ?></textarea></td>
+                                <td><input type="text" name="persen_tambahan" style="width: 100%; text-align: center;" required value="<?php echo isset($form_a->persen_tambahan) ? htmlspecialchars($form_a->persen_tambahan) : ''; ?>"></td>
+                                <td><textarea name="deviasi_tambahan" style="width: 100%; height: 100px;" required><?php echo isset($form_a->deviasi_tambahan) ? htmlspecialchars($form_a->deviasi_tambahan) : ''; ?></textarea></td>
                                 <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                 <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
                                 <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
@@ -119,7 +119,7 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row2->description; ?></p>
-                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;" required></textarea>
+                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;" required><?php echo isset($form_b->kesimpulan) ? htmlspecialchars($form_b->kesimpulan) : ''; ?></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -128,7 +128,7 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row1->description; ?></p>
-                                    <textarea name="penjelasan" style="width: 100%; height: 150px;" required></textarea>
+                                    <textarea name="penjelasan" style="width: 100%; height: 150px;" required><?php echo isset($form_b->penjelasan) ? htmlspecialchars($form_b->penjelasan) : ''; ?></textarea>
                                     <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                     <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
                                     <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
@@ -149,13 +149,15 @@
                             $count_kinerja = 1;
                             foreach ($menu5_data->result() as $dt1) {
                                 if (strtolower($dt1->nama_value) == 'tugas pokok' || strtolower($dt1->nama_value) == 'tugas tambahan') {
+                                    // Cek apakah ada nilai sebelumnya
+                                    $nilai_saat_ini = isset($nilai_terisi[$dt1->id_form_penilaian]) ? $nilai_terisi[$dt1->id_form_penilaian] : '';
                             ?>
                                     <tr>
                                         <td style="text-align: left;" colspan="2"><?php echo $count_kinerja . '. ' . $dt1->nama_value; ?></td>
-                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="A" required> A</td>
-                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="B" required> B</td>
-                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="C" required> C</td>
-                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="D" required> D</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="A" <?php echo ($nilai_saat_ini == 'A') ? 'checked' : ''; ?> required> A</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="B" <?php echo ($nilai_saat_ini == 'B') ? 'checked' : ''; ?> required> B</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="C" <?php echo ($nilai_saat_ini == 'C') ? 'checked' : ''; ?> required> C</td>
+                                        <td><input type="radio" name="kinerja[<?php echo $dt1->id_form_penilaian; ?>]" value="D" <?php echo ($nilai_saat_ini == 'D') ? 'checked' : ''; ?> required> D</td>
                                     </tr>
                             <?php
                                     $count_kinerja++;
@@ -171,13 +173,15 @@
                             $count_kompetensi = 1;
                             foreach ($menu5_data->result() as $dt1) {
                                 if (!in_array(strtolower($dt1->nama_value), ['tugas pokok', 'tugas tambahan'])) {
+                                    // Cek apakah ada nilai sebelumnya
+                                    $nilai_saat_ini = isset($nilai_terisi[$dt1->id_form_penilaian]) ? $nilai_terisi[$dt1->id_form_penilaian] : '';
                             ?>
                                     <tr>
                                         <td style="text-align: left;" colspan="2"><?php echo $count_kompetensi . '. ' . $dt1->nama_value; ?></td>
-                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="A" required> A</td>
-                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="B" required> B</td>
-                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="C" required> C</td>
-                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="D" required> D</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="A" <?php echo ($nilai_saat_ini == 'A') ? 'checked' : ''; ?> required> A</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="B" <?php echo ($nilai_saat_ini == 'B') ? 'checked' : ''; ?> required> B</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="C" <?php echo ($nilai_saat_ini == 'C') ? 'checked' : ''; ?> required> C</td>
+                                        <td><input type="radio" name="kompetensi[<?php echo $dt1->id_form_penilaian; ?>]" value="D" <?php echo ($nilai_saat_ini == 'D') ? 'checked' : ''; ?> required> D</td>
                                         <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                         <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
                                         <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">

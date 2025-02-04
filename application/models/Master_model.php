@@ -460,8 +460,7 @@ FROM
 
 	public function get_nilai_submit_by_nrp($nrp)
 	{
-		$query = $this->db->query("
-			SELECT 
+		$query = $this->db->query("SELECT 
 				COUNT(DISTINCT id_p_periode) AS jumlah_terisi,
 				(SELECT COUNT(DISTINCT id_p_periode) 
 				 FROM (SELECT id_p_periode FROM trans_kel_1_2 
@@ -638,6 +637,70 @@ FROM
 		$query = $this->db->get();
 		return $query;
 	}
+
+	public function get_nilai_1_2_terisi($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_kel_1_2');
+
+		$nilai_terisi = [
+			'nilai' => [],
+			'text_tambahan' => ''
+		];
+
+		foreach ($query->result() as $row) {
+			$nilai_terisi['nilai'][$row->id_nilai_pkk] = $row->isi_nilai_kel_1_2;
+			$nilai_terisi['text_tambahan'] = $row->text_tambahan; // Ambil hanya satu nilai text_tambahan
+		}
+
+		return $nilai_terisi;
+	}
+
+	public function get_nilai_3_7_terisi($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_kel_3_7');
+
+		$nilai_terisi = [];
+		foreach ($query->result() as $row) {
+			$nilai_terisi[$row->id_form_penilaian] = $row->isi_form_penilaian;
+		}
+
+		return $nilai_terisi;
+	}
+
+	public function get_form_A($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_form_a');
+
+		if ($query->num_rows() > 0) {
+			return $query->row(); // Mengembalikan satu baris data
+		}
+		return null; // Jika tidak ada data, kembalikan null
+	}
+
+
+	public function get_form_B($nrp, $id_p_periode, $atasan)
+	{
+		$this->db->select('*');
+		$this->db->where('nrp', $nrp);
+		$this->db->where('insert_by', $atasan);
+		$this->db->where('id_p_periode', $id_p_periode);
+		$query = $this->db->get('trans_form_b');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
 	//USERS
 	public function get_user($id_karyawan)
 	{

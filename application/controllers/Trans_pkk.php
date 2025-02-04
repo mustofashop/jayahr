@@ -2,6 +2,11 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 require('./vendor/autoload.php');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Helper\Sample;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Trans_pkk extends CI_Controller
 {
     public function save_set_pkk()
@@ -192,19 +197,17 @@ class Trans_pkk extends CI_Controller
             foreach ($penilaian_data as $kategori => $data) {
                 if (!empty($data)) {
                     foreach ($data as $id_form_penilaian => $nilai) {
-                        // Query untuk mengambil nilai dari mst_penilaian_3_7_form_penilaian
-                        $query = $this->db->select("nilai_a_flag{$flag_jenis_form} AS nilai_a, 
-                                                nilai_b_flag{$flag_jenis_form} AS nilai_b, 
-                                                nilai_c_flag{$flag_jenis_form} AS nilai_c, 
-                                                nilai_d_flag{$flag_jenis_form} AS nilai_d")
+                        // Query untuk mengambil nilai dari mst_penilaian_3_7_form_penilaian berdasarkan flag
+                        $query = $this->db->select("nilai_a, nilai_b, nilai_c, nilai_d")
                             ->where('id_form_penilaian', $id_form_penilaian)
-                            ->get('mst_penilaian_3_7_form_penilaian');
+                            ->where('flag', $flag_jenis_form) // Sesuaikan dengan flag_jenis_form
+                            ->get('mst_flag');
 
                         $nilai_form = $query->row(); // Ambil hasil query
 
                         // Pastikan data ditemukan
                         if (!$nilai_form) {
-                            die("Error: Data penilaian tidak ditemukan untuk ID $id_form_penilaian.");
+                            die("Error: Data penilaian tidak ditemukan untuk ID $id_form_penilaian dan flag $flag_jenis_form.");
                         }
 
                         // Menentukan hasil nilai berdasarkan pilihan A, B, C, D
@@ -245,6 +248,7 @@ class Trans_pkk extends CI_Controller
                         $this->db->insert("trans_kel_3_7", $dt);
                     }
                 }
+
                 $this->session->set_flashdata('msg', 'Penilaian berhasil disimpan');
             }
             redirect(base_url('Pengaturan_pkk/list_karyawan_pkk'));
@@ -639,6 +643,100 @@ class Trans_pkk extends CI_Controller
                 $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
             } else {
                 $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+
+    // excel
+    function download_data_pkk_excel($nrp)
+    {
+        $masuk  = $this->session->userdata('masuk_k');
+        $this->load->helpers('print_rekap_helper');
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+            $data   = $this->master_model->lap_nilai($nrp);
+            if ($data->num_rows() > 0) {
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+
+                // *Judul Laporan*
+                $sheet->mergeCells('A1:F1');
+                $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KERJA KARYAWAN KONTRAK KELOMPOK I - II');
+                $sheet->getStyle('A1')->getFont()->setBold(true);
+                $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
+
+                // *Header Data Karyawan*
+                $headers = ['Nama', 'Jabatan', 'Tanggal Masuk', 'Atasan Langsung', 'Atasan Tidak Langsung', 'Unit', 'Periode Penilaian'];
+                $values  = [
+                    isset($data->row()->nama) ? $data->row()->nama : 'Tidak Ada Data',
+                    isset($data->row()->jabatan) ? $data->row()->jabatan : 'Tidak Ada Data',
+                    isset($data->row()->tgl_masuk) ? $data->row()->tgl_masuk : 'Tidak Ada Data',
+                    isset($data->row()->atasan_langsung) ? $data->row()->atasan_langsung : 'Tidak Ada Data',
+                    isset($data->row()->atasan_tidak_langsung) ? $data->row()->atasan_tidak_langsung : 'Tidak Ada Data',
+                    isset($data->row()->unit) ? $data->row()->unit : 'Tidak Ada Data',
+                    isset($data->row()->periode_penilaian) ? $data->row()->periode_penilaian : 'Tidak Ada Data'
+                ];
+
+                for ($i = 0; $i < count($headers); $i++) {
+                    $sheet->setCellValue('A' . ($i + 3), $headers[$i]);
+                    $sheet->setCellValue('B' . ($i + 3), $values[$i]);
+                }
+
+                // *Header Tabel Penilaian*
+                $headerPenilaian = ['No', 'Aspek yang Dinilai', 'Atasan Langsung', 'Nilai AL', 'Atasan Tidak Langsung', 'Nilai ATL'];
+                $colIndex = 'A';
+                foreach ($headerPenilaian as $header) {
+                    $sheet->setCellValue($colIndex . '11', $header);
+                    $sheet->getStyle($colIndex . '11')->getFont()->setBold(true);
+                    $colIndex++;
+                }
+
+                // *Isi Data Penilaian*
+                $rowIndex = 12;
+                $no = 1;
+                foreach ($data->result() as $dt) {
+                    $sheet->setCellValue('A' . $rowIndex, $no++);
+                    $sheet->setCellValue('B' . $rowIndex, isset($dt->aspek_dinilai) ? $dt->aspek_dinilai : 'Tidak Ada Data');
+                    $sheet->setCellValue('C' . $rowIndex, isset($dt->nilai_atasan_langsung) ? $dt->nilai_atasan_langsung : '0');
+                    $sheet->setCellValue('D' . $rowIndex, isset($dt->skor_atasan_langsung) ? $dt->skor_atasan_langsung : '0');
+                    $sheet->setCellValue('E' . $rowIndex, isset($dt->nilai_atasan_tidak_langsung) ? $dt->nilai_atasan_tidak_langsung : '0');
+                    $sheet->setCellValue('F' . $rowIndex, isset($dt->skor_atasan_tidak_langsung) ? $dt->skor_atasan_tidak_langsung : '0');
+                    $rowIndex++;
+                }
+
+                // *Total Nilai*
+                $sheet->setCellValue('B' . $rowIndex, 'TOTAL');
+                $sheet->setCellValue('D' . $rowIndex, '=SUM(D12:D' . ($rowIndex - 1) . ')');
+                $sheet->setCellValue('F' . $rowIndex, '=SUM(F12:F' . ($rowIndex - 1) . ')');
+
+                $rowIndex++;
+                $sheet->setCellValue('B' . $rowIndex, 'Hasil Akhir');
+                $sheet->setCellValue('D' . $rowIndex, '=D' . ($rowIndex - 1) . '/12');
+                $sheet->setCellValue('F' . $rowIndex, '=F' . ($rowIndex - 1) . '/12');
+
+                //autosize
+                $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+                // redirect output to client browser    
+                $writer = IOFactory::createWriter($spreadsheet, "Xlsx");
+                // header('Content-Type: application/vnd.ms-excel');
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="Rekap_IDP.xlsx"');
+                header('Cache-Control: max-age=0');
+                // If you're serving to IE 9, then the following may be needed
+                header('Cache-Control: max-age=1');
+                // If you're serving to IE over SSL, then the following may be needed
+                header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+                header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+                header('Pragma: public'); // HTTP/1.0
+                // $writer = new Xlsx($spreadsheet);
+                ob_end_clean();
+                ob_start();
+                $writer->save('php://output');
+            } else {
+                $this->session->set_flashdata('msg_error', 'Data karyawan tidak ada');
                 redirect($_SERVER['HTTP_REFERER']);
             }
         }
