@@ -44,12 +44,12 @@
                         <?php
                         $no     = '1';
                         $status = '0';
-                        $data = $this->master_model->list_member_rekap_pkk($unit);
+                        $data = $this->master_model->list_member_rekap_pkk1($unit);
                         foreach ($data->result() as $dt) {
-                            $data2 = $this->master_model->hasil_nilai($dt->nip)->row();
-                            $nilai1 = isset($data2->total_nilai_atasan_langsung) ? ($data2->total_nilai_atasan_langsung * 0.6) : 0;
-                            $nilai2 = isset($data2->total_nilai_atasan_tidak_langsung) ? ($data2->total_nilai_atasan_tidak_langsung * 0.4) : 0;
-                            $nilaiAkhir = $nilai1 + $nilai2;
+                            $data2 = $this->master_model->real_hasil_nilai($dt->nip)->row();
+                            $nilaiAkhir = (isset($data2->total_nilai_atasan_langsung) && isset($data2->total_nilai_atasan_tidak_langsung))
+                                ? ($data2->total_nilai_atasan_langsung * 0.6) + ($data2->total_nilai_atasan_tidak_langsung * 0.4)
+                                : 0.0;
 
                             if ($nilaiAkhir == 0 && $nilaiAkhir == NULL) {
                                 $kriteria = '';

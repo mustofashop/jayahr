@@ -1,3 +1,10 @@
+<?php if ($this->session->flashdata('msg_error')) : ?>
+    <div class="alert alert-danger alert-dismissible" id="success-alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h4><i class="icon fa fa-exclamation"></i> Alert!</h4>
+        <?php echo $this->session->flashdata('msg_error'); ?>
+    </div>
+<?php endif; ?>
 <?php if ($periode == 'all'): ?>
     <?php if ($flag_jenis_form == 'form_penilaian_1_2'): ?>
         <div style="border-bottom: 2px solid black; width: 100%;"></div>
@@ -15,23 +22,23 @@
                     <tr>
                         <td style="width: 40%; padding: 10px;">Nama</td>
                         <?php
-                        $row = $data_pkk->row(); // Ambil baris pertama dari hasil query
+                        $row1 = $data_pkk->row(); // Ambil baris pertama dari hasil query
                         ?>
-                        <td style="padding: 10px;"><?php echo isset($row->nama_lengkap) ? $row->nama_lengkap : 'Nilai Belum Di Isi !'; ?></td>
+                        <td style="padding: 10px;"><?php echo isset($row1->nama_lengkap) ? $row1->nama_lengkap : 'Nilai Belum Di Isi !'; ?></td>
                     </tr>
                     <tr>
                         <td style="padding: 10px;">Jabatan</td>
                         <?php
-                        $row = $data_pkk->row(); // Ambil baris pertama dari hasil query
+                        $row2 = $data_pkk->row(); // Ambil baris pertama dari hasil query
                         ?>
-                        <td style="padding: 10px;"><?php echo isset($row->job_grade) ? $row->job_grade : 'Nilai Belum Di Isi !'; ?></td>
+                        <td style="padding: 10px;"><?php echo isset($row2->job_grade) ? $row2->job_grade : 'Nilai Belum Di Isi !'; ?></td>
                     </tr>
                     <tr>
                         <td style="padding: 10px;">Tanggal Masuk</td>
                         <?php
-                        $row = $data_pkk->row(); // Ambil baris pertama dari hasil query
+                        $row3 = $data_pkk->row(); // Ambil baris pertama dari hasil query
                         ?>
-                        <td style="padding: 10px;"><?php echo isset($row->tgl_hire) ? $row->tgl_hire : 'Nilai Belum Di Isi !'; ?></td>
+                        <td style="padding: 10px;"><?php echo isset($row3->tgl_hire) ? $row3->tgl_hire : 'Nilai Belum Di Isi !'; ?></td>
                     </tr>
                 </table>
 
@@ -42,30 +49,30 @@
                     <tr>
                         <td style="width: 40%; padding: 4px;">Atasan Langsung :</td>
                         <?php
-                        $row = $this->master_model->lap_nilai_periode($dt->nrp, $dt->id_p_periode)->row(); // Ambil baris pertama dari hasil query
+                        $row4 = $this->master_model->lap_nilai_periode($dt->nrp, $dt->id_p_periode)->row(); // Ambil baris pertama dari hasil query
                         ?>
-                        <td style="padding: 4px;"><?php echo isset($row->spv1_nama) ? $row->spv1_nama : 'Nilai Belum Di Isi !'; ?></td>
+                        <td style="padding: 4px;"><?php echo isset($row4->spv1_nama) ? $row4->spv1_nama : 'Nilai Belum Di Isi !'; ?></td>
                     </tr>
                     <tr>
                         <td style="width: 40%; padding: 4px;">Atasan Tidak Langsung :</td>
                         <?php
-                        $row = $this->master_model->lap_nilai_periode($dt->nrp, $dt->id_p_periode)->row(); // Ambil baris pertama dari hasil query
+                        $row5 = $this->master_model->lap_nilai_periode($dt->nrp, $dt->id_p_periode)->row(); // Ambil baris pertama dari hasil query
                         ?>
-                        <td style="padding: 4px;"><?php echo isset($row->spv2_nama) ? $row->spv2_nama : 'Nilai Belum Di Isi !'; ?></td>
+                        <td style="padding: 4px;"><?php echo isset($row5->spv2_nama) ? $row5->spv2_nama : 'Nilai Belum Di Isi !'; ?></td>
                     </tr>
                     <tr>
                         <td style="width: 40%; padding: 4px;">Unit :</td>
                         <?php
-                        $row = $data_pkk->row(); // Ambil baris pertama dari hasil query
+                        $row6 = $data_pkk->row(); // Ambil baris pertama dari hasil query
                         ?>
-                        <td style="padding: 4px;"><?php echo isset($row->department) ? $row->department : 'Nilai Belum Di Isi !'; ?></td>
+                        <td style="padding: 4px;"><?php echo isset($row6->department) ? $row6->department : 'Nilai Belum Di Isi !'; ?></td>
                     </tr>
                     <tr>
                         <td style="width: 40%; padding: 4px;">Periode Penilaian :</td>
                         <?php
-                        $row = $this->master_model->lap_nilai_periode($dt->nrp, $dt->id_p_periode)->row(); // Ambil baris pertama dari hasil query
+                        $row7 = $this->master_model->lap_nilai_periode($dt->nrp, $dt->id_p_periode)->row(); // Ambil baris pertama dari hasil query
                         ?>
-                        <td style="padding: 4px;"><?php echo isset($row->flag_penilaian) ? $row->flag_penilaian : 'Nilai Belum Di Isi !'; ?></td>
+                        <td style="padding: 4px;"><?php echo isset($row7->flag_penilaian) ? $row7->flag_penilaian : 'Nilai Belum Di Isi !'; ?></td>
                     </tr>
                 </table>
                 <!-- Tambahkan ini untuk memastikan bagian baru dimulai di halaman berikutnya -->

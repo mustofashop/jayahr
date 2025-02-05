@@ -321,14 +321,14 @@ class Trans_pkk extends CI_Controller
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            if ($periode = 'all') {
+            if ($periode == 'all') {
                 $data1   = $this->master_model->get_trans_pkk($nrp);
-                foreach ($data1->result() as $value) {
-                    $data   = $this->master_model->lap_nilai_periode($value->nrp, $value->id_p_periode);
+                $pdf = new reportProduct();
+                $pdf->setKriteria("cetak_laporan");
+                foreach ($data1->result() as $dt) {
+                    $data   = $this->master_model->lap_nilai_periode($dt->nrp, $dt->id_p_periode);
                     if ($data->num_rows() > 0) {
                         $row = $data->row();
-                        $pdf = new reportProduct();
-                        $pdf->setKriteria("cetak_laporan");
                         $pdf->setNama("CETAK DATA KARYAWAN");
                         $pdf->AliasNbPages();
                         $pdf->AddPage("P", "A4");
@@ -338,7 +338,6 @@ class Trans_pkk extends CI_Controller
                         $Q[1] = 279;
                         $pdf->SetTitle('LAPORAN PENILAIAN PRESTASI KERJA');
                         $pdf->SetCreator('Jaya HR');
-
                         $h = 7;
                         $pdf->SetFont('Times', 'B', 14);
                         $pdf->SetX(6);
@@ -411,7 +410,7 @@ class Trans_pkk extends CI_Controller
 
                         $pdf->SetFont('Arial', '', 10);
                         $no = 1;
-                        $penilaian = $this->master_model->hasil_nilai_periode($value->nrp, $value->id_p_periode);
+                        $penilaian = $this->master_model->hasil_nilai_periode($dt->nrp, $dt->id_p_periode);
                         foreach ($penilaian->result() as $row) {
                             $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
                             $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
@@ -459,12 +458,13 @@ class Trans_pkk extends CI_Controller
                         $pdf->SetFont('Arial', '', 10);
                         $pdf->MultiCell(190, 7, 'Atasan Langsung:' . (isset($row->text_tambahan_atasan_langsung) ? $row->text_tambahan_atasan_langsung : 'Tidak Ada Data'), 1);
                         $pdf->MultiCell(190, 7, 'Atasan Tidak Langsung:' . (isset($row->text_tambahan_atasan_tidak_langsung) ? $row->text_tambahan_atasan_tidak_langsung : 'Tidak Ada Data'), 1);
-                        $pdf->Output('D', 'Laporan_Penilaian_Kel_1_2.pdf');
                     } else {
                         $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
                         redirect($_SERVER['HTTP_REFERER']);
                     }
                 }
+                ob_clean();
+                $pdf->Output('D', 'Laporan_Penilaian_Kel_1_2.pdf');
             } else {
                 $data   = $this->master_model->lap_nilai_periode($nrp, $periode);
                 if ($data->num_rows() > 0) {
@@ -618,12 +618,12 @@ class Trans_pkk extends CI_Controller
         } else {
             if ($periode == 'all') {
                 $data1   = $this->master_model->get_trans_pkk($nrp);
+                $pdf = new reportProduct();
+                $pdf->setKriteria("cetak_laporan");
                 foreach ($data1->result() as $dt) {
                     $data   = $this->master_model->lap_nilai_3_7_periode($dt->nrp, $dt->id_p_periode);
                     if ($data->num_rows() > 0) {
                         $row = $data->row();
-                        $pdf = new reportProduct();
-                        $pdf->setKriteria("cetak_laporan");
                         $pdf->setNama("CETAK DATA KARYAWAN");
                         $pdf->AliasNbPages();
                         $pdf->AddPage("P", "A4");
@@ -842,12 +842,12 @@ class Trans_pkk extends CI_Controller
                         $pdf->Cell(0, 7, isset($row4->nama_value) ? $row4->nama_value : '', 0, 1, 'L');
                         $pdf->SetFont("Arial", '', 10);
                         $pdf->MultiCell(0, 20, isset($penilaian2->komentar_atasan) ? $penilaian2->komentar_atasan : '', 1);
-                        $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
                     } else {
                         $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
                         redirect($_SERVER['HTTP_REFERER']);
                     }
                 }
+                $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
             } else {
                 $data   = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
                 if ($data->num_rows() > 0) {
