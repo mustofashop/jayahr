@@ -353,9 +353,10 @@ FROM
 		return $q;
 	}
 
-	public function real_hasil_nilai($nrp)
+	public function real_hasil_nilai($nrp, $jenis_form)
 	{
-		$q = $this->db->query("WITH atasan_langsung AS (
+		if ($jenis_form == '1') {
+			$q = $this->db->query("WITH atasan_langsung AS (
 				SELECT 
 					a.id_nilai_pkk,
 					a.nrp,
@@ -403,6 +404,48 @@ FROM
 				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
 				ORDER BY al.id_nilai_pkk DESC
 				");
+		} else {
+			$q = $this->db->query("WITH atasan_langsung AS (
+				SELECT 
+					a.id_form_penilaian,
+					a.nrp,
+					a.isi_form_penilaian AS isi_nilai_atasan_langsung,  
+					a.hasil_nilai AS nilai_atasan_langsung,
+					ROW_NUMBER() OVER (PARTITION BY a.id_form_penilaian, a.nrp ORDER BY a.insert_date DESC) AS rn
+				FROM trans_kel_3_7 a
+				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
+				AND a.nrp = '$nrp' and a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7)
+			),
+			atasan_tidak_langsung AS (
+				SELECT 
+					a2.id_form_penilaian,
+					a2.nrp,
+					a2.isi_form_penilaian AS isi_nilai_atasan_tidak_langsung,  
+					a2.hasil_nilai AS nilai_atasan_tidak_langsung,
+					ROW_NUMBER() OVER (PARTITION BY a2.id_form_penilaian, a2.nrp ORDER BY a2.insert_date DESC) AS rn
+				FROM trans_kel_3_7 a2
+				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
+				AND a2.nrp = '$nrp' and a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7)
+			)
+			SELECT
+				c.nama_value AS aspek_dinilai,                  
+				al.isi_nilai_atasan_langsung,  
+				al.nilai_atasan_langsung,         
+				atl.isi_nilai_atasan_tidak_langsung, 
+				atl.nilai_atasan_tidak_langsung,
+				SUM(COALESCE(CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_langsung,
+				SUM(COALESCE(CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_tidak_langsung
+				FROM atasan_langsung al
+				LEFT JOIN atasan_tidak_langsung atl 
+					ON al.id_form_penilaian = atl.id_form_penilaian 
+					AND al.nrp = atl.nrp
+				JOIN mst_penilaian_3_7_form_penilaian c 
+					ON al.id_form_penilaian = c.id_form_penilaian
+				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
+				ORDER BY al.id_form_penilaian
+				");
+		}
+
 		return $q;
 	}
 
@@ -1174,7 +1217,7 @@ FROM
 	{
 
 		$q = $this->db->query("SELECT DISTINCT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
-		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.id_bagian
+		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.id_bagian, c.id_jenis_form 
 		FROM mst_karyawan a
 		LEFT JOIN mst_bagian b on a.department = b.nama_bagian
 		LEFT JOIN trans_pkk c on a.nip = c.nrp

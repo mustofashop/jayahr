@@ -937,12 +937,15 @@ class Trans_pkk extends CI_Controller
                     $no = 1;
                     $penilaian = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
                     foreach ($penilaian->result() as $row) {
+                        $nilai_langsung = $row->nilai_atasan_langsung ? str_replace(',', '.', $row->nilai_atasan_langsung) : '0.0';
+                        $nilai_tak_langsung = $row->nilai_atasan_tidak_langsung ? str_replace(',', '.', $row->nilai_atasan_tidak_langsung) : '0.0';
+
                         $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
                         $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
                         $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
-                        $pdf->Cell($colWidths[3], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
+                        $pdf->Cell($colWidths[3], 7, number_format($nilai_langsung, 1), 1, 0, 'C');
                         $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
-                        $pdf->Cell($colWidths[5], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
+                        $pdf->Cell($colWidths[5], 7, number_format($nilai_tak_langsung, 1), 1, 0, 'C');
                         $pdf->Ln();
                     }
                     // Total dan Hasil Akhir

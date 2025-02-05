@@ -46,7 +46,7 @@
                         $status = '0';
                         $data = $this->master_model->list_member_rekap_pkk1($unit);
                         foreach ($data->result() as $dt) {
-                            $data2 = $this->master_model->real_hasil_nilai($dt->nip)->row();
+                            $data2 = $this->master_model->real_hasil_nilai($dt->nip, $dt->id_jenis_form)->row();
                             $nilaiAkhir = (isset($data2->total_nilai_atasan_langsung) && isset($data2->total_nilai_atasan_tidak_langsung))
                                 ? ($data2->total_nilai_atasan_langsung * 0.6) + ($data2->total_nilai_atasan_tidak_langsung * 0.4)
                                 : 0.0;
