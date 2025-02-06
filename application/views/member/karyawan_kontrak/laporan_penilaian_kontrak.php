@@ -18,7 +18,7 @@
             <i class="fa fa-arrow-left"></i>
             Kembali
         </a>
-        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_pdf/<?php echo $unit ?>">
+        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel/<?php echo $unit ?>">
             <i class="fa fa-download"></i>
             Download data
         </a>

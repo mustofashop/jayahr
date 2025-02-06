@@ -1395,4 +1395,104 @@ class Trans_pkk extends CI_Controller
             }
         }
     }
+
+    public function download_data_pkk_excel($unit)
+    {
+        $data = $this->master_model->list_member_rekap_pkk1($unit); // Ambil data dari model
+
+        if ($data->num_rows() > 0) {
+            $row = $data->row();
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $sheet->mergeCells('A1:G1');
+            $sheet->setCellValue('A1', 'Laporan Penilaian Karyawan Kontrak ' . $row->department);
+            $sheet->getStyle('A1')->getFont()->setBold(true);
+            $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // **Header Tabel Sesuai View**
+            $headerTable = ['No', 'Nama', 'NRP', 'Unit', 'Ceklis', 'Nilai (Angka)', 'Kriteria'];
+            $columnIndex = 'A';
+
+            foreach ($headerTable as $header) {
+                $sheet->setCellValue($columnIndex . '2', $header);
+                $sheet->getStyle($columnIndex . '2')->getFont()->setBold(true);
+                $sheet->getStyle($columnIndex . '2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $columnIndex++;
+            }
+
+            // **Mengisi Data ke Tabel**
+            $rowIndex = 3;
+            $no = 1;
+            foreach ($data->result() as $dt) {
+                // Mengisi data nilai & kriteria
+                $data2 = $this->master_model->real_hasil_nilai($dt->nip, $dt->id_jenis_form)->row();
+
+                $nilaiAkhir = (isset($data2->total_nilai_atasan_langsung) && isset($data2->total_nilai_atasan_tidak_langsung))
+                    ? ($data2->total_nilai_atasan_langsung * 0.6) + ($data2->total_nilai_atasan_tidak_langsung * 0.4)
+                    : 0.0;
+
+                if ($nilaiAkhir == 0 && $nilaiAkhir == NULL) {
+                    $kriteria = '';
+                } elseif ($nilaiAkhir >= 90 && $nilaiAkhir <= 100) {
+                    $kriteria = 'A';
+                } elseif ($nilaiAkhir >= 80 && $nilaiAkhir <= 89) {
+                    $kriteria = 'B';
+                } elseif ($nilaiAkhir >= 60 && $nilaiAkhir <= 79) {
+                    $kriteria = 'C';
+                } else {
+                    $kriteria = 'D';
+                }
+
+                // Mengisi Data ceklis
+                $data3 = $this->master_model->get_nilai_ceklis_by_nrp($dt->nip, $dt->id_jenis_form)->row();
+                $jumlah_ceklis = $data3->jumlah_ceklis;
+
+                // Mengisi data ke dalam file Excel
+                $sheet->setCellValue('A' . $rowIndex, $no++);
+                $sheet->setCellValue('B' . $rowIndex, isset($dt->nama_lengkap) ? $dt->nama_lengkap : '-');
+                $sheet->setCellValue('C' . $rowIndex, isset($dt->nip) ? $dt->nip : '-');
+                $sheet->setCellValue('D' . $rowIndex, isset($dt->department) ? $dt->department : '-');
+                $sheet->setCellValue('E' . $rowIndex, isset($jumlah_ceklis) ? $jumlah_ceklis : '');
+                $sheet->setCellValue('F' . $rowIndex, isset($nilaiAkhir) ? number_format($nilaiAkhir, 1) : '');
+                $sheet->setCellValue('G' . $rowIndex, isset($kriteria) ? $kriteria : '');
+
+                $sheet->getStyle('C' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('D' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('E' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('F' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('G' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                $rowIndex++;
+            }
+
+            // **Menambahkan Border di Seluruh Tabel**
+            $styleArray = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ];
+            $sheet->getStyle('A1:G' . ($rowIndex - 1))->applyFromArray($styleArray);
+
+            // **Autosize Kolom**
+            foreach (range('A', 'G') as $col) {
+                $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            // **Download File Excel**
+            $writer = new Xlsx($spreadsheet);
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="Laporan_Penilaian_Karyawan_Kontrak_(' . $row->department . ').xlsx"');
+            header('Cache-Control: max-age=0');
+            ob_end_clean();
+            ob_start();
+            $writer->save('php://output');
+        } else {
+            $this->session->set_flashdata('msg_error', 'Data tidak ditemukan');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
 }
