@@ -62,27 +62,62 @@
         });
     });
 </script>
+<!-- ALERT -->
+<div id="feedbackAlert" class="alert alert-success" style="display:none; margin-top: 10px;"></div>
+<style>
+    .nav-tabs-custom {
+        background-color: #1b2a47;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .nav-tabs-custom .nav-pills {
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-tabs-custom .nav-pills li {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    .nav-tabs-custom .nav-pills li a {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        color: #ffffff;
+        background-color: #1b2a47;
+        padding: 8px 15px;
+        text-decoration: none;
+    }
+
+    .nav-tabs-custom .nav-pills li.active a {
+        background-color: #17a2b8;
+        color: white;
+        border: 1px solid #17a2b8;
+    }
+</style>
 
 <body>
     <div class="box">
-        <div class="box-header">
-            <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
-                <i class="fa fa-arrow-left"></i>
-                Kembali
-            </button>
-        </div>
-        <div class="box-body">
-            <form role="form" method="POST" action="<?php echo base_url(); ?>Trans_pkk/simpan_nilai_3_7">
-                <ul class="nav nav-pills">
-                    <li class="active"><a data-toggle="tab" href="#menu1">Kriteria Penilaian</a></li>
-                    <li><a data-toggle="tab" href="#menu2">Contoh</a></li>
-                    <li><a data-toggle="tab" href="#menu3">Form A</a></li>
-                    <li><a data-toggle="tab" href="#menu4">Form B</a></li>
-                    <li><a data-toggle="tab" href="#menu5">Form Penilaian</a></li>
-                    <li><a data-toggle="tab" href="#menu6">Feedback Karyawan</a></li>
-                </ul>
+        <form role="form" method="POST" action="<?php echo base_url(); ?>Trans_pkk/simpan_nilai_3_7">
+            <div class="box-header">
+                <button class="btn btn-app" title="Kembali" onclick="history.back(); return false;">
+                    <i class="fa fa-arrow-left"></i>
+                    Kembali
+                </button>
+            </div>
+            <div class="box-body">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-pills">
+                        <li class="active"><a data-toggle="tab" href="#menu1">Kriteria Penilaian</a></li>
+                        <li><a data-toggle="tab" href="#menu2">Contoh</a></li>
+                        <li><a data-toggle="tab" href="#menu3">Form Isi A</a></li>
+                        <li><a data-toggle="tab" href="#menu4">Form Isi B</a></li>
+                        <li><a data-toggle="tab" href="#menu5">Form Penilaian</a></li>
+                        <li><a data-toggle="tab" href="#menu6">Feedback Karyawan</a></li>
+                    </ul>
+                </div>
                 <div class="tab-content">
-
                     <!-- MENU 1: Kriteria Penilaian -->
                     <div id="menu1" class="tab-pane fade in active">
                         <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_3_7/Contoh_penilaian_3_7.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
@@ -105,7 +140,7 @@
                             $row2 = $menu3->row(1); // Mengambil baris kedua (index 1)
                             ?>
                             <tr>
-                                <th> 1. <?php echo $row2->nama_value; ?></th>
+                                <th> 1. <?php echo $row1->nama_value; ?></th>
                                 <th style="text-align: center;">KESIMPULAN HASIL</th>
                                 <th style="text-align: center;">%</th>
                                 <th style="text-align: center;">KESIMPULAN DEVIASI</th>
@@ -118,9 +153,9 @@
                                     (hasil bisa dilihat dari kualitas keakuratan, dll)
                                 </td>
                                 <!-- FORM A -->
-                                <td><textarea name="hasil_nilai_a" style="width: 100%; height: 100px;" required><?php echo isset($form_a->hasil_nilai_a) ? htmlspecialchars($form_a->hasil_nilai_a) : ''; ?></textarea></td>
-                                <td><input type="text" name="persen_a" style="width: 100%; text-align: center;" required value="<?php echo isset($form_a->persen_a) ? htmlspecialchars($form_a->persen_a) : ''; ?>"></td>
-                                <td><textarea name="deviasi_nilai_a" style="width: 100%; height: 100px;" required><?php echo isset($form_a->deviasi_nilai_a) ? htmlspecialchars($form_a->deviasi_nilai_a) : ''; ?></textarea></td>
+                                <td><textarea name="hasil_nilai_a" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->hasil_nilai_a) ? htmlspecialchars($form_a->hasil_nilai_a) : ''; ?></textarea></td>
+                                <td><input type="number" name="persen_a" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_a) ? htmlspecialchars($form_a->persen_a) : '0'; ?>"></td>
+                                <td><textarea name="deviasi_nilai_a" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->deviasi_nilai_a) ? htmlspecialchars($form_a->deviasi_nilai_a) : ''; ?></textarea></td>
                             </tr>
                             <tr>
                                 <td style="text-align: left;">
@@ -129,12 +164,12 @@
                                     <br>
                                     (hasil bisa dilihat dari jumlah, nilai, lama waktu, dll)
                                 </td>
-                                <td><textarea name="hasil_nilai_b" style="width: 100%; height: 100px;" required><?php echo isset($form_a->hasil_nilai_b) ? htmlspecialchars($form_a->hasil_nilai_b) : ''; ?></textarea></td>
-                                <td><input type="text" name="persen_b" style="width: 100%; text-align: center;" required value="<?php echo isset($form_a->persen_b) ? htmlspecialchars($form_a->persen_b) : ''; ?>"></td>
-                                <td><textarea name="deviasi_b" style="width: 100%; height: 100px;" required><?php echo isset($form_a->deviasi_b) ? htmlspecialchars($form_a->deviasi_b) : ''; ?></textarea></td>
+                                <td><textarea name="hasil_nilai_b" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->hasil_nilai_b) ? htmlspecialchars($form_a->hasil_nilai_b) : ''; ?></textarea></td>
+                                <td><input type="number" name="persen_b" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_b) ? htmlspecialchars($form_a->persen_b) : '0'; ?>"></td>
+                                <td><textarea name="deviasi_b" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->deviasi_b) ? htmlspecialchars($form_a->deviasi_b) : ''; ?></textarea></td>
                             </tr>
                             <tr>
-                                <th colspan="4"> 2. <?php echo $row1->nama_value; ?></th>
+                                <th colspan="4"> 2. <?php echo $row2->nama_value; ?></th>
                             </tr>
                             <tr>
                                 <th>(<?php echo $row2->description; ?>)</th>
@@ -143,10 +178,10 @@
                                 <th></th>
                             </tr>
                             <tr>
-                                <td><textarea name="tugas_tambahan" style="width: 100%; height: 100px;" required><?php echo isset($form_a->tugas_tambahan) ? htmlspecialchars($form_a->tugas_tambahan) : ''; ?></textarea></td>
-                                <td><textarea name="hasil_tgs_tambahan" style="width: 100%; height: 100px;" required><?php echo isset($form_a->hasil_tgs_tambahan) ? htmlspecialchars($form_a->hasil_tgs_tambahan) : ''; ?></textarea></td>
-                                <td><input type="text" name="persen_tambahan" style="width: 100%; text-align: center;" required value="<?php echo isset($form_a->persen_tambahan) ? htmlspecialchars($form_a->persen_tambahan) : ''; ?>"></td>
-                                <td><textarea name="deviasi_tambahan" style="width: 100%; height: 100px;" required><?php echo isset($form_a->deviasi_tambahan) ? htmlspecialchars($form_a->deviasi_tambahan) : ''; ?></textarea></td>
+                                <td><textarea name="tugas_tambahan" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->tugas_tambahan) ? htmlspecialchars($form_a->tugas_tambahan) : ''; ?></textarea></td>
+                                <td><textarea name="hasil_tgs_tambahan" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->hasil_tgs_tambahan) ? htmlspecialchars($form_a->hasil_tgs_tambahan) : ''; ?></textarea></td>
+                                <td><input type="number" name="persen_tambahan" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_tambahan) ? htmlspecialchars($form_a->persen_tambahan) : '0'; ?>"></td>
+                                <td><textarea name="deviasi_tambahan" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->deviasi_tambahan) ? htmlspecialchars($form_a->deviasi_tambahan) : ''; ?></textarea></td>
                                 <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                 <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
                                 <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
@@ -164,20 +199,20 @@
                             $row2 = $menu4->row(1); // Mengambil baris kedua
                             ?>
                             <tr>
-                                <th><b>III. <?php echo $row2->nama_value; ?></b></th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p><?php echo $row2->description; ?></p>
-                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;" required><?php echo isset($form_b->kesimpulan) ? htmlspecialchars($form_b->kesimpulan) : ''; ?></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th><b>IV. <?php echo $row1->nama_value; ?></b></th>
+                                <th><b>III. <?php echo $row1->nama_value; ?></b></th>
                             </tr>
                             <tr>
                                 <td>
                                     <p><?php echo $row1->description; ?></p>
+                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;" required><?php echo isset($form_b->kesimpulan) ? htmlspecialchars($form_b->kesimpulan) : ''; ?></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><b>IV. <?php echo $row2->nama_value; ?></b></th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p><?php echo $row2->description; ?></p>
                                     <textarea name="penjelasan" style="width: 100%; height: 150px;" required><?php echo isset($form_b->penjelasan) ? htmlspecialchars($form_b->penjelasan) : ''; ?></textarea>
                                     <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                     <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
@@ -263,7 +298,7 @@
                             <tr>
                                 <td>
                                     <p>Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut di atas</p>
-                                    <textarea name="isi_feedback" style="width: 100%; height: 150px;" readonly><?php echo isset($fb_k->isi_feedback) ? htmlspecialchars($fb_k->isi_feedback) : ''; ?></textarea>
+                                    <textarea name="isi_feedback" style="width: 100%; height: 150px;" placeholder="Karyawan Belum Mengisi Feedback" readonly><?php echo isset($fb_k->isi_feedback) ? htmlspecialchars($fb_k->isi_feedback) : ''; ?></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -271,7 +306,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <textarea id="isi_feedback" style="width: 100%; height: 150px;"><?php echo isset($fb_a->isi_feedback) ? htmlspecialchars($fb_a->isi_feedback) : ''; ?></textarea>
+                                    <textarea id="isi_feedback" style="width: 100%; height: 150px;" placeholder="Isi Disini"><?php echo isset($fb_a->isi_feedback) ? htmlspecialchars($fb_a->isi_feedback) : ''; ?></textarea>
                                     <input type="hidden" id="id_p_periode" value="<?php echo $id_p_periode; ?>">
                                     <input type="hidden" id="nrp" value="<?php echo $idp_nrp; ?>">
                                 </td>
@@ -282,10 +317,8 @@
                             <button type="button" id="simpanFeedback" class="btn bg-blue btn-primary btn-flat-margin">Simpan Feedback</button>
                         </div>
                     </div>
-                    <!-- ALERT -->
-                    <div id="feedbackAlert" class="alert alert-success" style="display:none; margin-top: 10px;"></div>
                 </div> <!-- END TAB-CONTENT -->
-            </form> <!-- END FORM -->
-        </div>
+            </div>
+        </form> <!-- END FORM -->
     </div>
 </body>

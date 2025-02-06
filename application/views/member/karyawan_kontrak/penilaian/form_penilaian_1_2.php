@@ -12,6 +12,38 @@
         <?php echo $this->session->flashdata('msg_error'); ?>
     </div>
 <?php endif; ?>
+<style>
+    .nav-tabs-custom {
+        background-color: #1b2a47;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .nav-tabs-custom .nav-pills {
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-tabs-custom .nav-pills li {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    .nav-tabs-custom .nav-pills li a {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        color: #ffffff;
+        background-color: #1b2a47;
+        padding: 8px 15px;
+        text-decoration: none;
+    }
+
+    .nav-tabs-custom .nav-pills li.active a {
+        background-color: #17a2b8;
+        color: white;
+        border: 1px solid #17a2b8;
+    }
+</style>
 
 <body>
     <div class="box">
@@ -23,11 +55,13 @@
                 </button>
             </div>
             <div class="box-body">
-                <ul class="nav nav-pills">
-                    <li class="active"><a data-toggle="tab" href="#menu1">Kriteria Penilaian</a></li>
-                    <li><a data-toggle="tab" href="#menu2">Contoh</a></li>
-                    <li><a data-toggle="tab" href="#menu3">Form</a></li>
-                </ul>
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-pills">
+                        <li class="active"><a data-toggle="tab" href="#menu1">Kriteria Penilaian</a></li>
+                        <li><a data-toggle="tab" href="#menu2">Contoh</a></li>
+                        <li><a data-toggle="tab" href="#menu3">Form</a></li>
+                    </ul>
+                </div>
                 <div class="tab-content">
                     <div id="menu1" class="tab-pane fade in active">
                         <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_1_2/kriteria_penilaian.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
@@ -36,13 +70,13 @@
                         <iframe src="<?php echo base_url('assets/form_penilaian/penilaian_1_2/Contoh.pdf'); ?>" width="100%" height="600px" frameborder="0"></iframe>
                     </div>
                     <div id="menu3" class="tab-pane fade">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered" style="border: 1px solid black;">
                             <thead>
                                 <tr>
-                                    <th>No</th>
-                                    <th>Kriteria</th>
-                                    <th>Bobot</th>
-                                    <th>Pilihan Jawaban</th>
+                                    <th style="border: 1px solid black;">No</th>
+                                    <th style="border: 1px solid black;">Kriteria</th>
+                                    <th style="border: 1px solid black;">Bobot</th>
+                                    <th style="border: 1px solid black;">Pilihan Jawaban</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,11 +87,11 @@
                                     // Cek apakah ada nilai sebelumnya
                                     $nilai_saat_ini = isset($nilai_terisi[$dt->id_nilai_pkk]) ? $nilai_terisi[$dt->id_nilai_pkk] : '';
                                 ?>
-                                    <tr>
-                                        <td><?php echo $no; ?></td>
-                                        <td><?php echo $dt->nama_value; ?></td>
-                                        <td><?php echo $dt->bobot; ?>%</td>
-                                        <td>
+                                    <tr style="border: 1px solid black;">
+                                        <td style="border: 1px solid black; padding: 5px;"><?php echo $no; ?></td>
+                                        <td style="border: 1px solid black; padding: 5px;"><?php echo $dt->nama_value; ?></td>
+                                        <td style="border: 1px solid black; padding: 5px;"><?php echo $dt->bobot; ?>%</td>
+                                        <td style="border: 1px solid black; padding: 5px;">
                                             <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="A" <?php echo ($nilai_saat_ini == 'A') ? 'checked' : ''; ?>> A</label>
                                             <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="B" <?php echo ($nilai_saat_ini == 'B') ? 'checked' : ''; ?>> B</label>
                                             <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="C" <?php echo ($nilai_saat_ini == 'C') ? 'checked' : ''; ?>> C</label>
@@ -75,6 +109,7 @@
                                             <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
                                         </td>
                                     </tr>
+
                                 <?php $no++;
                                 } ?>
                             </tbody>
@@ -82,7 +117,7 @@
                         </table>
                         <div class="form-group">
                             <label for="aspek_tambahan">Aspek Tambahan (Mohon diuraikan, bila ada):</label>
-                            <textarea name="text_tambahan" id="text_tambahan" class="form-control" rows="3"><?php echo isset($text_tambahan) ? htmlspecialchars($text_tambahan) : ''; ?></textarea>
+                            <textarea name="text_tambahan" id="text_tambahan" class="form-control" rows="3" placeholder="Berlaku Untuk SPV1 & SPV2"><?php echo isset($text_tambahan) ? htmlspecialchars($text_tambahan) : ''; ?></textarea>
                         </div>
                         <div class="form-group text-right" style="margin-top: 20px;">
                             <button type="submit" class="btn bg-green btn-success btn-flat-margin">Submit</button>
