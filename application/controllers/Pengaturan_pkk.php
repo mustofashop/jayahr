@@ -91,6 +91,7 @@ class Pengaturan_pkk extends CI_Controller
             $detail_nrp     = $this->master_model->detail_nrp($nrp);
             $d['id_k']      = $id_karyawan;
             $d['idp_nrp']   = $nrp;
+            $d['trans_pkk'] = $this->master_model->get_trans_pkk($nrp)->row_array();
             $d['class']     = '';
             $d['header']    = 'Setting PKK | ' . $nama_kr;
             $d['content']   = 'member/karyawan_kontrak/set_pkk';

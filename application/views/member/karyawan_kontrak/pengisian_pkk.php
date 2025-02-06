@@ -89,13 +89,15 @@
                                         <?php } ?>
                                     </td>
                                 </tr>
-                            <?php }
-                        } else { ?>
+                            <?php $no++;
+                            }
+                        } else {
+                            ?>
                             <tr>
                                 <td colspan="3" style="text-align: center;">Tidak ada data tersedia</td>
                             </tr>
                         <?php
-                            $no++;
+
                         } ?>
                     </tbody>
                 </table>

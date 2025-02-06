@@ -36,38 +36,39 @@
                         $data = $this->master_model->set_pkk();
                         if ($data->num_rows() > 0) {
                             $rows = $data->result();
-                            $first_row = reset($rows); // Mengambil baris pertama
+                            $first_row = reset($rows);
+
+                            // Ambil nilai periode yang sudah disimpan dari database
+                            $selected_id_p_periode = isset($trans_pkk['id_p_periode']) ? $trans_pkk['id_p_periode'] : null;
                         ?>
-                            <!-- Menampilkan Periode Penilaian hanya sekali di kolom pertama -->
                             <tr>
                                 <td rowspan="<?php echo count($rows); ?>"><strong>Periode Penilaian</strong></td>
                                 <td><?php echo $first_row->nama_value; ?></td>
                                 <td>
-                                    <input type="radio" name="id_p_periode" value="<?php echo $first_row->id_p_periode; ?>">
+                                    <input type="radio" name="id_p_periode" value="<?php echo $first_row->id_p_periode; ?>"
+                                        <?php echo ($selected_id_p_periode == $first_row->id_p_periode) ? 'checked disabled' : ''; ?>>
                                     <input type="hidden" name="id_periode" value="<?php echo $first_row->id_periode; ?>">
-                                    <input type="hidden" name="flag_penilaian[<?php echo $first_row->id_p_periode; ?>]" value="<?php echo $first_row->flag_penilaian; ?>">
                                     <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
                                 </td>
                             </tr>
-                            <?php
-                            // Menampilkan data periode lainnya
-                            foreach (array_slice($rows, 1) as $dt) { ?>
+                            <?php foreach (array_slice($rows, 1) as $dt) { ?>
                                 <tr>
                                     <td><?php echo $dt->nama_value; ?></td>
                                     <td>
-                                        <input type="radio" name="id_p_periode" value="<?php echo $dt->id_p_periode; ?>">
+                                        <input type="radio" name="id_p_periode" value="<?php echo $dt->id_p_periode; ?>"
+                                            <?php echo ($selected_id_p_periode == $dt->id_p_periode) ? 'checked disabled' : ''; ?>>
                                         <input type="hidden" name="id_periode" value="<?php echo $dt->id_periode; ?>">
-                                        <input type="hidden" name="flag_penilaian[<?php echo $dt->id_p_periode; ?>]" value="<?php echo $dt->flag_penilaian; ?>">
                                         <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
                                     </td>
                                 </tr>
-                            <?php }
-                        } else { ?>
+                            <?php } ?>
+                        <?php } else { ?>
                             <tr>
                                 <td colspan="3" style="text-align: center;">Tidak ada data tersedia</td>
                             </tr>
                         <?php } ?>
                     </tbody>
+
                 </table>
                 <!-- Jenis Form -->
                 <table class="table table-bordered">
@@ -81,13 +82,17 @@
                     <tbody>
                         <?php
                         $data2 = $this->master_model->list_jenis_form();
-                        if ($data->num_rows() > 0) {
+                        if ($data2->num_rows() > 0) {
+                            // Ambil nilai jenis form yang sudah tersimpan
+                            $selected_id_jenis_form = isset($trans_pkk['flag_jenis_form']) ? $trans_pkk['flag_jenis_form'] : null;
+
                             foreach ($data2->result() as $dt2) { ?>
                                 <tr>
                                     <td><?php echo $dt2->nama_value; ?></td>
                                     <td></td>
                                     <td>
-                                        <input type="radio" name="id_jenis_form" value="<?php echo $dt2->id_jenis_form; ?>">
+                                        <input type="radio" name="id_jenis_form" value="<?php echo $dt2->id_jenis_form; ?>"
+                                            <?php echo ($selected_id_jenis_form == $dt2->id_jenis_form) ? 'checked disabled' : ''; ?>>
                                         <input type="hidden" name="flag_jenis_form[<?php echo $dt2->id_jenis_form; ?>]" value="<?php echo $dt2->flag_jenis_form; ?>">
                                     </td>
                                 </tr>
@@ -98,6 +103,7 @@
                             </tr>
                         <?php } ?>
                     </tbody>
+
                 </table>
                 <!-- Tombol Submit -->
                 <div class="form-group text-right" style="margin-top: 20px;">
