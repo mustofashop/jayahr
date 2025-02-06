@@ -1034,7 +1034,7 @@
             <i class="fa fa-download"></i>
             PDF
         </a>
-        <a class="btn bg-green btn-flat margin text-center" href="#">
+        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel_1_2/<?php echo $nrp ?>/<?php echo $periode; ?>">
             <i class="fa fa-download"></i>
             Excel
         </a>
@@ -1043,7 +1043,7 @@
             <i class="fa fa-download"></i>
             PDF
         </a>
-        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_3_7_excel/<?php echo $nrp ?>/<?php echo $periode; ?>">
+        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel_3_7/<?php echo $nrp ?>/<?php echo $periode; ?>">
             <i class="fa fa-download"></i>
             Excel
         </a>
