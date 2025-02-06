@@ -26,18 +26,33 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th style="width: 200px;">Periode Penilaian</th>
-                            <th>Nama Value</th>
-                            <th style="width: 200px;">Pilih</th>
+                            <th style="width: 200px;"></th>
+                            <th></th>
+                            <th style="width: 200px;"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $data = $this->master_model->set_pkk();
                         if ($data->num_rows() > 0) {
-                            foreach ($data->result() as $dt) { ?>
+                            $rows = $data->result();
+                            $first_row = reset($rows); // Mengambil baris pertama
+                        ?>
+                            <!-- Menampilkan Periode Penilaian hanya sekali di kolom pertama -->
+                            <tr>
+                                <td rowspan="<?php echo count($rows); ?>"><strong>Periode Penilaian</strong></td>
+                                <td><?php echo $first_row->nama_value; ?></td>
+                                <td>
+                                    <input type="radio" name="id_p_periode" value="<?php echo $first_row->id_p_periode; ?>">
+                                    <input type="hidden" name="id_periode" value="<?php echo $first_row->id_periode; ?>">
+                                    <input type="hidden" name="flag_penilaian[<?php echo $first_row->id_p_periode; ?>]" value="<?php echo $first_row->flag_penilaian; ?>">
+                                    <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
+                                </td>
+                            </tr>
+                            <?php
+                            // Menampilkan data periode lainnya
+                            foreach (array_slice($rows, 1) as $dt) { ?>
                                 <tr>
-                                    <td><?php echo $dt->periode_tahun; ?></td>
                                     <td><?php echo $dt->nama_value; ?></td>
                                     <td>
                                         <input type="radio" name="id_p_periode" value="<?php echo $dt->id_p_periode; ?>">
@@ -54,15 +69,13 @@
                         <?php } ?>
                     </tbody>
                 </table>
-
-
                 <!-- Jenis Form -->
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th style="width: 500px;">Jenis Form</th>
                             <th></th>
-                            <th style="width: 200px;">Pilih</th>
+                            <th style="width: 200px;"></th>
                         </tr>
                     </thead>
                     <tbody>

@@ -3,9 +3,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require('./vendor/autoload.php');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Helper\Sample;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Trans_pkk extends CI_Controller
 {
@@ -1084,95 +1086,224 @@ class Trans_pkk extends CI_Controller
         }
     }
 
-    // excel
-    function download_data_pkk_excel($nrp)
+    public function download_data_pkk_3_7_excel($nrp, $periode)
     {
         $masuk  = $this->session->userdata('masuk_k');
-        $this->load->helpers('print_rekap_helper');
+        $this->load->helper('download');
+
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            $data   = $this->master_model->lap_nilai($nrp);
+            $data = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
+
             if ($data->num_rows() > 0) {
+                $row = $data->row();
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
 
-                // *Judul Laporan*
-                $sheet->mergeCells('A1:F1');
-                $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KERJA KARYAWAN KONTRAK KELOMPOK I - II');
-                $sheet->getStyle('A1')->getFont()->setBold(true);
-                $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
+                // **Menentukan Baris Awal**
+                $rowIndex = 1;
 
-                // *Header Data Karyawan*
-                $headers = ['Nama', 'Jabatan', 'Tanggal Masuk', 'Atasan Langsung', 'Atasan Tidak Langsung', 'Unit', 'Periode Penilaian'];
-                $values  = [
-                    isset($data->row()->nama) ? $data->row()->nama : 'Tidak Ada Data',
-                    isset($data->row()->jabatan) ? $data->row()->jabatan : 'Tidak Ada Data',
-                    isset($data->row()->tgl_masuk) ? $data->row()->tgl_masuk : 'Tidak Ada Data',
-                    isset($data->row()->atasan_langsung) ? $data->row()->atasan_langsung : 'Tidak Ada Data',
-                    isset($data->row()->atasan_tidak_langsung) ? $data->row()->atasan_tidak_langsung : 'Tidak Ada Data',
-                    isset($data->row()->unit) ? $data->row()->unit : 'Tidak Ada Data',
-                    isset($data->row()->periode_penilaian) ? $data->row()->periode_penilaian : 'Tidak Ada Data'
-                ];
+                // **Judul Laporan**
+                $sheet->mergeCells('A' . $rowIndex . ':F' . $rowIndex);
+                $sheet->setCellValue('A' . $rowIndex, 'LAPORAN PENILAIAN PRESTASI KERJA');
+                $rowIndex++;
+                $sheet->mergeCells('A' . $rowIndex . ':F' . $rowIndex);
+                $sheet->setCellValue('A' . $rowIndex, 'KARYAWAN KONTRAK KELOMPOK III - VII');
+                $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(14);
+                $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $rowIndex += 2;
 
-                for ($i = 0; $i < count($headers); $i++) {
-                    $sheet->setCellValue('A' . ($i + 3), $headers[$i]);
-                    $sheet->setCellValue('B' . ($i + 3), $values[$i]);
-                }
+                // **Informasi Karyawan**
+                $sheet->setCellValue('A' . $rowIndex, 'Nama:');
+                $sheet->setCellValue('B' . $rowIndex, isset($row->karyawan_nama) ? $row->karyawan_nama : 'Tidak Ada Data');
+                $rowIndex++;
+                $sheet->setCellValue('A' . $rowIndex, 'Jabatan:');
+                $sheet->setCellValue('B' . $rowIndex, isset($row->job_grade) ? $row->job_grade : 'Tidak Ada Data');
+                $rowIndex++;
+                $sheet->setCellValue('A' . $rowIndex, 'Tanggal Masuk:');
+                $sheet->setCellValue('B' . $rowIndex, isset($row->tgl_hire) ? $row->tgl_hire : 'Tidak Ada Data');
+                $rowIndex += 2;
 
-                // *Header Tabel Penilaian*
-                $headerPenilaian = ['No', 'Aspek yang Dinilai', 'Atasan Langsung', 'Nilai AL', 'Atasan Tidak Langsung', 'Nilai ATL'];
+                // **Informasi Penilai**
+                $sheet->setCellValue('A' . $rowIndex, 'Atasan Langsung:');
+                $sheet->setCellValue('B' . $rowIndex, isset($row->spv1_nama) ? $row->spv1_nama : 'Tidak Ada Data');
+                $rowIndex++;
+                $sheet->setCellValue('A' . $rowIndex, 'Atasan Tidak Langsung:');
+                $sheet->setCellValue('B' . $rowIndex, isset($row->spv2_nama) ? $row->spv2_nama : 'Tidak Ada Data');
+                $rowIndex++;
+                $sheet->setCellValue('A' . $rowIndex, 'Unit:');
+                $sheet->setCellValue('B' . $rowIndex, isset($row->department) ? $row->department : 'Tidak Ada Data');
+                $rowIndex++;
+                $sheet->setCellValue('A' . $rowIndex, 'Periode Penilaian:');
+                $sheet->setCellValue('B' . $rowIndex, isset($row->flag_penilaian) ? $row->flag_penilaian : 'Tidak Ada Data');
+                $rowIndex += 2;
+
+                // **Header Tabel Penilaian**
+                $headers = ['No', 'Aspek yang Dinilai', 'AL', 'Nilai AL', 'ATL', 'Nilai ATL'];
                 $colIndex = 'A';
-                foreach ($headerPenilaian as $header) {
-                    $sheet->setCellValue($colIndex . '11', $header);
-                    $sheet->getStyle($colIndex . '11')->getFont()->setBold(true);
+                foreach ($headers as $header) {
+                    $sheet->setCellValue($colIndex . $rowIndex, $header);
+                    $sheet->getStyle($colIndex . $rowIndex)->getFont()->setBold(true);
+                    $sheet->getStyle($colIndex . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $colIndex++;
                 }
+                $rowIndex++;
 
-                // *Isi Data Penilaian*
-                $rowIndex = 12;
+                // **Mengisi Data ke Tabel**
                 $no = 1;
-                foreach ($data->result() as $dt) {
+                $penilaian = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
+                foreach ($penilaian->result() as $data_row) {
+                    // Konversi dari VARCHAR ke format angka
+                    $nilai_atasan_langsung = str_replace(',', '.', trim($data_row->nilai_atasan_langsung));
+                    $nilai_atasan_langsung = is_numeric($nilai_atasan_langsung) ? (float) $nilai_atasan_langsung : 0.0;
+
+                    $nilai_atasan_tidak_langsung = str_replace(',', '.', trim($data_row->nilai_atasan_tidak_langsung));
+                    $nilai_atasan_tidak_langsung = is_numeric($nilai_atasan_tidak_langsung) ? (float) $nilai_atasan_tidak_langsung : 0.0;
+
                     $sheet->setCellValue('A' . $rowIndex, $no++);
-                    $sheet->setCellValue('B' . $rowIndex, isset($dt->aspek_dinilai) ? $dt->aspek_dinilai : 'Tidak Ada Data');
-                    $sheet->setCellValue('C' . $rowIndex, isset($dt->nilai_atasan_langsung) ? $dt->nilai_atasan_langsung : '0');
-                    $sheet->setCellValue('D' . $rowIndex, isset($dt->skor_atasan_langsung) ? $dt->skor_atasan_langsung : '0');
-                    $sheet->setCellValue('E' . $rowIndex, isset($dt->nilai_atasan_tidak_langsung) ? $dt->nilai_atasan_tidak_langsung : '0');
-                    $sheet->setCellValue('F' . $rowIndex, isset($dt->skor_atasan_tidak_langsung) ? $dt->skor_atasan_tidak_langsung : '0');
+                    $sheet->setCellValue('B' . $rowIndex, isset($data_row->aspek_dinilai) ? $data_row->aspek_dinilai : '-');
+                    $sheet->setCellValue('C' . $rowIndex, isset($data_row->isi_nilai_atasan_langsung) ? $data_row->isi_nilai_atasan_langsung : '-');
+                    $sheet->setCellValue('D' . $rowIndex, number_format($nilai_atasan_langsung, 1));
+                    $sheet->setCellValue('E' . $rowIndex, isset($data_row->isi_nilai_atasan_tidak_langsung) ? $data_row->isi_nilai_atasan_tidak_langsung : '-');
+                    $sheet->setCellValue('F' . $rowIndex, number_format($nilai_atasan_tidak_langsung, 1));
                     $rowIndex++;
                 }
 
-                // *Total Nilai*
-                $sheet->setCellValue('B' . $rowIndex, 'TOTAL');
-                $sheet->setCellValue('D' . $rowIndex, '=SUM(D12:D' . ($rowIndex - 1) . ')');
-                $sheet->setCellValue('F' . $rowIndex, '=SUM(F12:F' . ($rowIndex - 1) . ')');
+                // **Menambahkan Border ke Seluruh Tabel**
+                $styleArray = [
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ];
+                $sheet->getStyle('A12:F' . ($rowIndex - 1))->applyFromArray($styleArray);
 
-                $rowIndex++;
-                $sheet->setCellValue('B' . $rowIndex, 'Hasil Akhir');
-                $sheet->setCellValue('D' . $rowIndex, '=D' . ($rowIndex - 1) . '/12');
-                $sheet->setCellValue('F' . $rowIndex, '=F' . ($rowIndex - 1) . '/12');
+                // **Autosize Kolom**
+                foreach (range('A', 'F') as $col) {
+                    $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
+                }
 
-                //autosize
-                $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
-                // redirect output to client browser    
-                $writer = IOFactory::createWriter($spreadsheet, "Xlsx");
-                // header('Content-Type: application/vnd.ms-excel');
+                // **Download File Excel**
+                $writer = new Xlsx($spreadsheet);
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                header('Content-Disposition: attachment;filename="Rekap_IDP.xlsx"');
+                header('Content-Disposition: attachment;filename="Laporan_PKK_3_7.xlsx"');
                 header('Cache-Control: max-age=0');
-                // If you're serving to IE 9, then the following may be needed
-                header('Cache-Control: max-age=1');
-                // If you're serving to IE over SSL, then the following may be needed
-                header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-                header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-                header('Pragma: public'); // HTTP/1.0
-                // $writer = new Xlsx($spreadsheet);
                 ob_end_clean();
                 ob_start();
                 $writer->save('php://output');
             } else {
-                $this->session->set_flashdata('msg_error', 'Data karyawan tidak ada');
+                $this->session->set_flashdata('msg_error', 'Data tidak ditemukan');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
+
+    // excel
+    public function download_set_pkk()
+    {
+        $masuk  = $this->session->userdata('masuk_k');
+        $this->load->helper('download');
+
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+            $data = $this->master_model->list_isi_pkk(); // Ambil data dari model
+
+            if ($data->num_rows() > 0) {
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+
+                // **Header Tabel Sesuai View**
+                $headerTable = ['No', 'NRP', 'Nama Karyawan', 'Penilaian Ke', 'Submit', 'SPV 1', 'SPV 2', 'Karyawan'];
+                $columnIndex = 'A';
+
+                foreach ($headerTable as $header) {
+                    $sheet->setCellValue($columnIndex . '1', $header);
+                    $sheet->getStyle($columnIndex . '1')->getFont()->setBold(true);
+                    $sheet->getStyle($columnIndex . '1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $columnIndex++;
+                }
+
+                // **Mengisi Data ke Tabel**
+                $rowIndex = 2;
+                $no = 1;
+                foreach ($data->result() as $dt) {
+                    // Cek status feedback karyawan
+                    $cek_flag_sent = $this->master_model->get_fb_karyawan($dt->nrp, $dt->id_p_periode);
+
+                    // Cek status submit SPV1 dan SPV2 berdasarkan jenis form
+                    $spv1_submit = ($dt->flag_jenis_form == 1) ?
+                        $this->master_model->get_submit_1_2($dt->nrp, $dt->id_p_periode, $dt->spv1) :
+                        $this->master_model->get_submit_3_7($dt->nrp, $dt->id_p_periode, $dt->spv1);
+
+                    $spv2_submit = ($dt->flag_jenis_form == 1) ?
+                        $this->master_model->get_submit_1_2($dt->nrp, $dt->id_p_periode, $dt->spv2) :
+                        $this->master_model->get_submit_3_7($dt->nrp, $dt->id_p_periode, $dt->spv2);
+
+                    // Mengisi data ke dalam file Excel
+                    $sheet->setCellValue('A' . $rowIndex, $no++);
+                    $sheet->setCellValue('B' . $rowIndex, isset($dt->nrp) ? $dt->nrp : '-');
+                    $sheet->setCellValue('C' . $rowIndex, isset($dt->nama_lengkap) ? $dt->nama_lengkap : '-');
+
+                    // **Kolom Penilaian Ke**
+                    $penilaian_ke = '-';
+                    if ($dt->flag_penilaian == 1) {
+                        $penilaian_ke = 1;
+                    } elseif ($dt->flag_penilaian == 2) {
+                        $penilaian_ke = 2;
+                    } elseif ($dt->flag_penilaian == 3) {
+                        $penilaian_ke = 3;
+                    }
+                    $sheet->setCellValue('D' . $rowIndex, $penilaian_ke);
+
+                    // **Kolom Submit**
+                    $submit_status = (isset($dt->flag_sent) && $dt->flag_sent == 1) ? '✔' : '✘';
+                    $sheet->setCellValue('E' . $rowIndex, $submit_status);
+
+                    // **Kolom SPV1**
+                    $spv1_status = (!empty($spv1_submit) && isset($spv1_submit->flag_sent) && $spv1_submit->flag_sent == 1) ? '✔' : '✘';
+                    $sheet->setCellValue('F' . $rowIndex, $spv1_status);
+
+                    // **Kolom SPV2**
+                    $spv2_status = (!empty($spv2_submit) && isset($spv2_submit->flag_sent) && $spv2_submit->flag_sent == 1) ? '✔' : '✘';
+                    $sheet->setCellValue('G' . $rowIndex, $spv2_status);
+
+                    // **Kolom Karyawan**
+                    $karyawan_status = (!empty($cek_flag_sent) && isset($cek_flag_sent->flag_sent) && $cek_flag_sent->flag_sent == 1) ? '✔ Setuju' : '✘';
+                    $sheet->setCellValue('H' . $rowIndex, $karyawan_status);
+
+                    $rowIndex++;
+                }
+
+                // **Menambahkan Border di Seluruh Tabel**
+                $styleArray = [
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ];
+                $sheet->getStyle('A1:H' . ($rowIndex - 1))->applyFromArray($styleArray);
+
+                // **Autosize Kolom**
+                foreach (range('A', 'H') as $col) {
+                    $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
+                }
+
+                // **Download File Excel**
+                $writer = new Xlsx($spreadsheet);
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="Laporan Setting PKK.xlsx"');
+                header('Cache-Control: max-age=0');
+                ob_end_clean();
+                ob_start();
+                $writer->save('php://output');
+            } else {
+                $this->session->set_flashdata('msg_error', 'Data tidak ditemukan');
                 redirect($_SERVER['HTTP_REFERER']);
             }
         }

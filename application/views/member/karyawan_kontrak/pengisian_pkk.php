@@ -1,5 +1,5 @@
 <div class="box">
-    <a class="btn bg-green btn-flat margin" href="<?php echo base_url(); ?>Pengaturan_pkk/download_data_pkk/">
+    <a class="btn bg-green btn-flat margin" href="<?php echo base_url(); ?>Trans_pkk/download_set_pkk/">
         <i class="fa fa-download"></i>
         Download data
     </a>
@@ -27,7 +27,7 @@
                     <tbody>
                         <?php
                         $no     = 1;
-                        $data = $this->master_model->list_isi_pkk($atasan);
+                        $data = $this->master_model->list_isi_pkk();
                         if ($data->num_rows() > 0) {
                             foreach ($data->result() as $dt) {
                                 $cek_flag_sent = $this->master_model->get_fb_karyawan($dt->nrp, $dt->id_p_periode);
