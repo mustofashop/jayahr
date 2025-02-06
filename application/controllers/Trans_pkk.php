@@ -1308,4 +1308,91 @@ class Trans_pkk extends CI_Controller
             }
         }
     }
+
+    public function download_data_pkk_pdf($unit)
+    {
+        $masuk  = $this->session->userdata('masuk_k');
+        $this->load->helpers('print_rekap_helper');
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+            $data   = $this->master_model->list_member_rekap_pkk1($unit);
+            if ($data->num_rows() > 0) {
+                $dt = $data->row();
+                $pdf = new reportProduct();
+                $pdf->setKriteria("cetak_laporan");
+                $pdf->setNama("CETAK DATA KARYAWAN");
+                $pdf->AliasNbPages();
+                $pdf->AddPage("L", "A4");
+                $A4[0] = 210;
+                $A4[1] = 297;
+                $Q[0] = 216;
+                $Q[1] = 279;
+                $pdf->SetTitle('LAPORAN PENILAIAN KARYAWAN KONTRAK ' . $dt->department);
+                $pdf->SetCreator('Jaya HR');
+
+                $h = 7;
+                $pdf->SetFont('Times', 'B', 14);
+                $pdf->SetX(6);
+                $pdf->SetX(6);
+                $pdf->SetFont('Times', '', 10);
+                $pdf->Ln(5);
+
+                //Column widths
+                $pdf->SetFont('Arial', 'B', 14);
+                $pdf->SetX(6);
+                $pdf->Cell(290, 4, 'LAPORAN PENILAIAN KARYAWAN KONTRAK ' . $dt->department, 0, 0, 'C');
+                $pdf->Cell(10, 4, '', 0, 1);
+                $pdf->Ln(5);
+                $w = array(10, 35, 30, 65, 20, 35);
+
+                // Tabel Penilaian
+                $pdf->SetFont('Arial', 'B', 10);
+                $header = ['No', 'Nama', 'NRP', 'Unit', 'Ceklis', 'Nilai (Angka)', 'Kriteria'];
+                $colWidths = [10, 70, 22, 80, 28, 28, 28];
+                foreach ($header as $i => $col) {
+                    $pdf->Cell($colWidths[$i], 10, $col, 1, 0, 'C');
+                }
+                $pdf->Ln();
+
+                $pdf->SetFont('Arial', '', 10);
+                $no = 1;
+                $penilaian = $this->master_model->list_member_rekap_pkk1($unit);
+                foreach ($penilaian->result() as $row) {
+                    $data2 = $this->master_model->real_hasil_nilai($row->nip, $row->id_jenis_form)->row();
+                    $data3 = $this->master_model->get_nilai_ceklis_by_nrp($row->nip, $row->id_jenis_form)->row();
+                    $nilaiAkhir = (isset($data2->total_nilai_atasan_langsung) && isset($data2->total_nilai_atasan_tidak_langsung))
+                        ? ($data2->total_nilai_atasan_langsung * 0.6) + ($data2->total_nilai_atasan_tidak_langsung * 0.4)
+                        : 0.0;
+                    $jumlah_ceklis = $data3->jumlah_ceklis;
+
+                    if ($nilaiAkhir == 0 && $nilaiAkhir == NULL) {
+                        $kriteria = '';
+                    } elseif ($nilaiAkhir >= 90 && $nilaiAkhir <= 100) {
+                        $kriteria = 'A';
+                    } elseif ($nilaiAkhir >= 80 && $nilaiAkhir <= 89) {
+                        $kriteria = 'B';
+                    } elseif ($nilaiAkhir >= 60 && $nilaiAkhir <= 79) {
+                        $kriteria = 'C';
+                    } else {
+                        $kriteria = 'D';
+                    }
+
+                    $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
+                    $pdf->Cell($colWidths[1], 7, $row->nama_lengkap, 1);
+                    $pdf->Cell($colWidths[2], 7, $row->nip, 1, 0, 'C');
+                    $pdf->Cell($colWidths[3], 7, $row->department, 1, 0, 'C');
+                    $pdf->Cell($colWidths[4], 7, $jumlah_ceklis, 1, 0, 'C');
+                    $pdf->Cell($colWidths[5], 7, number_format($nilaiAkhir, 1), 1, 0, 'C');
+                    $pdf->Cell($colWidths[6], 7, $kriteria, 1, 0, 'C');
+                    $pdf->Ln();
+                }
+                ob_clean();
+                $pdf->Output('D', 'Laporan_Penilaian_Karyawan_Kontrak.pdf');
+            } else {
+                $this->session->set_flashdata('msg_error', 'Data Tidak Ada');
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
+    }
 }

@@ -366,8 +366,8 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
 				FROM trans_kel_1_2 a
 				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' AND a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2)
-			),
+				AND a.nrp = '$nrp' AND a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
+				),
 			atasan_tidak_langsung AS (
 				SELECT 
 					a2.id_nilai_pkk,
@@ -378,7 +378,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
 				FROM trans_kel_1_2 a2
 				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' AND a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2)
+				AND a2.nrp = '$nrp' AND a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
 			)
 			SELECT
 				c.nama_value AS aspek_dinilai,                  
@@ -414,7 +414,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a.id_form_penilaian, a.nrp ORDER BY a.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a
 				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' and a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7)
+				AND a.nrp = '$nrp' and a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
 			),
 			atasan_tidak_langsung AS (
 				SELECT 
@@ -425,7 +425,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a2.id_form_penilaian, a2.nrp ORDER BY a2.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a2
 				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' and a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7)
+				AND a2.nrp = '$nrp' and a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
 			)
 			SELECT
 				c.nama_value AS aspek_dinilai,                  
@@ -553,6 +553,62 @@ FROM
 				ORDER BY al.id_nilai_pkk
 				");
 		return $q;
+	}
+
+	public function get_nilai_ceklis_by_nrp($nrp, $jenis_form)
+	{
+		if ($jenis_form == '1') {
+			$query = $this->db->query(
+				"SELECT 
+						(CASE 
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 4 THEN '4/4'
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 3 THEN '3/4'
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 2 THEN '2/4'
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 1 THEN '1/4'
+							ELSE '0/4'
+						END) AS jumlah_ceklis
+					FROM (
+						SELECT 
+							(CASE WHEN COUNT(a.id_trans_pkk) > 0 THEN 1 ELSE 0 END) AS jumlah_submit,
+							(CASE WHEN COUNT(b.id_trn_nilai_kel_1_2) > 0 THEN 1 ELSE 0 END) AS jumlah_ceklis_spv1,
+							(CASE WHEN COUNT(c.id_trn_nilai_kel_1_2) > 0 THEN 1 ELSE 0 END) AS jumlah_ceklis_spv2,
+							(CASE WHEN COUNT(d.id_fb_k) > 0 THEN 1 ELSE 0 END) AS jumlah_feedback
+						FROM trans_pkk a
+						LEFT JOIN trans_kel_1_2 b ON b.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp') 
+						AND b.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
+						LEFT JOIN trans_kel_1_2 c ON c.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp') 
+						AND c.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
+						LEFT JOIN trans_fb_karyawan d ON d.nrp = '$nrp' AND d.id_p_periode = (SELECT MAX(id_p_periode) from trans_fb_karyawan WHERE nrp = '$nrp')
+						WHERE a.nrp = '$nrp' AND a.id_p_periode = (SELECT MAX(id_p_periode) from trans_pkk WHERE nrp = '$nrp')
+					) AS subquery"
+			);
+		} else {
+			$query = $this->db->query(
+				"SELECT 
+						(CASE 
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 4 THEN '4/4'
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 3 THEN '3/4'
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 2 THEN '2/4'
+							WHEN jumlah_submit + jumlah_ceklis_spv1 + jumlah_ceklis_spv2 + jumlah_feedback = 1 THEN '1/4'
+							ELSE '0/4'
+						END) AS jumlah_ceklis
+					FROM (
+						SELECT 
+							(CASE WHEN COUNT(a.id_trans_pkk) > 0 THEN 1 ELSE 0 END) AS jumlah_submit,
+							(CASE WHEN COUNT(b.id_trn_nilai_kel_3_7) > 0 THEN 1 ELSE 0 END) AS jumlah_ceklis_spv1,
+							(CASE WHEN COUNT(c.id_trn_nilai_kel_3_7) > 0 THEN 1 ELSE 0 END) AS jumlah_ceklis_spv2,
+							(CASE WHEN COUNT(d.id_fb_k) > 0 THEN 1 ELSE 0 END) AS jumlah_feedback
+						FROM trans_pkk a
+						LEFT JOIN trans_kel_3_7 b ON b.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp') 
+						AND b.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
+						LEFT JOIN trans_kel_3_7 c ON c.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp') 
+						AND c.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
+						LEFT JOIN trans_fb_karyawan d ON d.nrp = '$nrp' AND d.id_p_periode = (SELECT MAX(id_p_periode) from trans_fb_karyawan WHERE nrp = '$nrp')
+						WHERE a.nrp = '$nrp' AND a.id_p_periode = (SELECT MAX(id_p_periode) from trans_pkk WHERE nrp = '$nrp')
+					) AS subquery"
+			);
+		}
+		return $query;
 	}
 
 	public function get_nilai_submit_by_nrp($nrp)
@@ -1215,7 +1271,6 @@ FROM
 
 	public function list_member_rekap_pkk1($unit)
 	{
-
 		$q = $this->db->query("SELECT DISTINCT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
 		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.id_bagian, c.id_jenis_form 
 		FROM mst_karyawan a
