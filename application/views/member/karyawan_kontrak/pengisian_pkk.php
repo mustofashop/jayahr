@@ -1,7 +1,7 @@
 <div class="box">
     <a class="btn bg-green btn-flat margin" href="<?php echo base_url(); ?>Trans_pkk/download_set_pkk/">
         <i class="fa fa-download"></i>
-        Download data
+        Excel
     </a>
     <div class="box-body">
         <!-- custom tab -->
