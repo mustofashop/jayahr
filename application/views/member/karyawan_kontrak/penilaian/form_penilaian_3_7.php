@@ -12,6 +12,56 @@
         <?php echo $this->session->flashdata('msg_error'); ?>
     </div>
 <?php endif; ?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#simpanFeedback").click(function() {
+            var isi_feedback = $("#isi_feedback").val();
+            var id_p_periode = $("#id_p_periode").val();
+            var nrp = $("#nrp").val();
+
+            // Debugging: Cek apakah data dikirim
+            console.log("Data yang dikirim:", {
+                isi_feedback,
+                id_p_periode,
+                nrp
+            });
+
+            $.ajax({
+                url: "<?php echo base_url(); ?>Trans_pkk/fb_atasan",
+                type: "POST",
+                data: {
+                    isi_feedback: isi_feedback,
+                    id_p_periode: id_p_periode,
+                    nrp: nrp
+                },
+                dataType: "json",
+                success: function(response) {
+                    console.log("Respon dari server:", response);
+                    if (response.status === "success") {
+                        $("#feedbackAlert").text(response.message)
+                            .removeClass("alert-danger")
+                            .addClass("alert-success")
+                            .show().delay(2000).fadeOut(500, function() {
+                                // Redirect setelah sukses
+                                window.location.href = "<?php echo base_url(); ?>Pengaturan_pkk/list_karyawan_pkk";
+                            });
+                    } else {
+                        $("#feedbackAlert").text(response.message)
+                            .removeClass("alert-success")
+                            .addClass("alert-danger")
+                            .show().delay(3000).fadeOut();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $("#feedbackAlert").text("Terjadi kesalahan: " + error)
+                        .addClass("alert-danger")
+                        .show().delay(3000).fadeOut();
+                }
+            });
+        });
+    });
+</script>
 
 <body>
     <div class="box">
@@ -239,53 +289,3 @@
         </div>
     </div>
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $("#simpanFeedback").click(function() {
-            var isi_feedback = $("#isi_feedback").val();
-            var id_p_periode = $("#id_p_periode").val();
-            var nrp = $("#nrp").val();
-
-            // Debugging: Cek apakah data dikirim
-            console.log("Data yang dikirim:", {
-                isi_feedback,
-                id_p_periode,
-                nrp
-            });
-
-            $.ajax({
-                url: "<?php echo base_url(); ?>Trans_pkk/fb_atasan",
-                type: "POST",
-                data: {
-                    isi_feedback: isi_feedback,
-                    id_p_periode: id_p_periode,
-                    nrp: nrp
-                },
-                dataType: "json",
-                success: function(response) {
-                    console.log("Respon dari server:", response);
-                    if (response.status === "success") {
-                        $("#feedbackAlert").text(response.message)
-                            .removeClass("alert-danger")
-                            .addClass("alert-success")
-                            .show().delay(2000).fadeOut(500, function() {
-                                // Redirect setelah sukses
-                                window.location.href = "<?php echo base_url(); ?>Pengaturan_pkk/list_karyawan_pkk";
-                            });
-                    } else {
-                        $("#feedbackAlert").text(response.message)
-                            .removeClass("alert-success")
-                            .addClass("alert-danger")
-                            .show().delay(3000).fadeOut();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $("#feedbackAlert").text("Terjadi kesalahan: " + error)
-                        .addClass("alert-danger")
-                        .show().delay(3000).fadeOut();
-                }
-            });
-        });
-    });
-</script>

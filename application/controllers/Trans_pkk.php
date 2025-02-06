@@ -602,6 +602,7 @@ class Trans_pkk extends CI_Controller
                     $pdf->SetFont('Arial', '', 10);
                     $pdf->MultiCell(190, 7, 'Atasan Langsung:' . (isset($row->text_tambahan_atasan_langsung) ? $row->text_tambahan_atasan_langsung : 'Tidak Ada Data'), 1);
                     $pdf->MultiCell(190, 7, 'Atasan Tidak Langsung:' . (isset($row->text_tambahan_atasan_tidak_langsung) ? $row->text_tambahan_atasan_tidak_langsung : 'Tidak Ada Data'), 1);
+                    ob_clean();
                     $pdf->Output('D', 'Laporan_Penilaian_Kel_1_2.pdf');
                 } else {
                     $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
@@ -848,8 +849,9 @@ class Trans_pkk extends CI_Controller
                         $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
                         redirect($_SERVER['HTTP_REFERER']);
                     }
+                    ob_clean();
+                    $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
                 }
-                $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
             } else {
                 $data   = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
                 if ($data->num_rows() > 0) {

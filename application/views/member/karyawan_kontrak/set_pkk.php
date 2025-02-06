@@ -84,15 +84,14 @@
                         $data2 = $this->master_model->list_jenis_form();
                         if ($data2->num_rows() > 0) {
                             // Ambil nilai jenis form yang sudah tersimpan
-                            $selected_id_jenis_form = isset($trans_pkk['flag_jenis_form']) ? $trans_pkk['flag_jenis_form'] : null;
+                            // $selected_id_jenis_form = isset($trans_pkk['flag_jenis_form']) ? $trans_pkk['flag_jenis_form'] : null;
 
                             foreach ($data2->result() as $dt2) { ?>
                                 <tr>
                                     <td><?php echo $dt2->nama_value; ?></td>
                                     <td></td>
                                     <td>
-                                        <input type="radio" name="id_jenis_form" value="<?php echo $dt2->id_jenis_form; ?>"
-                                            <?php echo ($selected_id_jenis_form == $dt2->id_jenis_form) ? 'checked disabled' : ''; ?>>
+                                        <input type="radio" name="id_jenis_form" value="<?php echo $dt2->id_jenis_form; ?>">
                                         <input type="hidden" name="flag_jenis_form[<?php echo $dt2->id_jenis_form; ?>]" value="<?php echo $dt2->flag_jenis_form; ?>">
                                     </td>
                                 </tr>

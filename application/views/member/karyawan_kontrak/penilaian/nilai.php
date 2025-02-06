@@ -534,28 +534,30 @@
             </div>
             <!-- <br><br>
         <hr size="4" color="black" style="margin: 20px 0;"> -->
-            <div style="width: 40%; padding: 10px; margin: right; margin-top: 10px;">
-                <h4><b>PENDAPAT DARI KARYAWAN YANG DINILAI</b></h4>
-                (Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut)
-                <table border=" 1" style="width: 100%;">
-                    <?php
-                    $row1 = $menu6->row(0); // Mengambil baris pertama (index 0)
-                    $row2 = $menu6->row(1); // Mengambil baris kedua (index 1)
-                    ?>
-                    <tr>
-                        <td>
-                            <textarea name="isi_feedback" style="width: 100%; height: 150px;"></textarea>
-                            <input type="hidden" name="id_p_periode" value="1">
-                            <input type="hidden" name="nrp" value="<?php echo $nrp; ?>">
-                        </td>
-                    </tr>
-                </table>
-                <center>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <button type="submit" class="btn bg-blue btn-success btn-flat-margin">KIRIM</button>
-                    </div>
-                </center>
-            </div>
+            <?php if ($flag_sent != 1): ?>
+                <div style="width: 40%; padding: 10px; margin: right; margin-top: 10px;">
+                    <h4><b>PENDAPAT DARI KARYAWAN YANG DINILAI</b></h4>
+                    (Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut)
+                    <table border="1" style="width: 100%;">
+                        <?php
+                        $row1 = $menu6->row(0); // Mengambil baris pertama (index 0)
+                        $row2 = $menu6->row(1); // Mengambil baris kedua (index 1)
+                        ?>
+                        <tr>
+                            <td>
+                                <textarea name="isi_feedback" style="width: 100%; height: 150px;"></textarea>
+                                <input type="hidden" name="nrp" value="<?php echo $nrp; ?>">
+                                <input type="hidden" name="id_p_periode" value="<?php echo $periode; ?>">
+                            </td>
+                        </tr>
+                    </table>
+                    <center>
+                        <div class="form-group" style="margin-top: 20px;">
+                            <button type="submit" class="btn bg-blue btn-success btn-flat-margin">KIRIM</button>
+                        </div>
+                    </center>
+                </div>
+            <?php endif; ?>
         </div>
     </form>
 <?php endif; ?>

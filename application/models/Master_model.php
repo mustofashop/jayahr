@@ -897,6 +897,7 @@ FROM
 	{
 		$this->db->select('*');
 		$this->db->where('nrp', $nrp);
+		$this->db->where('flag_sent', 1);
 		$this->db->where('id_p_periode', $id_p_periode);
 		$query = $this->db->get('trans_fb_karyawan');
 

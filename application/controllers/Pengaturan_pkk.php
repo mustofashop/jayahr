@@ -295,6 +295,7 @@ class Pengaturan_pkk extends CI_Controller
             $flag_jenis_form = isset($row->flag_jenis_form) ? $row->flag_jenis_form : 0;
 
             // Masukkan flag ke dalam data yang dikirim ke view
+            $d['periode']   = 1; // Set default ke 1
             $d['menu3']     = $this->master_model->get_menu3_data();
             $d['menu4']     = $this->master_model->get_menu4_data();
             $d['menu5']     = $this->master_model->get_menu5_data();
@@ -313,6 +314,8 @@ class Pengaturan_pkk extends CI_Controller
             $d['class']     = '';
             $d['header']    = 'Karyawan Kontrak';
             $d['content']   = 'member/karyawan_kontrak/penilaian/nilai';
+            $d['flag_sent'] = isset($d['fb_k']->flag_sent) ? $d['fb_k']->flag_sent : 0;
+
             $this->load->view('master', $d);
         }
     }
@@ -339,6 +342,8 @@ class Pengaturan_pkk extends CI_Controller
                 $d['form_b']     = $form_b;
                 $d['fb_k']       = $this->master_model->get_fb_karyawan($nrp, $periode);
                 $d['fb_a']       = $this->master_model->get_fb_atasan($nrp, $periode);
+                $d['periode']    = $periode;
+                $d['flag_sent']  = isset($d['fb_k']->flag_sent) ? $d['fb_k']->flag_sent : 0;
             }
             $data_pkk       = $this->master_model->detail_karyawan1($nrp);
             // Masukkan flag ke dalam data yang dikirim ke view
