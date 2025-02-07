@@ -46,7 +46,7 @@
                                 <td><?php echo $dt->nama_lengkap; ?></td>
                                 <td><?php echo $dt->status_jaya; ?></td>
                                 <td>
-                                    <p style="font-weight: bold; color: <?php echo ($hasil_submit === '6/6') ? 'green' : 'red'; ?>">
+                                    <p style="font-weight: bold; color: <?php echo ($hasil_submit === '3/3') ? 'green' : 'red'; ?>">
                                         <?php echo $hasil_submit; ?>
                                     </p>
                                 </td>

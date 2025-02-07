@@ -3,6 +3,42 @@
 class Master_model extends CI_Model
 {
 	//KARYAWAN PKK
+	public function list_member_sudah_isi_pkk($nrp)
+	{
+		$q = $this->db->query("SELECT
+				kar.id_karyawan,
+				kar.nip,
+				kar.nama_lengkap
+			FROM
+				enterprise.mst_karyawan kar,
+				(SELECT DISTINCT x.nrp
+				FROM enterprise.trans_kel_1_2 x
+				WHERE x.insert_by = '$nrp'
+				
+				UNION
+				
+				SELECT DISTINCT y.nrp
+				FROM enterprise.trans_kel_3_7 y
+				WHERE y.insert_by = '$nrp'
+				) AS trn_kel
+			WHERE
+				(kar.spv1 = '$nrp' OR kar.spv2 = '$nrp')
+				AND kar.nip = trn_kel.nrp||''
+			ORDER BY
+				kar.nama_lengkap ASC");
+		return $q;
+	}
+
+	public function total_feedback()
+	{
+		$this->db->select('COUNT(*) AS total_feedback');
+		$this->db->from('trans_fb_karyawan');
+		$this->db->where_in('id_p_periode', [1, 2, 3]); // Jika hanya ingin feedback dari periode 1,2,3
+		$query = $this->db->get();
+
+		return $query->row(); // Mengembalikan satu objek, bukan array list
+	}
+
 	public function get_detail_perusahaan($id_perusahaan)
 	{
 		$q = $this->db->query("SELECT a.id_perusahaan, a.nama_perusahaan, a.logo, a.ip_perusahaan FROM enterprise.mst_perusahaan a WHERE a.id_perusahaan = '$id_perusahaan'");
@@ -76,7 +112,7 @@ class Master_model extends CI_Model
 	public function set_pkk()
 	{
 		$q = $this->db->query("SELECT a.periode_tahun, b.nama_value, 
-		a.id_periode, b.id_p_periode, b.flag_penilaian
+		a.id_periode, b.id_p_periode, b.flag_penilaian, b.id_p_periode
         FROM mst_periode a
         JOIN mst_periode_penilaian b on a.id_periode = b.id_periode
         WHERE a.id_perusahaan = '12' and a.status = 0
@@ -802,8 +838,9 @@ FROM
 		$this->db->from('trans_pkk');
 		$this->db->where('nrp', $nrp);
 		$query = $this->db->get();
-		return $query;
+		return $query->result_array(); // Mengembalikan array, bukan object query
 	}
+
 
 	public function get_nilai_1_2_terisi($nrp, $id_p_periode, $atasan)
 	{
@@ -873,6 +910,19 @@ FROM
 		$this->db->where('nrp', $nrp);
 		$this->db->where('id_p_periode', 1);
 		$query = $this->db->get('trans_fb_karyawan');
+
+		if ($query->num_rows() > 0) {
+			return $query->row();
+		}
+		return ''; // Jika tidak ada data, kembalikan string kosong
+	}
+
+	public function get_fb_kr1_2($nrp)
+	{
+		$this->db->select('*');
+		$this->db->where('nrp', $nrp);
+		$this->db->where('id_p_periode', 1);
+		$query = $this->db->get('trans_fb_kr_1_2');
 
 		if ($query->num_rows() > 0) {
 			return $query->row();

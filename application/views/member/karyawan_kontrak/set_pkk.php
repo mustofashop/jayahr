@@ -33,21 +33,31 @@
                     </thead>
                     <tbody>
                         <?php
+                        // Ambil data dari model
                         $data = $this->master_model->set_pkk();
+                        $trans_pkk = $this->master_model->get_trans_pkk($idp_nrp);
+
+                        // Simpan semua id_p_periode yang sudah ada dalam array
+                        $selected_id_p_periode = array_column($trans_pkk, 'id_p_periode');
+
                         if ($data->num_rows() > 0) {
                             $rows = $data->result();
                             $first_row = reset($rows);
-
-                            // Ambil nilai periode yang sudah disimpan dari database
-                            $selected_id_p_periode = isset($trans_pkk['id_p_periode']) ? $trans_pkk['id_p_periode'] : null;
                         ?>
                             <tr>
                                 <td rowspan="<?php echo count($rows); ?>"><strong>Periode Penilaian</strong></td>
                                 <td><?php echo $first_row->nama_value; ?></td>
                                 <td>
-                                    <input type="radio" name="id_p_periode" value="<?php echo $first_row->id_p_periode; ?>"
-                                        <?php echo ($selected_id_p_periode == $first_row->id_p_periode) ? 'checked disabled' : ''; ?>>
+                                    <input type="radio" name="id_p_periode_visible" value="<?php echo $first_row->id_p_periode; ?>"
+                                        <?php echo in_array($first_row->id_p_periode, $selected_id_p_periode) ? 'checked disabled' : ''; ?>>
+
+                                    <!-- Hidden input agar nilai tetap dikirim meskipun radio button disabled -->
+                                    <?php if (in_array($first_row->id_p_periode, $selected_id_p_periode)) { ?>
+                                        <input type="hidden" name="id_p_periode" value="<?php echo $first_row->id_p_periode; ?>">
+                                    <?php } ?>
+
                                     <input type="hidden" name="id_periode" value="<?php echo $first_row->id_periode; ?>">
+                                    <input type="hidden" name="flag_penilaian[<?php echo $first_row->id_p_periode; ?>]" value="<?php echo $first_row->flag_penilaian; ?>">
                                     <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
                                 </td>
                             </tr>
@@ -56,8 +66,9 @@
                                     <td><?php echo $dt->nama_value; ?></td>
                                     <td>
                                         <input type="radio" name="id_p_periode" value="<?php echo $dt->id_p_periode; ?>"
-                                            <?php echo ($selected_id_p_periode == $dt->id_p_periode) ? 'checked disabled' : ''; ?>>
+                                            <?php echo in_array($dt->id_p_periode, $selected_id_p_periode) ? 'checked disabled' : ''; ?>>
                                         <input type="hidden" name="id_periode" value="<?php echo $dt->id_periode; ?>">
+                                        <input type="hidden" name="flag_penilaian[<?php echo $dt->id_p_periode; ?>]" value="<?php echo $dt->flag_penilaian; ?>">
                                         <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
                                     </td>
                                 </tr>
@@ -68,6 +79,7 @@
                             </tr>
                         <?php } ?>
                     </tbody>
+
 
                 </table>
                 <!-- Jenis Form -->

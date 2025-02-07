@@ -204,7 +204,7 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row1->description; ?></p>
-                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;" required><?php echo isset($form_b->kesimpulan) ? htmlspecialchars($form_b->kesimpulan) : ''; ?></textarea>
+                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;"><?php echo isset($form_b->kesimpulan) ? htmlspecialchars($form_b->kesimpulan) : ''; ?></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -213,7 +213,7 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row2->description; ?></p>
-                                    <textarea name="penjelasan" style="width: 100%; height: 150px;" required><?php echo isset($form_b->penjelasan) ? htmlspecialchars($form_b->penjelasan) : ''; ?></textarea>
+                                    <textarea name="penjelasan" style="width: 100%; height: 150px;"><?php echo isset($form_b->penjelasan) ? htmlspecialchars($form_b->penjelasan) : ''; ?></textarea>
                                     <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                     <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
                                     <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
@@ -306,11 +306,13 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <textarea id="isi_feedback" style="width: 100%; height: 150px;" placeholder="Isi Disini"><?php echo isset($fb_a->isi_feedback) ? htmlspecialchars($fb_a->isi_feedback) : ''; ?></textarea>
+                                    <textarea id="isi_feedback" style="width: 100%; height: 150px;" placeholder="Isi Disini"
+                                        <?php echo empty($fb_k->isi_feedback) ? 'readonly' : ''; ?>><?php echo isset($fb_a->isi_feedback) ? htmlspecialchars($fb_a->isi_feedback) : ''; ?></textarea>
                                     <input type="hidden" id="id_p_periode" value="<?php echo $id_p_periode; ?>">
                                     <input type="hidden" id="nrp" value="<?php echo $idp_nrp; ?>">
                                 </td>
                             </tr>
+
                         </table>
                         <!-- SUBMIT BUTTON UNTUK MENU 6 -->
                         <div class="form-group text-right" style="margin-top: 10px;">

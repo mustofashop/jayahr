@@ -91,7 +91,7 @@ class Pengaturan_pkk extends CI_Controller
             $detail_nrp     = $this->master_model->detail_nrp($nrp);
             $d['id_k']      = $id_karyawan;
             $d['idp_nrp']   = $nrp;
-            $d['trans_pkk'] = $this->master_model->get_trans_pkk($nrp)->row_array();
+            $d['trans_pkk'] = $this->master_model->get_trans_pkk($nrp);
             $d['class']     = '';
             $d['header']    = 'Setting PKK | ' . $nama_kr;
             $d['content']   = 'member/karyawan_kontrak/set_pkk';
@@ -301,6 +301,7 @@ class Pengaturan_pkk extends CI_Controller
             $d['menu5']     = $this->master_model->get_menu5_data();
             $d['menu6']     = $this->master_model->get_menu6_data();
             $d['fb_k']      = $this->master_model->get_fb_karyawan1($nrp);
+            $d['fb_kr_1_2'] = $this->master_model->get_fb_kr1_2($nrp);
             $d['fb_a']      = $this->master_model->get_fb_atasan1($nrp);
             $d['data']      = $data;
             $d['penilaian'] = $penilaian;
@@ -315,6 +316,7 @@ class Pengaturan_pkk extends CI_Controller
             $d['header']    = 'Karyawan Kontrak';
             $d['content']   = 'member/karyawan_kontrak/penilaian/nilai';
             $d['flag_sent'] = isset($d['fb_k']->flag_sent) ? $d['fb_k']->flag_sent : 0;
+            $d['flag_sent2']  = isset($d['fb_kr_1_2']->flag_sent) ? $d['fb_kr_1_2']->flag_sent : 0;
 
             $this->load->view('master', $d);
         }
@@ -331,6 +333,8 @@ class Pengaturan_pkk extends CI_Controller
                 $penilaian      = $this->master_model->hasil_nilai_periode($nrp, $periode);
                 $d['data']      = $data;
                 $d['penilaian'] = $penilaian;
+                $d['periode']    = $periode;
+                $d['flag_sent2']  = isset($d['fb_kr_1_2']->flag_sent) ? $d['fb_kr_1_2']->flag_sent : 0;
             } else {
                 $data2           = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
                 $penilaian2      = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);

@@ -284,6 +284,31 @@ class Trans_pkk extends CI_Controller
         }
     }
 
+    public function fb_kr_1_2()
+    {
+        $masuk = $this->session->userdata('masuk_k');
+        if ($masuk != TRUE) {
+            redirect(base_url('login'));
+        } else {
+            $id_p_periode       = $this->input->post('id_p_periode');
+            $nrp                = $this->input->post('nrp');
+            $data = [
+                'id_p_periode'    => $id_p_periode,
+                'nrp'             => $nrp,
+                'isi_fb'    => 'Saya sudah membaca hasil penilaian ini',
+                'insert_date'     => date('Y-m-d'),
+                'flag_sent'       => 1,
+            ];
+
+            // Insert ke tabel trans_pkk
+            $this->db->insert("trans_fb_kr_1_2", $data);
+
+            // Redirect dengan pesan sukses
+            $this->session->set_flashdata('msg', 'Feedback Sukses dikirim');
+            redirect(base_url('Pengaturan_pkk/nilai_pkk'));
+        }
+    }
+
     public function fb_atasan()
     {
         if ($this->session->userdata('masuk_k') != TRUE) {
