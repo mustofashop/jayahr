@@ -117,7 +117,7 @@
             <div class="box-body">
                 <?php
                 $nrp    = $this->session->userdata('nrp');
-                $jml_karyawan = $this->master_model->list_member($nrp)->num_rows();
+                $jml_karyawan = $this->master_model->list_member_pkk_2($nrp)->num_rows();
                 ?>
                 <div class="small-box bg-green">
                     <div class="inner">
@@ -134,9 +134,9 @@
                     <div class="inner">
                         <?php
                         $nrp    = $this->session->userdata('nrp');
-                        $jml_sudah_idp = $this->master_model->list_member_sudah_inass($nrp)->num_rows();
+                        $jml_sudah_pkk = $this->master_model->list_member_sudah_isi_pkk($nrp)->num_rows();
                         ?>
-                        <h3><?php echo $jml_sudah_idp; ?></h3>
+                        <h3><?php echo $jml_sudah_pkk; ?></h3>
                         <p>Sudah Isi</p>
                     </div>
                     <div class="icon">
@@ -146,7 +146,7 @@
                 <div class="small-box bg-gray">
                     <div class="inner">
 
-                        <h3><?php echo $jml_karyawan - $jml_sudah_idp; ?></h3>
+                        <h3><?php echo $jml_karyawan - $jml_sudah_pkk; ?></h3>
                         <p>Belum Isi</p>
                     </div>
                     <div class="icon">
@@ -155,10 +155,16 @@
                 </div>
                 <div class="small-box bg-gray">
                     <div class="inner">
+                        <?php
+                        $jml_sudah_fb = $this->master_model->total_feedback(); // Tidak perlu ->result(), karena sudah row()
 
-                        <h3><?php echo $jml_karyawan - $jml_sudah_idp; ?></h3>
+                        // Pastikan data tidak NULL sebelum mengaksesnya
+                        $total_feedback = isset($jml_sudah_fb->total_feedback) ? $jml_sudah_fb->total_feedback : 0;
+                        ?>
+                        <h3><?php echo $total_feedback; ?></h3>
                         <p>Feed Back Karyawan</p>
                     </div>
+
                     <div class="icon">
                         <i class="fa fa-check"></i>
                     </div>
