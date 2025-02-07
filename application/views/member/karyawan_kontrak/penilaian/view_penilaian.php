@@ -372,7 +372,7 @@
                                 <?php
                                 // Menghitung Hasil Akhir dengan validasi
                                 $hasil_akhir = (isset($row->total_nilai_atasan_langsung) && isset($row->total_nilai_atasan_tidak_langsung))
-                                    ? ($row->total_nilai_atasan_langsung * 0.6) + ($row->total_nilai_atasan_tidak_langsung * 0.4)
+                                    ? ($row->total_nilai_atasan_langsung + $row->total_nilai_atasan_tidak_langsung) / 2
                                     : 0.0;
                                 ?>
                                 <td colspan="4" style="padding: 4px; text-align: center;"><?php echo number_format($hasil_akhir, 1); ?></td>
@@ -881,7 +881,7 @@
                             <?php
                             // Menghitung Hasil Akhir dengan validasi
                             $hasil_akhir = (isset($row->total_nilai_atasan_langsung) && isset($row->total_nilai_atasan_tidak_langsung))
-                                ? ($row->total_nilai_atasan_langsung * 0.6) + ($row->total_nilai_atasan_tidak_langsung * 0.4)
+                                ? ($row->total_nilai_atasan_langsung + $row->total_nilai_atasan_tidak_langsung) / 2
                                 : 0.0;
                             ?>
                             <td colspan="4" style="padding: 4px; text-align: center;"><?php echo number_format($hasil_akhir, 1); ?></td>

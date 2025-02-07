@@ -277,6 +277,16 @@ FROM
 		return $p;
 	}
 
+	public function cek_lap_nilai($nrp, $jenis_form, $periode)
+	{
+		if ($jenis_form == '1') {
+			$q = $this->db->query("SELECT COUNT(a.id_trn_nilai_kel_1_2) as jumlah_data FROM trans_kel_1_2 a WHERE a.nrp = '$nrp' and a.id_p_periode = '$periode'");
+		} else {
+			$q = $this->db->query("SELECT COUNT(a.id_trn_nilai_kel_3_7) as jumlah_data FROM trans_kel_3_7 a WHERE a.nrp = '$nrp' and a.id_p_periode = '$periode'");
+		}
+		return $q;
+	}
+
 	public function lap_nilai($nrp)
 	{
 		$q = $this->db->query("SELECT 
@@ -329,8 +339,10 @@ FROM
 			spv2_data.nama_lengkap AS spv2_nama, -- Nama Supervisor 2
 			b.department, 
 			b.tgl_hire, 
+			b.job_grade,
 			c.nama_value, 
 			d.flag_penilaian,
+			a.id_p_periode,
 			(SELECT SUM(a2.nilai_akhir)
 			FROM trans_kel_1_2 a2
 			WHERE a2.nrp = a.nrp AND a2.insert_by = a.insert_by) AS total_nilai_akhir
@@ -368,6 +380,7 @@ FROM
         b.job_grade, 
         c.nama_value, 
         d.flag_penilaian,
+		a.id_p_periode,
         (SELECT SUM(CAST(NULLIF(REPLACE(a2.hasil_nilai, ',', '.'), '') AS NUMERIC)) 
          FROM trans_kel_3_7 a2
          WHERE a2.nrp = a.nrp AND a2.insert_by = a.insert_by) AS total_nilai_akhir

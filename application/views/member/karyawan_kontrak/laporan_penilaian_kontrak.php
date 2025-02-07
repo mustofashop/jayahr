@@ -94,14 +94,27 @@
 
                                             // Tentukan form link berdasarkan flag_jenis_form
                                             $form_link = ($flag_jenis_form == 1) ? "form_penilaian_1_2" : "form_penilaian_3_7";
+
+                                            $disable_button = $this->master_model->cek_lap_nilai($dt->nip, $dt->id_jenis_form, $flag_periode)->row();
+                                            $cek_lap_nilai = $disable_button->jumlah_data;
+
+                                            if ($cek_lap_nilai > 0) {
                                     ?>
-                                            <a class="btn bg-blue circle-btn"
-                                                href="<?php echo base_url(); ?>Pengaturan_pkk/view_nilai_pkk_periode/<?php echo $dt->nip; ?>/<?php echo $form_link; ?>/<?php echo $flag_periode ?>" target="_blank">
-                                                <?php echo $i; ?>
-                                            </a>
-                                        <?php
+                                                <a class="btn bg-blue circle-btn"
+                                                    href="<?php echo base_url(); ?>Pengaturan_pkk/view_nilai_pkk_periode/<?php echo $dt->nip; ?>/<?php echo $form_link; ?>/<?php echo $flag_periode ?>" target="_blank">
+                                                    <?php echo $i; ?>
+                                                </a>
+                                            <?php
+                                            } else { ?>
+                                                <button class="btn bg-gray circle-btn alert-button"
+                                                    data-message="Form Belum Diinput, Harap Hubungi Atasan Terkait"
+                                                    title="Form belum tersedia">
+                                                    <?php echo $i; ?>
+                                                </button>
+                                            <?php
+                                            }
                                         } else {
-                                        ?>
+                                            ?>
                                             <button class="btn bg-gray circle-btn alert-button"
                                                 data-message="Form Belum Tersedia, Harap Hubungi SDM"
                                                 title="Form belum tersedia">

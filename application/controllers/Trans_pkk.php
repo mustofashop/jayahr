@@ -1531,238 +1531,507 @@ class Trans_pkk extends CI_Controller
         if (!$masuk) {
             redirect(base_url('login'));
         } else {
-            // Ambil data dari database
-            $query = $this->master_model->lap_nilai_periode($nrp, $periode);
-            $data = $query->row_array();
+            if ($periode == 'all') {
+                $trans = $this->master_model->get_trans_pkk($nrp);
+                $spreadsheet = new Spreadsheet();
+                $index = 0;
+                foreach ($trans->result() as $tl) {
+                    // Ambil data dari database
+                    $query = $this->master_model->lap_nilai_periode($tl->nrp, $tl->id_p_periode);
+                    $data = $query->row_array();
 
-            if (!$data) {
-                show_error('Data tidak ditemukan atau tidak dapat diakses.', 404);
-                return;
-            }
+                    if (!$data) {
+                        show_error('Data tidak ditemukan atau tidak dapat diakses.', 404);
+                        return;
+                    }
 
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
+                    if ($index > 0) {
+                        $spreadsheet->createSheet();
+                    }
 
-            // *Mengatur Border*
-            $thickBorder = [
-                'borders' => [
-                    'outline' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
-                        'color' => ['rgb' => '000000'],
+                    $spreadsheet->setActiveSheetIndex($index);
+
+                    $sheet = $spreadsheet->getActiveSheet();
+                    $sheet->setTitle("Periode " . $tl->id_p_periode);
+
+                    // *Mengatur Border*
+                    $thickBorder = [
+                        'borders' => [
+                            'outline' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                                'color' => ['rgb' => '000000'],
+                            ],
+                            'inside' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                'color' => ['rgb' => '000000'],
+                            ],
+                        ],
+                    ];
+
+                    // *Header & Judul*
+                    $sheet->mergeCells('A1:F1');
+                    $sheet->mergeCells('A2:F2');
+                    $sheet->mergeCells('A3:F3');
+                    $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KINERJA');
+                    $sheet->setCellValue('A2', 'KARYAWAN KONTRAK');
+                    $sheet->setCellValue('A3', 'KELOMPOK I - II');
+                    $sheet->getStyle('A1:A3')->getFont()->setBold(true)->setSize(14);
+                    $sheet->getStyle('A1:A3')->getAlignment()->setHorizontal('center');
+
+                    // *Data Karyawan*
+                    $row_karyawan = 5;
+                    $sheet->mergeCells("A$row_karyawan:B$row_karyawan");
+                    $sheet->setCellValue('A' . $row_karyawan, 'KARYAWAN YANG DINILAI');
+                    $sheet->getStyle("A$row_karyawan")->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle("A$row_karyawan")->getFont()->setBold(true);
+                    $sheet->setCellValue('A' . ($row_karyawan + 1), 'Nama:');
+                    $sheet->setCellValue('B' . ($row_karyawan + 1), $data['karyawan_nama']);
+                    $sheet->setCellValue('A' . ($row_karyawan + 2), 'Jabatan:');
+                    $sheet->setCellValue('B' . ($row_karyawan + 2), $data['job_grade']);
+                    $sheet->setCellValue('A' . ($row_karyawan + 3), 'Tanggal Masuk:');
+                    $sheet->setCellValue('B' . ($row_karyawan + 3), $data['tgl_hire']);
+                    $sheet->getStyle("A$row_karyawan:B" . ($row_karyawan + 3))->applyFromArray($thickBorder);
+
+                    // *Data Penilai*
+                    $row_penilai = $row_karyawan + 5;
+                    $sheet->mergeCells("A$row_penilai:B$row_penilai");
+                    $sheet->setCellValue('A' . $row_penilai, 'NAMA PENILAI');
+                    $sheet->getStyle("A$row_penilai")->getFont()->setBold(true);
+                    $sheet->getStyle("A$row_penilai")->getAlignment()->setHorizontal('center');
+                    $sheet->setCellValue('A' . ($row_penilai + 1), 'Atasan Langsung:');
+                    $sheet->setCellValue('B' . ($row_penilai + 1), $data['spv1_nama']);
+                    $sheet->setCellValue('A' . ($row_penilai + 2), 'Atasan Tidak Langsung:');
+                    $sheet->setCellValue('B' . ($row_penilai + 2), $data['spv2_nama']);
+                    $sheet->setCellValue('A' . ($row_penilai + 3), 'Unit:');
+                    $sheet->setCellValue('B' . ($row_penilai + 3), $data['department']);
+                    $sheet->setCellValue('A' . ($row_penilai + 4), 'Periode Penilaian:');
+                    $sheet->setCellValue('B' . ($row_penilai + 4), $data['id_p_periode']);
+                    $sheet->getStyle("A$row_penilai:B" . ($row_penilai + 4))->applyFromArray($thickBorder);
+                    $sheet->getStyle('B' . ($row_penilai + 4))->getAlignment()->setHorizontal('left');
+
+                    // *Header Tabel Penilaian*
+                    $row_penilaian = $row_penilai + 6;
+                    $sheet->setCellValue('A' . $row_penilaian, 'No')
+                        ->setCellValue('B' . $row_penilaian, 'Aspek Yang Dinilai')
+                        ->setCellValue('C' . $row_penilaian, 'Atasan Langsung')
+                        ->setCellValue('D' . $row_penilaian, 'Nilai Atasan Langsung')
+                        ->setCellValue('E' . $row_penilaian, 'Atasan Tidak Langsung')
+                        ->setCellValue('F' . $row_penilaian, 'Nilai Atasan Tidak Langsung');
+                    $sheet->getStyle("A$row_penilaian:F$row_penilaian")->getFont()->setBold(true);
+                    $sheet->getStyle("B$row_penilaian")->getAlignment()->setHorizontal('center');
+
+                    // *Mengisi Data Penilaian*
+                    $penilaian2 = $this->master_model->hasil_nilai_periode($tl->nrp, $tl->id_p_periode);
+                    $text = $penilaian2->row();
+                    $total_nilai_atasan_langsung = 0;
+                    $total_nilai_atasan_tidak_langsung = 0;
+                    $row = $row_penilaian + 1;
+                    $no = 1;
+
+                    foreach ($penilaian2->result_array() as $p) {
+                        $sheet->setCellValue('A' . $row, $no);
+                        $sheet->setCellValue('B' . $row, $p['aspek_dinilai']);
+                        $sheet->setCellValue('C' . $row, $p['isi_nilai_atasan_langsung']);
+                        $sheet->setCellValue('D' . $row, number_format($p['nilai_atasan_langsung'], 1, '.', ''));
+                        $sheet->setCellValue('E' . $row, $p['isi_nilai_atasan_tidak_langsung']);
+                        $sheet->setCellValue('F' . $row, number_format($p['nilai_atasan_tidak_langsung'], 1, '.', ''));
+
+                        $sheet->getStyle('D' . $row)->getNumberFormat()->setFormatCode('0.0');
+                        $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode('0.0');
+                        $row++;
+                        $no++;
+                    }
+
+                    // Hitung total
+                    $total_nilai_atasan_langsung += (float) $p['total_nilai_atasan_langsung'];
+                    $total_nilai_atasan_tidak_langsung += (float) $p['total_nilai_atasan_tidak_langsung'];
+
+                    $row++;
+                    $no++;
+
+                    // **Menambahkan Total**
+                    $sheet->setCellValue("B$row", 'Total');
+                    $sheet->setCellValue("C$row", number_format($total_nilai_atasan_langsung, 1, '.', ''));
+                    $sheet->setCellValue("E$row", number_format($total_nilai_atasan_tidak_langsung, 1, '.', ''));
+                    $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
+                    $sheet->mergeCells("E$row:F$row");
+                    $sheet->getStyle("C$row:D$row")->getNumberFormat()->setFormatCode('0.0');
+                    $sheet->getStyle("E$row:F$row")->getNumberFormat()->setFormatCode('0.0');
+                    $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
+                    $sheet->getStyle("B$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                    // **Menghitung Hasil Akhir**
+                    $row_hasil_akhir = $row + 1;
+                    $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
+
+                    $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
+                    $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
+                    $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
+                    $sheet->getStyle("C$row_hasil_akhir:F$row_hasil_akhir")->getNumberFormat()->setFormatCode('0.0');
+                    $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
+                    $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                    // **Menambahkan Border**
+                    $sheet->getStyle("A$row_penilaian:F$row_hasil_akhir")->applyFromArray($thickBorder);
+                    // *Merapikan Alignment*
+                    $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setHorizontal('left'); // Rata tengah horizontal untuk No
+                    $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setVertical('left'); // Rata tengah vertikal untuk No
+                    $sheet->getStyle("C$row_penilaian:F" . ($row - 1))->getAlignment()->setHorizontal('center'); // Rata tengah untuk kolom lain
+
+                    // *Menyesuaikan Lebar Kolom secara Dinamis*
+                    foreach (range('A', 'F') as $columnID) {
+                        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+                    }
+
+                    // *Tabel Kriteria*
+                    $row_kriteria = $row_hasil_akhir + 2; // Sesuaikan posisi awal tabel kriteria
+                    $sheet->setCellValue('A' . $row_kriteria, 'Kriteria');
+                    $sheet->setCellValue('B' . $row_kriteria, 'Nilai');
+                    $sheet->setCellValue('C' . $row_kriteria, 'Keterangan');
+                    $sheet->getStyle("A$row_kriteria:C$row_kriteria")->getFont()->setBold(true);
+
+                    $start_kriteria = $row_kriteria + 1;
+                    $kriteria = [
+                        ['A', '90 s.d. 100', 'Istimewa'],
+                        ['B', '80 s.d. 89', 'Baik'],
+                        ['C', '60 s.d. 79', 'Cukup'],
+                        ['D', '40 s.d. 59', 'Kurang']
+                    ];
+                    foreach ($kriteria as $k) {
+                        $sheet->setCellValue('A' . $start_kriteria, $k[0]);
+                        $sheet->setCellValue('B' . $start_kriteria, $k[1]);
+                        $sheet->setCellValue('C' . $start_kriteria, $k[2]);
+                        $start_kriteria++;
+                    }
+
+                    // *Menambahkan Border Tebal pada Tabel Kriteria*
+                    $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->applyFromArray($thickBorder);
+
+                    // *Membuat Alignment ke Tengah*
+                    $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setVertical('center');
+
+                    // **Judul Aspek Tambahan**
+                    $row_aspek = $start_kriteria + 1; // Beri jarak 1 baris kosong setelah tabel kriteria
+                    $sheet->setCellValue('A' . $row_aspek, 'Aspek-aspek Tambahan (mohon diuraikan bila ada) :');
+                    $sheet->mergeCells("A$row_aspek:C$row_aspek");
+                    $sheet->getStyle("A$row_aspek")->getFont()->setBold(true);
+
+                    // **Atasan Langsung**
+                    $row_atasan_langsung = $row_aspek + 1;
+                    $sheet->setCellValue('A' . $row_atasan_langsung, 'Atasan Langsung:');
+                    $sheet->mergeCells("A$row_atasan_langsung:C$row_atasan_langsung");
+                    $sheet->getStyle("A$row_atasan_langsung")->getFont()->setBold(true);
+
+                    // **Isi Atasan Langsung**
+                    $row_text_atasan_langsung = $row_atasan_langsung + 1;
+                    $sheet->setCellValue('A' . $row_text_atasan_langsung, !empty($text->text_tambahan_atasan_langsung) ? $text->text_tambahan_atasan_langsung : '');
+                    $sheet->mergeCells("A$row_text_atasan_langsung:C$row_text_atasan_langsung");
+
+                    // **Garis Kosong**
+                    $row_garis_atasan = $row_text_atasan_langsung + 1;
+                    $sheet->mergeCells("A$row_garis_atasan:C$row_garis_atasan");
+
+                    // **Atasan Tidak Langsung**
+                    $row_atasan_tidak_langsung = $row_garis_atasan + 1;
+                    $sheet->setCellValue('A' . $row_atasan_tidak_langsung, 'Atasan Tidak Langsung:');
+                    $sheet->mergeCells("A$row_atasan_tidak_langsung:C$row_atasan_tidak_langsung");
+                    $sheet->getStyle("A$row_atasan_tidak_langsung")->getFont()->setBold(true);
+
+                    // **Isi Atasan Tidak Langsung**
+                    $row_text_atasan_tidak_langsung = $row_atasan_tidak_langsung + 1;
+                    $sheet->setCellValue('A' . $row_text_atasan_tidak_langsung, !empty($text->text_tambahan_atasan_tidak_langsung) ? $text->text_tambahan_atasan_tidak_langsung : '');
+                    $sheet->mergeCells("A$row_text_atasan_tidak_langsung:C$row_text_atasan_tidak_langsung");
+
+                    // **Garis Kosong**
+                    $row_garis_tidak_langsung = $row_text_atasan_tidak_langsung + 1;
+                    $sheet->mergeCells("A$row_garis_tidak_langsung:C$row_garis_tidak_langsung");
+
+                    // **Atur Border untuk Tabel Aspek Tambahan**
+                    $styleArray = [
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => Border::BORDER_THIN,
+                            ],
+                        ],
+                        'alignment' => [
+                            'horizontal' => Alignment::HORIZONTAL_LEFT,
+                            'vertical' => Alignment::VERTICAL_CENTER,
+                        ],
+                    ];
+
+                    // Terapkan border ke area aspek tambahan
+                    $sheet->getStyle("A$row_aspek:C$row_garis_tidak_langsung")->applyFromArray($styleArray);
+
+                    // **Set Lebar Kolom**
+                    $sheet->getColumnDimension('A')->setWidth(50);
+                    $sheet->getColumnDimension('B')->setWidth(50);
+                    $sheet->getColumnDimension('C')->setWidth(50);
+
+                    $index++;
+                }
+
+                // Set Sheet Aktif ke yang pertama
+                $spreadsheet->setActiveSheetIndex(0);
+
+                // Set nama file
+                $filename = "Laporan_Penilaian_$nrp.xlsx";
+
+                if (ob_get_contents()) {
+                    ob_end_clean();
+                }
+                // Simpan dan download file
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="' . $filename . '"');
+                header('Cache-Control: max-age=0');
+
+                $writer = new Xlsx($spreadsheet);
+                $writer->save('php://output');
+                exit;
+            } else {
+                // Ambil data dari database
+                $query = $this->master_model->lap_nilai_periode($nrp, $periode);
+                $data = $query->row_array();
+
+                if (!$data) {
+                    show_error('Data tidak ditemukan atau tidak dapat diakses.', 404);
+                    return;
+                }
+
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+                $sheet->setTitle("Periode " . $periode);
+
+                // *Mengatur Border*
+                $thickBorder = [
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                            'color' => ['rgb' => '000000'],
+                        ],
+                        'inside' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ],
                     ],
-                    'inside' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        'color' => ['rgb' => '000000'],
-                    ],
-                ],
-            ];
+                ];
 
-            // *Header & Judul*
-            $sheet->mergeCells('A1:F1');
-            $sheet->mergeCells('A2:F2');
-            $sheet->mergeCells('A3:F3');
-            $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KINERJA');
-            $sheet->setCellValue('A2', 'KARYAWAN KONTRAK');
-            $sheet->setCellValue('A3', 'KELOMPOK I - II');
-            $sheet->getStyle('A1:A3')->getFont()->setBold(true)->setSize(14);
-            $sheet->getStyle('A1:A3')->getAlignment()->setHorizontal('center');
+                // *Header & Judul*
+                $sheet->mergeCells('A1:F1');
+                $sheet->mergeCells('A2:F2');
+                $sheet->mergeCells('A3:F3');
+                $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KINERJA');
+                $sheet->setCellValue('A2', 'KARYAWAN KONTRAK');
+                $sheet->setCellValue('A3', 'KELOMPOK I - II');
+                $sheet->getStyle('A1:A3')->getFont()->setBold(true)->setSize(14);
+                $sheet->getStyle('A1:A3')->getAlignment()->setHorizontal('center');
 
-            // *Data Karyawan*
-            $row_karyawan = 5;
-            $sheet->mergeCells("A$row_karyawan:B$row_karyawan");
-            $sheet->setCellValue('A' . $row_karyawan, 'KARYAWAN YANG DINILAI');
-            $sheet->getStyle("A$row_karyawan")->getAlignment()->setHorizontal('center');
-            $sheet->getStyle("A$row_karyawan")->getFont()->setBold(true);
-            $sheet->setCellValue('A' . ($row_karyawan + 1), 'Nama:');
-            $sheet->setCellValue('B' . ($row_karyawan + 1), $data['karyawan_nama']);
-            $sheet->setCellValue('A' . ($row_karyawan + 2), 'Jabatan:');
-            $sheet->setCellValue('B' . ($row_karyawan + 2), $data['job_grade']);
-            $sheet->setCellValue('A' . ($row_karyawan + 3), 'Tanggal Masuk:');
-            $sheet->setCellValue('B' . ($row_karyawan + 3), $data['tgl_hire']);
-            $sheet->getStyle("A$row_karyawan:B" . ($row_karyawan + 3))->applyFromArray($thickBorder);
+                // *Data Karyawan*
+                $row_karyawan = 5;
+                $sheet->mergeCells("A$row_karyawan:B$row_karyawan");
+                $sheet->setCellValue('A' . $row_karyawan, 'KARYAWAN YANG DINILAI');
+                $sheet->getStyle("A$row_karyawan")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("A$row_karyawan")->getFont()->setBold(true);
+                $sheet->setCellValue('A' . ($row_karyawan + 1), 'Nama:');
+                $sheet->setCellValue('B' . ($row_karyawan + 1), $data['karyawan_nama']);
+                $sheet->setCellValue('A' . ($row_karyawan + 2), 'Jabatan:');
+                $sheet->setCellValue('B' . ($row_karyawan + 2), $data['job_grade']);
+                $sheet->setCellValue('A' . ($row_karyawan + 3), 'Tanggal Masuk:');
+                $sheet->setCellValue('B' . ($row_karyawan + 3), $data['tgl_hire']);
+                $sheet->getStyle("A$row_karyawan:B" . ($row_karyawan + 3))->applyFromArray($thickBorder);
 
-            // *Data Penilai*
-            $row_penilai = $row_karyawan + 5;
-            $sheet->mergeCells("A$row_penilai:B$row_penilai");
-            $sheet->setCellValue('A' . $row_penilai, 'NAMA PENILAI');
-            $sheet->getStyle("A$row_penilai")->getFont()->setBold(true);
-            $sheet->getStyle("A$row_penilai")->getAlignment()->setHorizontal('center');
-            $sheet->setCellValue('A' . ($row_penilai + 1), 'Atasan Langsung:');
-            $sheet->setCellValue('B' . ($row_penilai + 1), $data['spv1_nama']);
-            $sheet->setCellValue('A' . ($row_penilai + 2), 'Atasan Tidak Langsung:');
-            $sheet->setCellValue('B' . ($row_penilai + 2), $data['spv2_nama']);
-            $sheet->setCellValue('A' . ($row_penilai + 3), 'Unit:');
-            $sheet->setCellValue('B' . ($row_penilai + 3), $data['department']);
-            $sheet->setCellValue('A' . ($row_penilai + 4), 'Periode Penilaian:');
-            $sheet->setCellValue('B' . ($row_penilai + 4), $data['id_p_periode']);
-            $sheet->getStyle("A$row_penilai:B" . ($row_penilai + 4))->applyFromArray($thickBorder);
-            $sheet->getStyle('B' . ($row_penilai + 4))->getAlignment()->setHorizontal('left');
+                // *Data Penilai*
+                $row_penilai = $row_karyawan + 5;
+                $sheet->mergeCells("A$row_penilai:B$row_penilai");
+                $sheet->setCellValue('A' . $row_penilai, 'NAMA PENILAI');
+                $sheet->getStyle("A$row_penilai")->getFont()->setBold(true);
+                $sheet->getStyle("A$row_penilai")->getAlignment()->setHorizontal('center');
+                $sheet->setCellValue('A' . ($row_penilai + 1), 'Atasan Langsung:');
+                $sheet->setCellValue('B' . ($row_penilai + 1), $data['spv1_nama']);
+                $sheet->setCellValue('A' . ($row_penilai + 2), 'Atasan Tidak Langsung:');
+                $sheet->setCellValue('B' . ($row_penilai + 2), $data['spv2_nama']);
+                $sheet->setCellValue('A' . ($row_penilai + 3), 'Unit:');
+                $sheet->setCellValue('B' . ($row_penilai + 3), $data['department']);
+                $sheet->setCellValue('A' . ($row_penilai + 4), 'Periode Penilaian:');
+                $sheet->setCellValue('B' . ($row_penilai + 4), $data['id_p_periode']);
+                $sheet->getStyle("A$row_penilai:B" . ($row_penilai + 4))->applyFromArray($thickBorder);
+                $sheet->getStyle('B' . ($row_penilai + 4))->getAlignment()->setHorizontal('left');
 
-            // *Header Tabel Penilaian*
-            $row_penilaian = $row_penilai + 6;
-            $sheet->setCellValue('A' . $row_penilaian, 'No')
-                ->setCellValue('B' . $row_penilaian, 'Aspek Yang Dinilai')
-                ->setCellValue('C' . $row_penilaian, 'Atasan Langsung')
-                ->setCellValue('D' . $row_penilaian, 'Nilai Atasan Langsung')
-                ->setCellValue('E' . $row_penilaian, 'Atasan Tidak Langsung')
-                ->setCellValue('F' . $row_penilaian, 'Nilai Atasan Tidak Langsung');
-            $sheet->getStyle("A$row_penilaian:F$row_penilaian")->getFont()->setBold(true);
-            $sheet->getStyle("B$row_penilaian")->getAlignment()->setHorizontal('center');
+                // *Header Tabel Penilaian*
+                $row_penilaian = $row_penilai + 6;
+                $sheet->setCellValue('A' . $row_penilaian, 'No')
+                    ->setCellValue('B' . $row_penilaian, 'Aspek Yang Dinilai')
+                    ->setCellValue('C' . $row_penilaian, 'Atasan Langsung')
+                    ->setCellValue('D' . $row_penilaian, 'Nilai Atasan Langsung')
+                    ->setCellValue('E' . $row_penilaian, 'Atasan Tidak Langsung')
+                    ->setCellValue('F' . $row_penilaian, 'Nilai Atasan Tidak Langsung');
+                $sheet->getStyle("A$row_penilaian:F$row_penilaian")->getFont()->setBold(true);
+                $sheet->getStyle("B$row_penilaian")->getAlignment()->setHorizontal('center');
 
-            // *Mengisi Data Penilaian*
-            $penilaian2 = $this->master_model->hasil_nilai_periode($nrp, $periode);
-            $text = $penilaian2->row();
-            $total_nilai_atasan_langsung = 0;
-            $total_nilai_atasan_tidak_langsung = 0;
-            $row = $row_penilaian + 1;
-            $no = 1;
+                // *Mengisi Data Penilaian*
+                $penilaian2 = $this->master_model->hasil_nilai_periode($nrp, $periode);
+                $text = $penilaian2->row();
+                $total_nilai_atasan_langsung = 0;
+                $total_nilai_atasan_tidak_langsung = 0;
+                $row = $row_penilaian + 1;
+                $no = 1;
 
-            foreach ($penilaian2->result_array() as $p) {
-                $sheet->setCellValue('A' . $row, $no);
-                $sheet->setCellValue('B' . $row, $p['aspek_dinilai']);
-                $sheet->setCellValue('C' . $row, $p['isi_nilai_atasan_langsung']);
-                $sheet->setCellValue('D' . $row, number_format($p['nilai_atasan_langsung'], 1));
-                $sheet->setCellValue('E' . $row, $p['isi_nilai_atasan_tidak_langsung']);
-                $sheet->setCellValue('F' . $row, number_format($p['nilai_atasan_tidak_langsung'], 1));
+                foreach ($penilaian2->result_array() as $p) {
+                    $sheet->setCellValue('A' . $row, $no);
+                    $sheet->setCellValue('B' . $row, $p['aspek_dinilai']);
+                    $sheet->setCellValue('C' . $row, $p['isi_nilai_atasan_langsung']);
+                    $sheet->setCellValue('D' . $row, number_format($p['nilai_atasan_langsung'], 1));
+                    $sheet->setCellValue('E' . $row, $p['isi_nilai_atasan_tidak_langsung']);
+                    $sheet->setCellValue('F' . $row, number_format($p['nilai_atasan_tidak_langsung'], 1));
+
+                    $sheet->getStyle('D' . $row)->getNumberFormat()->setFormatCode('0.0');
+                    $sheet->getStyle('F' . $row)->getNumberFormat()->setFormatCode('0.0');
+                    $row++;
+                    $no++;
+                }
+
+                // Hitung total
+                $total_nilai_atasan_langsung += (float) $p['total_nilai_atasan_langsung'];
+                $total_nilai_atasan_tidak_langsung += (float) $p['total_nilai_atasan_tidak_langsung'];
+
                 $row++;
                 $no++;
+
+                // **Menambahkan Total**
+                $sheet->setCellValue("B$row", 'Total');
+                $sheet->setCellValue("C$row", $total_nilai_atasan_langsung);
+                $sheet->setCellValue("E$row", $total_nilai_atasan_tidak_langsung);
+                $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
+                $sheet->mergeCells("E$row:F$row");
+                $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
+                $sheet->getStyle("B$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("C$row")->getNumberFormat()->setFormatCode('0.0');
+                $sheet->getStyle("E$row")->getNumberFormat()->setFormatCode('0.0');
+
+                // **Menghitung Hasil Akhir**
+                $row_hasil_akhir = $row + 1;
+                $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
+
+                $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
+                $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
+                $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
+                $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
+                $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("C$row_hasil_akhir:F$row_hasil_akhir")->getNumberFormat()->setFormatCode('0.0');
+
+                // **Menambahkan Border**
+                $sheet->getStyle("A$row_penilaian:F$row_hasil_akhir")->applyFromArray($thickBorder);
+                // *Merapikan Alignment*
+                $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setHorizontal('left'); // Rata tengah horizontal untuk No
+                $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setVertical('left'); // Rata tengah vertikal untuk No
+                $sheet->getStyle("C$row_penilaian:F" . ($row - 1))->getAlignment()->setHorizontal('center'); // Rata tengah untuk kolom lain
+
+                // *Menyesuaikan Lebar Kolom secara Dinamis*
+                foreach (range('A', 'F') as $columnID) {
+                    $sheet->getColumnDimension($columnID)->setAutoSize(true);
+                }
+
+                // *Tabel Kriteria*
+                $row_kriteria = $row_hasil_akhir + 2; // Sesuaikan posisi awal tabel kriteria
+                $sheet->setCellValue('A' . $row_kriteria, 'Kriteria');
+                $sheet->setCellValue('B' . $row_kriteria, 'Nilai');
+                $sheet->setCellValue('C' . $row_kriteria, 'Keterangan');
+                $sheet->getStyle("A$row_kriteria:C$row_kriteria")->getFont()->setBold(true);
+
+                $start_kriteria = $row_kriteria + 1;
+                $kriteria = [
+                    ['A', '90 s.d. 100', 'Istimewa'],
+                    ['B', '80 s.d. 89', 'Baik'],
+                    ['C', '60 s.d. 79', 'Cukup'],
+                    ['D', '40 s.d. 59', 'Kurang']
+                ];
+                foreach ($kriteria as $k) {
+                    $sheet->setCellValue('A' . $start_kriteria, $k[0]);
+                    $sheet->setCellValue('B' . $start_kriteria, $k[1]);
+                    $sheet->setCellValue('C' . $start_kriteria, $k[2]);
+                    $start_kriteria++;
+                }
+
+                // *Menambahkan Border Tebal pada Tabel Kriteria*
+                $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->applyFromArray($thickBorder);
+
+                // *Membuat Alignment ke Tengah*
+                $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setVertical('center');
+
+                // **Judul Aspek Tambahan**
+                $row_aspek = $start_kriteria + 1; // Beri jarak 1 baris kosong setelah tabel kriteria
+                $sheet->setCellValue('A' . $row_aspek, 'Aspek-aspek Tambahan (mohon diuraikan bila ada) :');
+                $sheet->mergeCells("A$row_aspek:C$row_aspek");
+                $sheet->getStyle("A$row_aspek")->getFont()->setBold(true);
+
+                // **Atasan Langsung**
+                $row_atasan_langsung = $row_aspek + 1;
+                $sheet->setCellValue('A' . $row_atasan_langsung, 'Atasan Langsung:');
+                $sheet->mergeCells("A$row_atasan_langsung:C$row_atasan_langsung");
+                $sheet->getStyle("A$row_atasan_langsung")->getFont()->setBold(true);
+
+                // **Isi Atasan Langsung**
+                $row_text_atasan_langsung = $row_atasan_langsung + 1;
+                $sheet->setCellValue('A' . $row_text_atasan_langsung, !empty($text->text_tambahan_atasan_langsung) ? $text->text_tambahan_atasan_langsung : '');
+                $sheet->mergeCells("A$row_text_atasan_langsung:C$row_text_atasan_langsung");
+
+                // **Garis Kosong**
+                $row_garis_atasan = $row_text_atasan_langsung + 1;
+                $sheet->mergeCells("A$row_garis_atasan:C$row_garis_atasan");
+
+                // **Atasan Tidak Langsung**
+                $row_atasan_tidak_langsung = $row_garis_atasan + 1;
+                $sheet->setCellValue('A' . $row_atasan_tidak_langsung, 'Atasan Tidak Langsung:');
+                $sheet->mergeCells("A$row_atasan_tidak_langsung:C$row_atasan_tidak_langsung");
+                $sheet->getStyle("A$row_atasan_tidak_langsung")->getFont()->setBold(true);
+
+                // **Isi Atasan Tidak Langsung**
+                $row_text_atasan_tidak_langsung = $row_atasan_tidak_langsung + 1;
+                $sheet->setCellValue('A' . $row_text_atasan_tidak_langsung, !empty($text->text_tambahan_atasan_tidak_langsung) ? $text->text_tambahan_atasan_tidak_langsung : '');
+                $sheet->mergeCells("A$row_text_atasan_tidak_langsung:C$row_text_atasan_tidak_langsung");
+
+                // **Garis Kosong**
+                $row_garis_tidak_langsung = $row_text_atasan_tidak_langsung + 1;
+                $sheet->mergeCells("A$row_garis_tidak_langsung:C$row_garis_tidak_langsung");
+
+                // **Atur Border untuk Tabel Aspek Tambahan**
+                $styleArray = [
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                        ],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ];
+
+                // Terapkan border ke area aspek tambahan
+                $sheet->getStyle("A$row_aspek:C$row_garis_tidak_langsung")->applyFromArray($styleArray);
+
+                // **Set Lebar Kolom**
+                $sheet->getColumnDimension('A')->setWidth(50);
+                $sheet->getColumnDimension('B')->setWidth(50);
+                $sheet->getColumnDimension('C')->setWidth(50);
+
+                // Set nama file
+                $filename = "Laporan_Penilaian_$nrp.xlsx";
+
+                if (ob_get_contents()) {
+                    ob_end_clean();
+                }
+                // Simpan dan download file
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="' . $filename . '"');
+                header('Cache-Control: max-age=0');
+
+                $writer = new Xlsx($spreadsheet);
+                $writer->save('php://output');
+                exit;
             }
-
-            // Hitung total
-            $total_nilai_atasan_langsung += (float) $p['total_nilai_atasan_langsung'];
-            $total_nilai_atasan_tidak_langsung += (float) $p['total_nilai_atasan_tidak_langsung'];
-
-            $row++;
-            $no++;
         }
-
-        // **Menambahkan Total**
-        $sheet->setCellValue("B$row", 'Total');
-        $sheet->setCellValue("C$row", $total_nilai_atasan_langsung);
-        $sheet->setCellValue("E$row", $total_nilai_atasan_tidak_langsung);
-        $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
-        $sheet->mergeCells("E$row:F$row");
-        $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
-        $sheet->getStyle("B$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        // **Menghitung Hasil Akhir**
-        $row_hasil_akhir = $row + 1;
-        $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
-
-        $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
-        $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
-        $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
-        $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
-        $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        // **Menambahkan Border**
-        $sheet->getStyle("A$row_penilaian:F$row_hasil_akhir")->applyFromArray($thickBorder);
-        // *Merapikan Alignment*
-        $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setHorizontal('left'); // Rata tengah horizontal untuk No
-        $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setVertical('left'); // Rata tengah vertikal untuk No
-        $sheet->getStyle("C$row_penilaian:F" . ($row - 1))->getAlignment()->setHorizontal('center'); // Rata tengah untuk kolom lain
-
-        // *Menyesuaikan Lebar Kolom secara Dinamis*
-        foreach (range('A', 'F') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-
-        // *Tabel Kriteria*
-        $row_kriteria = $row_hasil_akhir + 2; // Sesuaikan posisi awal tabel kriteria
-        $sheet->setCellValue('A' . $row_kriteria, 'Kriteria');
-        $sheet->setCellValue('B' . $row_kriteria, 'Nilai');
-        $sheet->setCellValue('C' . $row_kriteria, 'Keterangan');
-        $sheet->getStyle("A$row_kriteria:C$row_kriteria")->getFont()->setBold(true);
-
-        $start_kriteria = $row_kriteria + 1;
-        $kriteria = [
-            ['A', '90 s.d. 100', 'Istimewa'],
-            ['B', '80 s.d. 89', 'Baik'],
-            ['C', '60 s.d. 79', 'Cukup'],
-            ['D', '40 s.d. 59', 'Kurang']
-        ];
-        foreach ($kriteria as $k) {
-            $sheet->setCellValue('A' . $start_kriteria, $k[0]);
-            $sheet->setCellValue('B' . $start_kriteria, $k[1]);
-            $sheet->setCellValue('C' . $start_kriteria, $k[2]);
-            $start_kriteria++;
-        }
-
-        // *Menambahkan Border Tebal pada Tabel Kriteria*
-        $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->applyFromArray($thickBorder);
-
-        // *Membuat Alignment ke Tengah*
-        $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setHorizontal('center');
-        $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setVertical('center');
-
-        // **Judul Aspek Tambahan**
-        $row_aspek = $start_kriteria + 1; // Beri jarak 1 baris kosong setelah tabel kriteria
-        $sheet->setCellValue('A' . $row_aspek, 'Aspek-aspek Tambahan (mohon diuraikan bila ada) :');
-        $sheet->mergeCells("A$row_aspek:C$row_aspek");
-        $sheet->getStyle("A$row_aspek")->getFont()->setBold(true);
-
-        // **Atasan Langsung**
-        $row_atasan_langsung = $row_aspek + 1;
-        $sheet->setCellValue('A' . $row_atasan_langsung, 'Atasan Langsung:');
-        $sheet->mergeCells("A$row_atasan_langsung:C$row_atasan_langsung");
-        $sheet->getStyle("A$row_atasan_langsung")->getFont()->setBold(true);
-
-        // **Isi Atasan Langsung**
-        $row_text_atasan_langsung = $row_atasan_langsung + 1;
-        $sheet->setCellValue('A' . $row_text_atasan_langsung, !empty($text->text_tambahan_atasan_langsung) ? $text->text_tambahan_atasan_langsung : '');
-        $sheet->mergeCells("A$row_text_atasan_langsung:C$row_text_atasan_langsung");
-
-        // **Garis Kosong**
-        $row_garis_atasan = $row_text_atasan_langsung + 1;
-        $sheet->mergeCells("A$row_garis_atasan:C$row_garis_atasan");
-
-        // **Atasan Tidak Langsung**
-        $row_atasan_tidak_langsung = $row_garis_atasan + 1;
-        $sheet->setCellValue('A' . $row_atasan_tidak_langsung, 'Atasan Tidak Langsung:');
-        $sheet->mergeCells("A$row_atasan_tidak_langsung:C$row_atasan_tidak_langsung");
-        $sheet->getStyle("A$row_atasan_tidak_langsung")->getFont()->setBold(true);
-
-        // **Isi Atasan Tidak Langsung**
-        $row_text_atasan_tidak_langsung = $row_atasan_tidak_langsung + 1;
-        $sheet->setCellValue('A' . $row_text_atasan_tidak_langsung, !empty($text->text_tambahan_atasan_tidak_langsung) ? $text->text_tambahan_atasan_tidak_langsung : '');
-        $sheet->mergeCells("A$row_text_atasan_tidak_langsung:C$row_text_atasan_tidak_langsung");
-
-        // **Garis Kosong**
-        $row_garis_tidak_langsung = $row_text_atasan_tidak_langsung + 1;
-        $sheet->mergeCells("A$row_garis_tidak_langsung:C$row_garis_tidak_langsung");
-
-        // **Atur Border untuk Tabel Aspek Tambahan**
-        $styleArray = [
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                ],
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_LEFT,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ];
-
-        // Terapkan border ke area aspek tambahan
-        $sheet->getStyle("A$row_aspek:C$row_garis_tidak_langsung")->applyFromArray($styleArray);
-
-        // **Set Lebar Kolom**
-        $sheet->getColumnDimension('A')->setWidth(50);
-        $sheet->getColumnDimension('B')->setWidth(50);
-        $sheet->getColumnDimension('C')->setWidth(50);
-
-        // Set nama file
-        $filename = "Laporan_Penilaian_$nrp.xlsx";
-
-        // Simpan dan download file
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit;
     }
 
     public function download_data_pkk_excel_3_7($nrp, $periode)
@@ -1774,340 +2043,691 @@ class Trans_pkk extends CI_Controller
             redirect(base_url('login'));
         } else {
             // Ambil data dari database
-            $query = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
-            $data = $query->row_array();
+            if ($periode == 'all') {
+                $trans = $this->master_model->get_trans_pkk($nrp);
+                $spreadsheet = new Spreadsheet();
+                $index = 0;
+                foreach ($trans->result() as $dm) {
+                    $query = $this->master_model->lap_nilai_3_7_periode($dm->nrp, $dm->id_p_periode);
+                    $data = $query->row_array();
 
-            if (!$data) {
-                show_error('Data tidak ditemukan atau tidak dapat diakses.', 404);
-                return;
-            }
+                    if (!$data) {
+                        show_error('Data tidak ditemukan atau tidak dapat diakses.', 404);
+                        return;
+                    }
 
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
+                    if ($index > 0) {
+                        $spreadsheet->createSheet();
+                    }
 
-            // *Mengatur Border*
-            $thickBorder = [
-                'borders' => [
-                    'outline' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
-                        'color' => ['rgb' => '000000'],
+                    $spreadsheet->setActiveSheetIndex($index);
+
+                    $sheet = $spreadsheet->getActiveSheet();
+                    $sheet->setTitle("Periode " . $dm->id_p_periode);
+
+                    // *Mengatur Border*
+                    $thickBorder = [
+                        'borders' => [
+                            'outline' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                                'color' => ['rgb' => '000000'],
+                            ],
+                            'inside' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                'color' => ['rgb' => '000000'],
+                            ],
+                        ],
+                    ];
+
+                    // *Header & Judul*
+                    $sheet->mergeCells('A1:F1');
+                    $sheet->mergeCells('A2:F2');
+                    $sheet->mergeCells('A3:F3');
+                    $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KINERJA');
+                    $sheet->setCellValue('A2', 'KARYAWAN KONTRAK');
+                    $sheet->setCellValue('A3', 'KELOMPOK III - VII');
+                    $sheet->getStyle('A1:A3')->getFont()->setBold(true)->setSize(14);
+                    $sheet->getStyle('A1:A3')->getAlignment()->setHorizontal('center');
+
+
+                    // // *Mengatur Lebar Kolom*
+                    // $column_widths = ['A' => 3, 'B' => 50, 'C' => 15, 'D' => 15, 'E' => 15, 'F' => 15];
+                    // foreach ($column_widths as $column => $width) {
+                    //     $sheet->getColumnDimension($column)->setWidth($width);
+                    // }
+
+                    // *Data Karyawan*
+                    $row_karyawan = 5;
+                    $sheet->mergeCells("A$row_karyawan:B$row_karyawan");
+                    $sheet->setCellValue('A' . $row_karyawan, 'KARYAWAN YANG DINILAI');
+                    $sheet->getStyle("A$row_karyawan")->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle("A$row_karyawan")->getFont()->setBold(true);
+                    $sheet->setCellValue('A' . ($row_karyawan + 1), 'Nama:');
+                    $sheet->setCellValue('B' . ($row_karyawan + 1), $data['karyawan_nama']);
+                    $sheet->setCellValue('A' . ($row_karyawan + 2), 'Jabatan:');
+                    $sheet->setCellValue('B' . ($row_karyawan + 2), $data['job_grade']);
+                    $sheet->setCellValue('A' . ($row_karyawan + 3), 'Tanggal Masuk:');
+                    $sheet->setCellValue('B' . ($row_karyawan + 3), $data['tgl_hire']);
+                    $sheet->getStyle("A$row_karyawan:B" . ($row_karyawan + 3))->applyFromArray($thickBorder);
+
+                    // *Data Penilai*
+                    $row_penilai = $row_karyawan + 5;
+                    $sheet->mergeCells("A$row_penilai:B$row_penilai");
+                    $sheet->setCellValue('A' . $row_penilai, 'NAMA PENILAI');
+                    $sheet->getStyle("A$row_penilai")->getFont()->setBold(true);
+                    $sheet->getStyle("A$row_penilai")->getAlignment()->setHorizontal('center');
+                    $sheet->setCellValue('A' . ($row_penilai + 1), 'Atasan Langsung:');
+                    $sheet->setCellValue('B' . ($row_penilai + 1), $data['spv1_nama']);
+                    $sheet->setCellValue('A' . ($row_penilai + 2), 'Atasan Tidak Langsung:');
+                    $sheet->setCellValue('B' . ($row_penilai + 2), $data['spv2_nama']);
+                    $sheet->setCellValue('A' . ($row_penilai + 3), 'Unit:');
+                    $sheet->setCellValue('B' . ($row_penilai + 3), $data['department']);
+                    $sheet->setCellValue('A' . ($row_penilai + 4), 'Periode Penilaian:');
+                    $sheet->setCellValue('B' . ($row_penilai + 4), $data['id_p_periode']);
+                    $sheet->getStyle("A$row_penilai:B" . ($row_penilai + 4))->applyFromArray($thickBorder);
+                    $sheet->getStyle('B' . ($row_penilai + 4))->getAlignment()->setHorizontal('left');
+
+                    // *Header Tabel Penilaian*
+                    $row_penilaian = $row_penilai + 6;
+                    $sheet->setCellValue('A' . $row_penilaian, 'No')
+                        ->setCellValue('B' . $row_penilaian, 'Aspek Yang Dinilai')
+                        ->setCellValue('C' . $row_penilaian, 'Atasan Langsung')
+                        ->setCellValue('D' . $row_penilaian, 'Nilai Atasan Langsung')
+                        ->setCellValue('E' . $row_penilaian, 'Atasan Tidak Langsung')
+                        ->setCellValue('F' . $row_penilaian, 'Nilai Atasan Tidak Langsung');
+                    $sheet->getStyle("A$row_penilaian:F$row_penilaian")->getFont()->setBold(true);
+                    $sheet->getStyle("B$row_penilaian")->getAlignment()->setHorizontal('center');
+
+                    // *Mengisi Data Penilaian*
+                    $penilaian2 = $this->master_model->hasil_nilai_3_7_periode($dm->nrp, $dm->id_p_periode);
+                    $row = $row_penilaian + 1;
+                    $total_nilai_atasan_langsung = 0;
+                    $total_nilai_atasan_tidak_langsung = 0;
+                    $no = 1;
+
+                    foreach ($penilaian2->result_array() as $p) {
+                        $sheet->setCellValue('A' . $row, $no);
+                        $sheet->setCellValue('B' . $row, $p['aspek_dinilai']);
+                        $sheet->setCellValue('C' . $row, $p['isi_nilai_atasan_langsung']);
+                        $sheet->setCellValue('D' . $row, $p['nilai_atasan_langsung']);
+                        $sheet->setCellValue('E' . $row, $p['isi_nilai_atasan_tidak_langsung']);
+                        $sheet->setCellValue('F' . $row, $p['nilai_atasan_tidak_langsung']);
+                        $row++;
+                        $no++;
+                    }
+
+                    // Hitung total
+                    $total_nilai_atasan_langsung += (float) $p['total_nilai_atasan_langsung'];
+                    $total_nilai_atasan_tidak_langsung += (float) $p['total_nilai_atasan_tidak_langsung'];
+
+                    $row++;
+                    $no++;
+
+                    // **Menambahkan Total**
+                    $sheet->setCellValue("B$row", 'Total');
+                    $sheet->setCellValue("C$row", $total_nilai_atasan_langsung);
+                    $sheet->setCellValue("E$row", $total_nilai_atasan_tidak_langsung);
+                    $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
+                    $sheet->mergeCells("E$row:F$row");
+                    $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
+                    $sheet->getStyle("B$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                    // **Menghitung Hasil Akhir**
+                    $row_hasil_akhir = $row + 1;
+                    $hasil_akhir = ($total_nilai_atasan_langsung + $total_nilai_atasan_tidak_langsung) / 2;
+
+                    $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
+                    $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
+                    $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
+                    $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
+                    $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                    $sheet->getStyle("A$row_penilaian:F$row_hasil_akhir")->applyFromArray($thickBorder);
+
+                    // *Merapikan Alignment*
+                    $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setHorizontal('left'); // Rata tengah horizontal untuk No
+                    $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setVertical('left'); // Rata tengah vertikal untuk No
+                    $sheet->getStyle("C$row_penilaian:F" . ($row - 1))->getAlignment()->setHorizontal('center'); // Rata tengah untuk kolom lain
+
+                    // *Menyesuaikan Lebar Kolom secara Dinamis*
+                    foreach (range('A', 'F') as $columnID) {
+                        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+                    }
+
+                    //  // *Mengatur Lebar Kolom*
+                    //  $column_widths = ['A' => 3, 'B' => 50, 'C' => 15, 'D' => 15, 'E' => 15, 'F' => 15];
+                    //  foreach ($column_widths as $column => $width) {
+                    //      $sheet->getColumnDimension($column)->setWidth($width);
+                    //  }
+
+                    // *Tabel Kriteria*
+                    $row_kriteria = $row_hasil_akhir + 2; // Sesuaikan posisi awal tabel kriteria
+                    $sheet->setCellValue('A' . $row_kriteria, 'Kriteria');
+                    $sheet->setCellValue('B' . $row_kriteria, 'Nilai');
+                    $sheet->setCellValue('C' . $row_kriteria, 'Keterangan');
+                    $sheet->getStyle("A$row_kriteria:C$row_kriteria")->getFont()->setBold(true);
+
+                    $start_kriteria = $row_kriteria + 1;
+                    $kriteria = [
+                        ['A', '90 s.d. 100', 'Istimewa'],
+                        ['B', '80 s.d. 89', 'Baik'],
+                        ['C', '60 s.d. 79', 'Cukup'],
+                        ['D', '40 s.d. 59', 'Kurang']
+                    ];
+                    foreach ($kriteria as $k) {
+                        $sheet->setCellValue('A' . $start_kriteria, $k[0]);
+                        $sheet->setCellValue('B' . $start_kriteria, $k[1]);
+                        $sheet->setCellValue('C' . $start_kriteria, $k[2]);
+                        $start_kriteria++;
+                    }
+
+                    // *Menambahkan Border Tebal pada Tabel Kriteria*
+                    $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->applyFromArray($thickBorder);
+
+                    // *Membuat Alignment ke Tengah*
+                    $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setHorizontal('center');
+                    $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setVertical('center');
+
+                    // // Tambahkan bagian Kesimpulan
+                    // $row_kriteria += 6;
+                    // $sheet->setCellValue('A' . $row, 'KESIMPULAN ATAS HASIL SELURUH PENILAIAN');
+                    // $sheet->mergeCells('A' . $row . ':F' . $row);
+                    // $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+                    // $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    // $row++;
+                    // $sheet->setCellValue('A' . $row, 'Tuliskan hal-hal positif, kelemahan yang harus diperbaiki, serta perbaikan yang telah dilakukan karyawan dibanding penilaian sebelumnya.');
+                    // $sheet->mergeCells('A' . $row . ':F' . ($row + 2));
+
+                    // // Tambahkan bagian komentar
+                    // $row += 4;
+                    // $sheet->setCellValue('A' . $row, 'PENDAPAT / KOMENTAR');
+                    // $sheet->mergeCells('A' . $row . ':F' . $row);
+                    // $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+
+                    // Ambil data dari model
+                    $menu3 = $this->master_model->get_menu3_data()->result();
+                    $menu4 = $this->master_model->get_menu4_data()->result();
+                    $menu6 = $this->master_model->get_menu6_data()->result();
+                    $form_a = $this->master_model->get_form_A($dm->nrp, $dm->id_p_periode, $penilaian2->atasan);
+                    $form_b = $this->master_model->get_form_B($dm->nrp, $dm->id_p_periode, $penilaian2->atasan);
+
+                    // Set awal row
+                    $row = $start_kriteria + 1;
+
+                    // *Header Tabel*
+                    $headers = ['RENCANA KERJA', 'KESIMPULAN HASIL', '%', 'KESIMPULAN DEVIASI'];
+                    $sheet->fromArray($headers, null, "A$row");
+                    $sheet->getStyle("A$row:D$row")->applyFromArray($thickBorder);
+                    $sheet->getStyle("A$row:D$row")->getFont()->setBold(true);
+                    $row++;
+
+                    // *Bagian Kinerja*
+                    $sheet->setCellValue("A$row", 'A. KINERJA (Didasarkan Sasaran Pekerjaan)');
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    // *Tugas Pokok*
+                    if (!empty($menu3)) {
+                        $sheet->setCellValue("A$row", "1. {$menu3[0]->nama_value}");
+                        $sheet->getStyle("A$row")->getFont()->setBold(true);
+                        $row++;
+
+                        $sheet->setCellValue("A$row", "a. {$menu3[1]->description}");
+                        $sheet->setCellValue("B$row", $form_a->hasil_nilai_a ?? 'Nilai Belum Di Isi !');
+                        $sheet->setCellValue("C$row", $form_a->persen_a ?? '0');
+                        $sheet->setCellValue("D$row", $form_a->deviasi_nilai_a ?? 'Nilai Belum Di Isi !');
+                        $row++;
+
+                        $sheet->setCellValue("A$row", 'b. Sasaran Pekerjaan Secara Kuantitatif');
+                        $sheet->setCellValue("B$row", $form_a->hasil_nilai_b ?? 'Nilai Belum Di Isi !');
+                        $sheet->setCellValue("C$row", $form_a->persen_b ?? '0');
+                        $sheet->setCellValue("D$row", $form_a->deviasi_b ?? 'Nilai Belum Di Isi !');
+                        $row++;
+
+                        // *Menambahkan Border ke Tugas Pokok*
+                        $sheet->getStyle("A" . ($row - 3) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                    }
+
+                    // *Tugas Tambahan*
+                    if (!empty($menu3)) {
+                        $sheet->setCellValue("A$row", "2. {$menu3[1]->nama_value}");
+                        $sheet->mergeCells("A$row:D$row");
+                        $sheet->getStyle("A$row")->getFont()->setBold(true);
+                        $row++;
+
+                        $sheet->setCellValue("A$row", $form_a->tugas_tambahan ?? 'Nilai Belum Di Isi !');
+                        $sheet->setCellValue("B$row", $form_a->hasil_tgs_tambahan ?? 'Nilai Belum Di Isi !');
+                        $sheet->setCellValue("C$row", $form_a->persen_tambahan ?? '0');
+                        $sheet->setCellValue("D$row", $form_a->deviasi_tambahan ?? 'Nilai Belum Di Isi !');
+                        $row++;
+
+                        // *Menambahkan Border ke Tugas Tambahan*
+                        $sheet->getStyle("A" . ($row - 2) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                    }
+
+                    // *Kesimpulan*
+                    if (!empty($menu4)) {
+                        $row += 2;
+                        $sheet->setCellValue("A$row", $menu4[1]->nama_value);
+                        $sheet->mergeCells("A$row:D$row");
+                        $sheet->getStyle("A$row")->getFont()->setBold(true);
+                        $row++;
+
+                        $sheet->setCellValue("A$row", $menu4[1]->description);
+                        $sheet->mergeCells("A$row:D$row");
+                        $row++;
+
+                        $sheet->setCellValue("A$row", $form_b->kesimpulan ?? 'Nilai Belum Di Isi !');
+                        $sheet->mergeCells("A$row:D" . ($row + 1));
+                        $row += 2;
+
+                        // *Menambahkan Border ke Kesimpulan*
+                        $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                    }
+
+                    // penjelasan
+                    if (!empty($menu4)) {
+                        $row += 2;
+                        $sheet->setCellValue("A$row", $menu4[1]->nama_value);
+                        $sheet->mergeCells("A$row:D$row");
+                        $sheet->getStyle("A$row")->getFont()->setBold(true);
+                        $row++;
+
+                        $sheet->setCellValue("A$row", $menu4[1]->description);
+                        $sheet->mergeCells("A$row:D$row");
+                        $row++;
+
+                        $sheet->setCellValue("A$row", $form_b->penjelasan ?? 'Nilai Belum Di Isi !');
+                        $sheet->mergeCells("A$row:D" . ($row + 1));
+                        $row += 2;
+
+                        // *Menambahkan Border ke Kesimpulan*
+                        $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                    }
+
+
+                    // *Pendapat / Komentar*
+                    $row += 2;
+                    $sheet->setCellValue("A$row", 'PENDAPAT / KOMENTAR');
+                    $sheet->mergeCells("A$row:D$row");
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    if (!empty($menu6)) {
+                        $sheet->setCellValue("A$row", "1. {$menu6[0]->nama_value}");
+                        $sheet->mergeCells("A$row:D$row");
+                        $sheet->getStyle("A$row")->getFont()->setBold(true);
+                        $row++;
+
+                        $sheet->setCellValue("A$row", 'Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut di atas.');
+                        $sheet->mergeCells("A$row:D" . ($row + 1));
+                        $row += 2;
+
+                        $sheet->setCellValue("A$row", "2. {$menu6[1]->nama_value}");
+                        $sheet->mergeCells("A$row:D$row");
+                        $sheet->getStyle("A$row")->getFont()->setBold(true);
+                        $row++;
+
+                        // *Menambahkan Border ke Pendapat*
+                        $sheet->getStyle("A" . ($row - 6) . ":D$row")->applyFromArray($thickBorder);
+                    }
+                    $index++;
+                }
+                // Set Sheet Aktif ke yang pertama
+                $spreadsheet->setActiveSheetIndex(0);
+                // Set nama file
+                $filename = "Laporan_Penilaian_$nrp.xlsx";
+
+                if (ob_get_contents()) {
+                    ob_end_clean();
+                }
+
+                // Simpan dan download file
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="' . $filename . '"');
+                header('Cache-Control: max-age=0');
+
+                $writer = new Xlsx($spreadsheet);
+                $writer->save('php://output');
+                exit;
+            } else {
+                $query = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
+                $data = $query->row_array();
+
+                if (!$data) {
+                    show_error('Data tidak ditemukan atau tidak dapat diakses.', 404);
+                    return;
+                }
+
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+                $sheet->setTitle("Periode " . $periode);
+
+                // *Mengatur Border*
+                $thickBorder = [
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                            'color' => ['rgb' => '000000'],
+                        ],
+                        'inside' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ],
                     ],
-                    'inside' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                        'color' => ['rgb' => '000000'],
-                    ],
-                ],
-            ];
+                ];
 
-            // *Header & Judul*
-            $sheet->mergeCells('A1:F1');
-            $sheet->mergeCells('A2:F2');
-            $sheet->mergeCells('A3:F3');
-            $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KINERJA');
-            $sheet->setCellValue('A2', 'KARYAWAN KONTRAK');
-            $sheet->setCellValue('A3', 'KELOMPOK III - VII');
-            $sheet->getStyle('A1:A3')->getFont()->setBold(true)->setSize(14);
-            $sheet->getStyle('A1:A3')->getAlignment()->setHorizontal('center');
+                // *Header & Judul*
+                $sheet->mergeCells('A1:F1');
+                $sheet->mergeCells('A2:F2');
+                $sheet->mergeCells('A3:F3');
+                $sheet->setCellValue('A1', 'LAPORAN PENILAIAN PRESTASI KINERJA');
+                $sheet->setCellValue('A2', 'KARYAWAN KONTRAK');
+                $sheet->setCellValue('A3', 'KELOMPOK III - VII');
+                $sheet->getStyle('A1:A3')->getFont()->setBold(true)->setSize(14);
+                $sheet->getStyle('A1:A3')->getAlignment()->setHorizontal('center');
 
 
-            // // *Mengatur Lebar Kolom*
-            // $column_widths = ['A' => 3, 'B' => 50, 'C' => 15, 'D' => 15, 'E' => 15, 'F' => 15];
-            // foreach ($column_widths as $column => $width) {
-            //     $sheet->getColumnDimension($column)->setWidth($width);
-            // }
+                // // *Mengatur Lebar Kolom*
+                // $column_widths = ['A' => 3, 'B' => 50, 'C' => 15, 'D' => 15, 'E' => 15, 'F' => 15];
+                // foreach ($column_widths as $column => $width) {
+                //     $sheet->getColumnDimension($column)->setWidth($width);
+                // }
 
-            // *Data Karyawan*
-            $row_karyawan = 5;
-            $sheet->mergeCells("A$row_karyawan:B$row_karyawan");
-            $sheet->setCellValue('A' . $row_karyawan, 'KARYAWAN YANG DINILAI');
-            $sheet->getStyle("A$row_karyawan")->getAlignment()->setHorizontal('center');
-            $sheet->getStyle("A$row_karyawan")->getFont()->setBold(true);
-            $sheet->setCellValue('A' . ($row_karyawan + 1), 'Nama:');
-            $sheet->setCellValue('B' . ($row_karyawan + 1), $data['karyawan_nama']);
-            $sheet->setCellValue('A' . ($row_karyawan + 2), 'Jabatan:');
-            $sheet->setCellValue('B' . ($row_karyawan + 2), $data['job_grade']);
-            $sheet->setCellValue('A' . ($row_karyawan + 3), 'Tanggal Masuk:');
-            $sheet->setCellValue('B' . ($row_karyawan + 3), $data['tgl_hire']);
-            $sheet->getStyle("A$row_karyawan:B" . ($row_karyawan + 3))->applyFromArray($thickBorder);
+                // *Data Karyawan*
+                $row_karyawan = 5;
+                $sheet->mergeCells("A$row_karyawan:B$row_karyawan");
+                $sheet->setCellValue('A' . $row_karyawan, 'KARYAWAN YANG DINILAI');
+                $sheet->getStyle("A$row_karyawan")->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("A$row_karyawan")->getFont()->setBold(true);
+                $sheet->setCellValue('A' . ($row_karyawan + 1), 'Nama:');
+                $sheet->setCellValue('B' . ($row_karyawan + 1), $data['karyawan_nama']);
+                $sheet->setCellValue('A' . ($row_karyawan + 2), 'Jabatan:');
+                $sheet->setCellValue('B' . ($row_karyawan + 2), $data['job_grade']);
+                $sheet->setCellValue('A' . ($row_karyawan + 3), 'Tanggal Masuk:');
+                $sheet->setCellValue('B' . ($row_karyawan + 3), $data['tgl_hire']);
+                $sheet->getStyle("A$row_karyawan:B" . ($row_karyawan + 3))->applyFromArray($thickBorder);
 
-            // *Data Penilai*
-            $row_penilai = $row_karyawan + 5;
-            $sheet->mergeCells("A$row_penilai:B$row_penilai");
-            $sheet->setCellValue('A' . $row_penilai, 'NAMA PENILAI');
-            $sheet->getStyle("A$row_penilai")->getFont()->setBold(true);
-            $sheet->getStyle("A$row_penilai")->getAlignment()->setHorizontal('center');
-            $sheet->setCellValue('A' . ($row_penilai + 1), 'Atasan Langsung:');
-            $sheet->setCellValue('B' . ($row_penilai + 1), $data['spv1_nama']);
-            $sheet->setCellValue('A' . ($row_penilai + 2), 'Atasan Tidak Langsung:');
-            $sheet->setCellValue('B' . ($row_penilai + 2), $data['spv2_nama']);
-            $sheet->setCellValue('A' . ($row_penilai + 3), 'Unit:');
-            $sheet->setCellValue('B' . ($row_penilai + 3), $data['department']);
-            $sheet->setCellValue('A' . ($row_penilai + 4), 'Periode Penilaian:');
-            $sheet->setCellValue('B' . ($row_penilai + 4), '1');
-            $sheet->getStyle("A$row_penilai:B" . ($row_penilai + 4))->applyFromArray($thickBorder);
-            $sheet->getStyle('B' . ($row_penilai + 4))->getAlignment()->setHorizontal('left');
+                // *Data Penilai*
+                $row_penilai = $row_karyawan + 5;
+                $sheet->mergeCells("A$row_penilai:B$row_penilai");
+                $sheet->setCellValue('A' . $row_penilai, 'NAMA PENILAI');
+                $sheet->getStyle("A$row_penilai")->getFont()->setBold(true);
+                $sheet->getStyle("A$row_penilai")->getAlignment()->setHorizontal('center');
+                $sheet->setCellValue('A' . ($row_penilai + 1), 'Atasan Langsung:');
+                $sheet->setCellValue('B' . ($row_penilai + 1), $data['spv1_nama']);
+                $sheet->setCellValue('A' . ($row_penilai + 2), 'Atasan Tidak Langsung:');
+                $sheet->setCellValue('B' . ($row_penilai + 2), $data['spv2_nama']);
+                $sheet->setCellValue('A' . ($row_penilai + 3), 'Unit:');
+                $sheet->setCellValue('B' . ($row_penilai + 3), $data['department']);
+                $sheet->setCellValue('A' . ($row_penilai + 4), 'Periode Penilaian:');
+                $sheet->setCellValue('B' . ($row_penilai + 4), '1');
+                $sheet->getStyle("A$row_penilai:B" . ($row_penilai + 4))->applyFromArray($thickBorder);
+                $sheet->getStyle('B' . ($row_penilai + 4))->getAlignment()->setHorizontal('left');
 
-            // *Header Tabel Penilaian*
-            $row_penilaian = $row_penilai + 6;
-            $sheet->setCellValue('A' . $row_penilaian, 'No')
-                ->setCellValue('B' . $row_penilaian, 'Aspek Yang Dinilai')
-                ->setCellValue('C' . $row_penilaian, 'Atasan Langsung')
-                ->setCellValue('D' . $row_penilaian, 'Nilai Atasan Langsung')
-                ->setCellValue('E' . $row_penilaian, 'Atasan Tidak Langsung')
-                ->setCellValue('F' . $row_penilaian, 'Nilai Atasan Tidak Langsung');
-            $sheet->getStyle("A$row_penilaian:F$row_penilaian")->getFont()->setBold(true);
-            $sheet->getStyle("B$row_penilaian")->getAlignment()->setHorizontal('center');
+                // *Header Tabel Penilaian*
+                $row_penilaian = $row_penilai + 6;
+                $sheet->setCellValue('A' . $row_penilaian, 'No')
+                    ->setCellValue('B' . $row_penilaian, 'Aspek Yang Dinilai')
+                    ->setCellValue('C' . $row_penilaian, 'Atasan Langsung')
+                    ->setCellValue('D' . $row_penilaian, 'Nilai Atasan Langsung')
+                    ->setCellValue('E' . $row_penilaian, 'Atasan Tidak Langsung')
+                    ->setCellValue('F' . $row_penilaian, 'Nilai Atasan Tidak Langsung');
+                $sheet->getStyle("A$row_penilaian:F$row_penilaian")->getFont()->setBold(true);
+                $sheet->getStyle("B$row_penilaian")->getAlignment()->setHorizontal('center');
 
-            // *Mengisi Data Penilaian*
-            $penilaian2 = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
-            $row = $row_penilaian + 1;
-            $total_nilai_atasan_langsung = 0;
-            $total_nilai_atasan_tidak_langsung = 0;
-            $no = 1;
+                // *Mengisi Data Penilaian*
+                $penilaian2 = $this->master_model->hasil_nilai_3_7_periode($nrp, $periode);
+                $row = $row_penilaian + 1;
+                $total_nilai_atasan_langsung = 0;
+                $total_nilai_atasan_tidak_langsung = 0;
+                $no = 1;
 
-            foreach ($penilaian2->result_array() as $p) {
-                $sheet->setCellValue('A' . $row, $no);
-                $sheet->setCellValue('B' . $row, $p['aspek_dinilai']);
-                $sheet->setCellValue('C' . $row, $p['isi_nilai_atasan_langsung']);
-                $sheet->setCellValue('D' . $row, $p['nilai_atasan_langsung']);
-                $sheet->setCellValue('E' . $row, $p['isi_nilai_atasan_tidak_langsung']);
-                $sheet->setCellValue('F' . $row, $p['nilai_atasan_tidak_langsung']);
+                foreach ($penilaian2->result_array() as $p) {
+                    $sheet->setCellValue('A' . $row, $no);
+                    $sheet->setCellValue('B' . $row, $p['aspek_dinilai']);
+                    $sheet->setCellValue('C' . $row, $p['isi_nilai_atasan_langsung']);
+                    $sheet->setCellValue('D' . $row, $p['nilai_atasan_langsung']);
+                    $sheet->setCellValue('E' . $row, $p['isi_nilai_atasan_tidak_langsung']);
+                    $sheet->setCellValue('F' . $row, $p['nilai_atasan_tidak_langsung']);
+                    $row++;
+                    $no++;
+                }
+
+                // Hitung total
+                $total_nilai_atasan_langsung += (float) $p['total_nilai_atasan_langsung'];
+                $total_nilai_atasan_tidak_langsung += (float) $p['total_nilai_atasan_tidak_langsung'];
+
                 $row++;
                 $no++;
+
+                // **Menambahkan Total**
+                $sheet->setCellValue("B$row", 'Total');
+                $sheet->setCellValue("C$row", $total_nilai_atasan_langsung);
+                $sheet->setCellValue("E$row", $total_nilai_atasan_tidak_langsung);
+                $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
+                $sheet->mergeCells("E$row:F$row");
+                $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
+                $sheet->getStyle("B$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                // **Menghitung Hasil Akhir**
+                $row_hasil_akhir = $row + 1;
+                $hasil_akhir = ($total_nilai_atasan_langsung + $total_nilai_atasan_tidak_langsung) / 2;
+
+                $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
+                $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
+                $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
+                $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
+                $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                $sheet->getStyle("A$row_penilaian:F$row_hasil_akhir")->applyFromArray($thickBorder);
+
+                // *Merapikan Alignment*
+                $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setHorizontal('left'); // Rata tengah horizontal untuk No
+                $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setVertical('left'); // Rata tengah vertikal untuk No
+                $sheet->getStyle("C$row_penilaian:F" . ($row - 1))->getAlignment()->setHorizontal('center'); // Rata tengah untuk kolom lain
+
+                // *Menyesuaikan Lebar Kolom secara Dinamis*
+                foreach (range('A', 'F') as $columnID) {
+                    $sheet->getColumnDimension($columnID)->setAutoSize(true);
+                }
+
+                //  // *Mengatur Lebar Kolom*
+                //  $column_widths = ['A' => 3, 'B' => 50, 'C' => 15, 'D' => 15, 'E' => 15, 'F' => 15];
+                //  foreach ($column_widths as $column => $width) {
+                //      $sheet->getColumnDimension($column)->setWidth($width);
+                //  }
+
+                // *Tabel Kriteria*
+                $row_kriteria = $row_hasil_akhir + 2; // Sesuaikan posisi awal tabel kriteria
+                $sheet->setCellValue('A' . $row_kriteria, 'Kriteria');
+                $sheet->setCellValue('B' . $row_kriteria, 'Nilai');
+                $sheet->setCellValue('C' . $row_kriteria, 'Keterangan');
+                $sheet->getStyle("A$row_kriteria:C$row_kriteria")->getFont()->setBold(true);
+
+                $start_kriteria = $row_kriteria + 1;
+                $kriteria = [
+                    ['A', '90 s.d. 100', 'Istimewa'],
+                    ['B', '80 s.d. 89', 'Baik'],
+                    ['C', '60 s.d. 79', 'Cukup'],
+                    ['D', '40 s.d. 59', 'Kurang']
+                ];
+                foreach ($kriteria as $k) {
+                    $sheet->setCellValue('A' . $start_kriteria, $k[0]);
+                    $sheet->setCellValue('B' . $start_kriteria, $k[1]);
+                    $sheet->setCellValue('C' . $start_kriteria, $k[2]);
+                    $start_kriteria++;
+                }
+
+                // *Menambahkan Border Tebal pada Tabel Kriteria*
+                $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->applyFromArray($thickBorder);
+
+                // *Membuat Alignment ke Tengah*
+                $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setHorizontal('center');
+                $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setVertical('center');
+
+                // // Tambahkan bagian Kesimpulan
+                // $row_kriteria += 6;
+                // $sheet->setCellValue('A' . $row, 'KESIMPULAN ATAS HASIL SELURUH PENILAIAN');
+                // $sheet->mergeCells('A' . $row . ':F' . $row);
+                // $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+                // $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                // $row++;
+                // $sheet->setCellValue('A' . $row, 'Tuliskan hal-hal positif, kelemahan yang harus diperbaiki, serta perbaikan yang telah dilakukan karyawan dibanding penilaian sebelumnya.');
+                // $sheet->mergeCells('A' . $row . ':F' . ($row + 2));
+
+                // // Tambahkan bagian komentar
+                // $row += 4;
+                // $sheet->setCellValue('A' . $row, 'PENDAPAT / KOMENTAR');
+                // $sheet->mergeCells('A' . $row . ':F' . $row);
+                // $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+
+                // Ambil data dari model
+                $menu3 = $this->master_model->get_menu3_data()->result();
+                $menu4 = $this->master_model->get_menu4_data()->result();
+                $menu6 = $this->master_model->get_menu6_data()->result();
+                $form_a = $this->master_model->get_form_A($nrp, $periode, $penilaian2->atasan);
+                $form_b = $this->master_model->get_form_B($nrp, $periode, $penilaian2->atasan);
+
+                // Set awal row
+                $row = $start_kriteria + 1;
+
+                // *Header Tabel*
+                $headers = ['RENCANA KERJA', 'KESIMPULAN HASIL', '%', 'KESIMPULAN DEVIASI'];
+                $sheet->fromArray($headers, null, "A$row");
+                $sheet->getStyle("A$row:D$row")->applyFromArray($thickBorder);
+                $sheet->getStyle("A$row:D$row")->getFont()->setBold(true);
+                $row++;
+
+                // *Bagian Kinerja*
+                $sheet->setCellValue("A$row", 'A. KINERJA (Didasarkan Sasaran Pekerjaan)');
+                $sheet->getStyle("A$row")->getFont()->setBold(true);
+                $row++;
+
+                // *Tugas Pokok*
+                if (!empty($menu3)) {
+                    $sheet->setCellValue("A$row", "1. {$menu3[0]->nama_value}");
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    $sheet->setCellValue("A$row", "a. {$menu3[1]->description}");
+                    $sheet->setCellValue("B$row", $form_a->hasil_nilai_a ?? 'Nilai Belum Di Isi !');
+                    $sheet->setCellValue("C$row", $form_a->persen_a ?? '0');
+                    $sheet->setCellValue("D$row", $form_a->deviasi_nilai_a ?? 'Nilai Belum Di Isi !');
+                    $row++;
+
+                    $sheet->setCellValue("A$row", 'b. Sasaran Pekerjaan Secara Kuantitatif');
+                    $sheet->setCellValue("B$row", $form_a->hasil_nilai_b ?? 'Nilai Belum Di Isi !');
+                    $sheet->setCellValue("C$row", $form_a->persen_b ?? '0');
+                    $sheet->setCellValue("D$row", $form_a->deviasi_b ?? 'Nilai Belum Di Isi !');
+                    $row++;
+
+                    // *Menambahkan Border ke Tugas Pokok*
+                    $sheet->getStyle("A" . ($row - 3) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                }
+
+                // *Tugas Tambahan*
+                if (!empty($menu3)) {
+                    $sheet->setCellValue("A$row", "2. {$menu3[1]->nama_value}");
+                    $sheet->mergeCells("A$row:D$row");
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    $sheet->setCellValue("A$row", $form_a->tugas_tambahan ?? 'Nilai Belum Di Isi !');
+                    $sheet->setCellValue("B$row", $form_a->hasil_tgs_tambahan ?? 'Nilai Belum Di Isi !');
+                    $sheet->setCellValue("C$row", $form_a->persen_tambahan ?? '0');
+                    $sheet->setCellValue("D$row", $form_a->deviasi_tambahan ?? 'Nilai Belum Di Isi !');
+                    $row++;
+
+                    // *Menambahkan Border ke Tugas Tambahan*
+                    $sheet->getStyle("A" . ($row - 2) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                }
+
+                // *Kesimpulan*
+                if (!empty($menu4)) {
+                    $row += 2;
+                    $sheet->setCellValue("A$row", $menu4[1]->nama_value);
+                    $sheet->mergeCells("A$row:D$row");
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    $sheet->setCellValue("A$row", $menu4[1]->description);
+                    $sheet->mergeCells("A$row:D$row");
+                    $row++;
+
+                    $sheet->setCellValue("A$row", $form_b->kesimpulan ?? 'Nilai Belum Di Isi !');
+                    $sheet->mergeCells("A$row:D" . ($row + 1));
+                    $row += 2;
+
+                    // *Menambahkan Border ke Kesimpulan*
+                    $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                }
+
+                // penjelasan
+                if (!empty($menu4)) {
+                    $row += 2;
+                    $sheet->setCellValue("A$row", $menu4[1]->nama_value);
+                    $sheet->mergeCells("A$row:D$row");
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    $sheet->setCellValue("A$row", $menu4[1]->description);
+                    $sheet->mergeCells("A$row:D$row");
+                    $row++;
+
+                    $sheet->setCellValue("A$row", $form_b->penjelasan ?? 'Nilai Belum Di Isi !');
+                    $sheet->mergeCells("A$row:D" . ($row + 1));
+                    $row += 2;
+
+                    // *Menambahkan Border ke Kesimpulan*
+                    $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
+                }
+
+
+                // *Pendapat / Komentar*
+                $row += 2;
+                $sheet->setCellValue("A$row", 'PENDAPAT / KOMENTAR');
+                $sheet->mergeCells("A$row:D$row");
+                $sheet->getStyle("A$row")->getFont()->setBold(true);
+                $row++;
+
+                if (!empty($menu6)) {
+                    $sheet->setCellValue("A$row", "1. {$menu6[0]->nama_value}");
+                    $sheet->mergeCells("A$row:D$row");
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    $sheet->setCellValue("A$row", 'Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut di atas.');
+                    $sheet->mergeCells("A$row:D" . ($row + 1));
+                    $row += 2;
+
+                    $sheet->setCellValue("A$row", "2. {$menu6[1]->nama_value}");
+                    $sheet->mergeCells("A$row:D$row");
+                    $sheet->getStyle("A$row")->getFont()->setBold(true);
+                    $row++;
+
+                    // *Menambahkan Border ke Pendapat*
+                    $sheet->getStyle("A" . ($row - 6) . ":D$row")->applyFromArray($thickBorder);
+                }
+
+                // Set nama file
+                $filename = "Laporan_Penilaian_$nrp.xlsx";
+
+                if (ob_get_contents()) {
+                    ob_end_clean();
+                }
+
+                // Simpan dan download file
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                header('Content-Disposition: attachment;filename="' . $filename . '"');
+                header('Cache-Control: max-age=0');
+
+                $writer = new Xlsx($spreadsheet);
+                $writer->save('php://output');
+                exit;
             }
-
-            // Hitung total
-            $total_nilai_atasan_langsung += (float) $p['nilai_atasan_langsung'];
-            $total_nilai_atasan_tidak_langsung += (float) $p['nilai_atasan_tidak_langsung'];
-
-            $row++;
-            $no++;
         }
-
-        // **Menambahkan Total**
-        $sheet->setCellValue("B$row", 'Total');
-        $sheet->setCellValue("C$row", $total_nilai_atasan_langsung);
-        $sheet->setCellValue("E$row", $total_nilai_atasan_tidak_langsung);
-        $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
-        $sheet->mergeCells("E$row:F$row");
-        $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
-        $sheet->getStyle("B$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        // **Menghitung Hasil Akhir**
-        $row_hasil_akhir = $row + 1;
-        $hasil_akhir =  ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
-
-        $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
-        $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
-        $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
-        $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
-        $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        $sheet->getStyle("A$row_penilaian:F$row_hasil_akhir")->applyFromArray($thickBorder);
-
-        // *Merapikan Alignment*
-        $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setHorizontal('left'); // Rata tengah horizontal untuk No
-        $sheet->getStyle("A$row_penilaian:A" . ($row - 1))->getAlignment()->setVertical('left'); // Rata tengah vertikal untuk No
-        $sheet->getStyle("C$row_penilaian:F" . ($row - 1))->getAlignment()->setHorizontal('center'); // Rata tengah untuk kolom lain
-
-        // *Menyesuaikan Lebar Kolom secara Dinamis*
-        foreach (range('A', 'F') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-
-        //  // *Mengatur Lebar Kolom*
-        //  $column_widths = ['A' => 3, 'B' => 50, 'C' => 15, 'D' => 15, 'E' => 15, 'F' => 15];
-        //  foreach ($column_widths as $column => $width) {
-        //      $sheet->getColumnDimension($column)->setWidth($width);
-        //  }
-
-        // *Tabel Kriteria*
-        $row_kriteria = $row_hasil_akhir + 2; // Sesuaikan posisi awal tabel kriteria
-        $sheet->setCellValue('A' . $row_kriteria, 'Kriteria');
-        $sheet->setCellValue('B' . $row_kriteria, 'Nilai');
-        $sheet->setCellValue('C' . $row_kriteria, 'Keterangan');
-        $sheet->getStyle("A$row_kriteria:C$row_kriteria")->getFont()->setBold(true);
-
-        $start_kriteria = $row_kriteria + 1;
-        $kriteria = [
-            ['A', '90 s.d. 100', 'Istimewa'],
-            ['B', '80 s.d. 89', 'Baik'],
-            ['C', '60 s.d. 79', 'Cukup'],
-            ['D', '40 s.d. 59', 'Kurang']
-        ];
-        foreach ($kriteria as $k) {
-            $sheet->setCellValue('A' . $start_kriteria, $k[0]);
-            $sheet->setCellValue('B' . $start_kriteria, $k[1]);
-            $sheet->setCellValue('C' . $start_kriteria, $k[2]);
-            $start_kriteria++;
-        }
-
-        // *Menambahkan Border Tebal pada Tabel Kriteria*
-        $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->applyFromArray($thickBorder);
-
-        // *Membuat Alignment ke Tengah*
-        $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setHorizontal('center');
-        $sheet->getStyle("A$row_kriteria:C" . ($start_kriteria - 1))->getAlignment()->setVertical('center');
-
-        // // Tambahkan bagian Kesimpulan
-        // $row_kriteria += 6;
-        // $sheet->setCellValue('A' . $row, 'KESIMPULAN ATAS HASIL SELURUH PENILAIAN');
-        // $sheet->mergeCells('A' . $row . ':F' . $row);
-        // $sheet->getStyle('A' . $row)->getFont()->setBold(true);
-        // $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-        // $row++;
-        // $sheet->setCellValue('A' . $row, 'Tuliskan hal-hal positif, kelemahan yang harus diperbaiki, serta perbaikan yang telah dilakukan karyawan dibanding penilaian sebelumnya.');
-        // $sheet->mergeCells('A' . $row . ':F' . ($row + 2));
-
-        // // Tambahkan bagian komentar
-        // $row += 4;
-        // $sheet->setCellValue('A' . $row, 'PENDAPAT / KOMENTAR');
-        // $sheet->mergeCells('A' . $row . ':F' . $row);
-        // $sheet->getStyle('A' . $row)->getFont()->setBold(true);
-
-        // Ambil data dari model
-        $menu3 = $this->master_model->get_menu3_data()->result();
-        $menu4 = $this->master_model->get_menu4_data()->result();
-        $menu6 = $this->master_model->get_menu6_data()->result();
-        $form_a = $this->master_model->get_form_A($nrp, $periode, $penilaian2->atasan);
-        $form_b = $this->master_model->get_form_B($nrp, $periode, $penilaian2->atasan);
-
-        // Set awal row
-        $row = $start_kriteria + 1;
-
-        // *Header Tabel*
-        $headers = ['RENCANA KERJA', 'KESIMPULAN HASIL', '%', 'KESIMPULAN DEVIASI'];
-        $sheet->fromArray($headers, null, "A$row");
-        $sheet->getStyle("A$row:D$row")->applyFromArray($thickBorder);
-        $sheet->getStyle("A$row:D$row")->getFont()->setBold(true);
-        $row++;
-
-        // *Bagian Kinerja*
-        $sheet->setCellValue("A$row", 'A. KINERJA (Didasarkan Sasaran Pekerjaan)');
-        $sheet->getStyle("A$row")->getFont()->setBold(true);
-        $row++;
-
-        // *Tugas Pokok*
-        if (!empty($menu3)) {
-            $sheet->setCellValue("A$row", "1. {$menu3[0]->nama_value}");
-            $sheet->getStyle("A$row")->getFont()->setBold(true);
-            $row++;
-
-            $sheet->setCellValue("A$row", "a. {$menu3[1]->description}");
-            $sheet->setCellValue("B$row", $form_a->hasil_nilai_a ?? 'Nilai Belum Di Isi !');
-            $sheet->setCellValue("C$row", $form_a->persen_a ?? '0');
-            $sheet->setCellValue("D$row", $form_a->deviasi_nilai_a ?? 'Nilai Belum Di Isi !');
-            $row++;
-
-            $sheet->setCellValue("A$row", 'b. Sasaran Pekerjaan Secara Kuantitatif');
-            $sheet->setCellValue("B$row", $form_a->hasil_nilai_b ?? 'Nilai Belum Di Isi !');
-            $sheet->setCellValue("C$row", $form_a->persen_b ?? '0');
-            $sheet->setCellValue("D$row", $form_a->deviasi_b ?? 'Nilai Belum Di Isi !');
-            $row++;
-
-            // *Menambahkan Border ke Tugas Pokok*
-            $sheet->getStyle("A" . ($row - 3) . ":D" . ($row - 1))->applyFromArray($thickBorder);
-        }
-
-        // *Tugas Tambahan*
-        if (!empty($menu3)) {
-            $sheet->setCellValue("A$row", "2. {$menu3[1]->nama_value}");
-            $sheet->mergeCells("A$row:D$row");
-            $sheet->getStyle("A$row")->getFont()->setBold(true);
-            $row++;
-
-            $sheet->setCellValue("A$row", $form_a->tugas_tambahan ?? 'Nilai Belum Di Isi !');
-            $sheet->setCellValue("B$row", $form_a->hasil_tgs_tambahan ?? 'Nilai Belum Di Isi !');
-            $sheet->setCellValue("C$row", $form_a->persen_tambahan ?? '0');
-            $sheet->setCellValue("D$row", $form_a->deviasi_tambahan ?? 'Nilai Belum Di Isi !');
-            $row++;
-
-            // *Menambahkan Border ke Tugas Tambahan*
-            $sheet->getStyle("A" . ($row - 2) . ":D" . ($row - 1))->applyFromArray($thickBorder);
-        }
-
-        // *Kesimpulan*
-        if (!empty($menu4)) {
-            $row += 2;
-            $sheet->setCellValue("A$row", $menu4[1]->nama_value);
-            $sheet->mergeCells("A$row:D$row");
-            $sheet->getStyle("A$row")->getFont()->setBold(true);
-            $row++;
-
-            $sheet->setCellValue("A$row", $menu4[1]->description);
-            $sheet->mergeCells("A$row:D$row");
-            $row++;
-
-            $sheet->setCellValue("A$row", $form_b->kesimpulan ?? 'Nilai Belum Di Isi !');
-            $sheet->mergeCells("A$row:D" . ($row + 1));
-            $row += 2;
-
-            // *Menambahkan Border ke Kesimpulan*
-            $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
-        }
-
-        // penjelasan
-        if (!empty($menu4)) {
-            $row += 2;
-            $sheet->setCellValue("A$row", $menu4[1]->nama_value);
-            $sheet->mergeCells("A$row:D$row");
-            $sheet->getStyle("A$row")->getFont()->setBold(true);
-            $row++;
-
-            $sheet->setCellValue("A$row", $menu4[1]->description);
-            $sheet->mergeCells("A$row:D$row");
-            $row++;
-
-            $sheet->setCellValue("A$row", $form_b->penjelasan ?? 'Nilai Belum Di Isi !');
-            $sheet->mergeCells("A$row:D" . ($row + 1));
-            $row += 2;
-
-            // *Menambahkan Border ke Kesimpulan*
-            $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
-        }
-
-
-        // *Pendapat / Komentar*
-        $row += 2;
-        $sheet->setCellValue("A$row", 'PENDAPAT / KOMENTAR');
-        $sheet->mergeCells("A$row:D$row");
-        $sheet->getStyle("A$row")->getFont()->setBold(true);
-        $row++;
-
-        if (!empty($menu6)) {
-            $sheet->setCellValue("A$row", "1. {$menu6[0]->nama_value}");
-            $sheet->mergeCells("A$row:D$row");
-            $sheet->getStyle("A$row")->getFont()->setBold(true);
-            $row++;
-
-            $sheet->setCellValue("A$row", 'Mintakan pendapat/komentar karyawan yang dinilai atas seluruh hasil penilaian tersebut di atas.');
-            $sheet->mergeCells("A$row:D" . ($row + 1));
-            $row += 2;
-
-            $sheet->setCellValue("A$row", "2. {$menu6[1]->nama_value}");
-            $sheet->mergeCells("A$row:D$row");
-            $sheet->getStyle("A$row")->getFont()->setBold(true);
-            $row++;
-
-            // *Menambahkan Border ke Pendapat*
-            $sheet->getStyle("A" . ($row - 6) . ":D$row")->applyFromArray($thickBorder);
-        }
-
-        // Set nama file
-        $filename = "Laporan_Penilaian_$nrp.xlsx";
-
-        if (ob_get_contents()) {
-            ob_end_clean();
-        }
-
-        // Simpan dan download file
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit;
     }
 }
