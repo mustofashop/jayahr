@@ -826,23 +826,23 @@ class Trans_pkk extends CI_Controller
 
                         // Row 1: "a. Sesuai tugas karyawan"
                         $pdf->Cell($col_widths[0], $height, "a. Sesuai tugas karyawan", 1, 0, 'L');
-                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'Nilai Belum Di Isi !', 1, 0, 'C');
                         $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_a) ? $penilaian->persen_a : '0', 1, 0, 'C');
-                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_nilai_a) ? $penilaian->deviasi_nilai_a : 'N/A', 1, 1, 'C');
+                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_nilai_a) ? $penilaian->deviasi_nilai_a : 'Nilai Belum Di Isi !', 1, 1, 'C');
 
                         // Row 2: "b. Sasaran Pekerjaan Secara Kuantitatif"
                         $pdf->Cell($col_widths[0], $height, "b. Sasaran Pekerjaan Secara Kuantitatif", 1, 0, 'L');
-                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_b) ? $penilaian->hasil_nilai_b : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_b) ? $penilaian->hasil_nilai_b : 'Nilai Belum Di Isi !', 1, 0, 'C');
                         $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_b) ? $penilaian->persen_b : '0', 1, 0, 'C');
-                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_b) ? $penilaian->deviasi_b : 'N/A', 1, 1, 'C');
+                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_b) ? $penilaian->deviasi_b : 'Nilai Belum Di Isi !', 1, 1, 'C');
 
                         $pdf->Cell(array_sum($col_widths), 8, "2. Tugas Tambahan", 1, 1, 'L');
 
                         // Row 3: Menyesuaikan agar kolom sejajar dengan header
-                        $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'N/A', 1, 0, 'C');
-                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'N/A', 1, 0, 'C');
+                        $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'Nilai Belum Di Isi !', 1, 0, 'C');
+                        $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'Nilai Belum Di Isi !', 1, 0, 'C');
                         $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : '0', 1, 0, 'C');
-                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : 'N/A', 1, 1, 'C');
+                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : 'Nilai Belum Di Isi !', 1, 1, 'C');
 
                         // Kesimpulan Atas Hasil Seluruh Penilaian - Sebagai Text Area
                         // Kesimpulan Atas Hasil Seluruh Penilaian - Mengambil data dari database dan menambahkan deskripsi
@@ -852,7 +852,7 @@ class Trans_pkk extends CI_Controller
                         $pdf->SetFont("Arial", 'I', 9);
                         $pdf->MultiCell(0, 10, isset($row2->description) ? $row2->description : '', 0);
                         $pdf->SetFont("Arial", '', 10);
-                        $pdf->MultiCell(0, 20, isset($penilaian2->kesimpulan) ? $penilaian2->kesimpulan : '', 1);
+                        $pdf->MultiCell(0, 20, isset($penilaian2->kesimpulan) ? $penilaian2->kesimpulan : 'Nilai Belum Di Isi !', 1);
                         $pdf->Ln(2);
 
                         // Penjelasan Hasil Kinerja Karyawan - Mengambil data dari database dan menambahkan deskripsi
@@ -862,7 +862,7 @@ class Trans_pkk extends CI_Controller
                         $pdf->SetFont("Arial", 'I', 9);
                         $pdf->MultiCell(0, 10, isset($row1->description) ? $row1->description : '', 0);
                         $pdf->SetFont("Arial", '', 10);
-                        $pdf->MultiCell(0, 20, isset($penilaian2->penjelasan) ? $penilaian2->penjelasan : '', 1);
+                        $pdf->MultiCell(0, 20, isset($penilaian2->penjelasan) ? $penilaian2->penjelasan : 'Nilai Belum Di Isi !', 1);
                         $pdf->Ln(2);
 
                         // Pendapat / Komentar - Sebagai Text Area
@@ -1063,23 +1063,23 @@ class Trans_pkk extends CI_Controller
 
                     // Row 1: "a. Sesuai tugas karyawan"
                     $pdf->Cell($col_widths[0], $height, "a. Sesuai tugas karyawan", 1, 0, 'L');
-                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'Nilai Belum Di Isi !', 1, 0, 'C');
                     $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_a) ? $penilaian->persen_a : '0', 1, 0, 'C');
-                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_nilai_a) ? $penilaian->deviasi_nilai_a : 'N/A', 1, 1, 'C');
+                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_nilai_a) ? $penilaian->deviasi_nilai_a : 'Nilai Belum Di Isi !', 1, 1, 'C');
 
                     // Row 2: "b. Sasaran Pekerjaan Secara Kuantitatif"
                     $pdf->Cell($col_widths[0], $height, "b. Sasaran Pekerjaan Secara Kuantitatif", 1, 0, 'L');
-                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_b) ? $penilaian->hasil_nilai_b : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_b) ? $penilaian->hasil_nilai_b : 'Nilai Belum Di Isi !', 1, 0, 'C');
                     $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_b) ? $penilaian->persen_b : '0', 1, 0, 'C');
-                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_b) ? $penilaian->deviasi_b : 'N/A', 1, 1, 'C');
+                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_b) ? $penilaian->deviasi_b : 'Nilai Belum Di Isi !', 1, 1, 'C');
 
                     $pdf->Cell(array_sum($col_widths), 8, "2. Tugas Tambahan", 1, 1, 'L');
 
                     // Row 3: Menyesuaikan agar kolom sejajar dengan header
-                    $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'N/A', 1, 0, 'C');
-                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'N/A', 1, 0, 'C');
+                    $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'Nilai Belum Di Isi !', 1, 0, 'C');
+                    $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'Nilai Belum Di Isi !', 1, 0, 'C');
                     $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : '0', 1, 0, 'C');
-                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : 'N/A', 1, 1, 'C');
+                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : 'Nilai Belum Di Isi !', 1, 1, 'C');
 
                     // Kesimpulan Atas Hasil Seluruh Penilaian - Sebagai Text Area
                     // Kesimpulan Atas Hasil Seluruh Penilaian - Mengambil data dari database dan menambahkan deskripsi
