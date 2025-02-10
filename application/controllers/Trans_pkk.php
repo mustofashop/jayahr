@@ -439,12 +439,15 @@ class Trans_pkk extends CI_Controller
                         $no = 1;
                         $penilaian = $this->master_model->hasil_nilai_periode($dt->nrp, $dt->id_p_periode);
                         foreach ($penilaian->result() as $row) {
+                            $nilai_langsung = $row->nilai_atasan_langsung ? str_replace(',', '.', $row->nilai_atasan_langsung) : '0.0';
+                            $nilai_tak_langsung = $row->nilai_atasan_tidak_langsung ? str_replace(',', '.', $row->nilai_atasan_tidak_langsung) : '0.0';
+
                             $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
                             $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
                             $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
-                            $pdf->Cell($colWidths[3], 7, number_format($row->nilai_atasan_langsung, 1), 1, 0, 'C');
+                            $pdf->Cell($colWidths[3], 7, number_format($nilai_langsung, 1), 1, 0, 'C');
                             $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
-                            $pdf->Cell($colWidths[5], 7, number_format($row->nilai_atasan_tidak_langsung, 1), 1, 0, 'C');
+                            $pdf->Cell($colWidths[5], 7, number_format($nilai_tak_langsung, 1), 1, 0, 'C');
                             $pdf->Ln();
                         }
                         // Total dan Hasil Akhir
@@ -735,12 +738,15 @@ class Trans_pkk extends CI_Controller
                         $no = 1;
                         $penilaian = $this->master_model->hasil_nilai_3_7_periode($dt->nrp, $dt->id_p_periode);
                         foreach ($penilaian->result() as $row) {
+                            $nilai_langsung = $row->nilai_atasan_langsung ? str_replace(',', '.', $row->nilai_atasan_langsung) : '0.0';
+                            $nilai_tak_langsung = $row->nilai_atasan_tidak_langsung ? str_replace(',', '.', $row->nilai_atasan_tidak_langsung) : '0.0';
+
                             $pdf->Cell($colWidths[0], 7, $no++, 1, 0, 'C');
                             $pdf->Cell($colWidths[1], 7, utf8_decode($row->aspek_dinilai), 1);
                             $pdf->Cell($colWidths[2], 7, $row->isi_nilai_atasan_langsung, 1, 0, 'C');
-                            $pdf->Cell($colWidths[3], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_langsung, 1) : '0.0', 1, 0, 'C');
+                            $pdf->Cell($colWidths[3], 7, number_format($nilai_langsung, 1), 1, 0, 'C');
                             $pdf->Cell($colWidths[4], 7, $row->isi_nilai_atasan_tidak_langsung, 1, 0, 'C');
-                            $pdf->Cell($colWidths[5], 7, is_numeric($row->nilai_atasan_langsung) ? number_format($row->nilai_atasan_tidak_langsung, 1) : '0.0', 1, 0, 'C');
+                            $pdf->Cell($colWidths[5], 7, number_format($nilai_tak_langsung, 1), 1, 0, 'C');
                             $pdf->Ln();
                         }
                         // Total dan Hasil Akhir
@@ -814,6 +820,7 @@ class Trans_pkk extends CI_Controller
                         $row4 = $this->master_model->get_menu6_data()->row(1); // Mengambil baris kedua
                         $height = 8;
 
+
                         // Row 1: "a. Sesuai tugas karyawan"
                         $pdf->Cell($col_widths[0], $height, "a. Sesuai tugas karyawan", 1, 0, 'L');
                         $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_nilai_a) ? $penilaian->hasil_nilai_a : 'N/A', 1, 0, 'C');
@@ -831,8 +838,8 @@ class Trans_pkk extends CI_Controller
                         // Row 3: Menyesuaikan agar kolom sejajar dengan header
                         $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'N/A', 1, 0, 'C');
                         $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'N/A', 1, 0, 'C');
-                        $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : 'N/A', 1, 0, 'C');
-                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : '0', 1, 1, 'C');
+                        $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : '0', 1, 0, 'C');
+                        $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : 'N/A', 1, 1, 'C');
 
                         // Kesimpulan Atas Hasil Seluruh Penilaian - Sebagai Text Area
                         // Kesimpulan Atas Hasil Seluruh Penilaian - Mengambil data dari database dan menambahkan deskripsi
@@ -1042,6 +1049,9 @@ class Trans_pkk extends CI_Controller
 
                     $penilaian = $this->master_model->nilai_form_a($nrp, $periode)->row();
                     $penilaian2 = $this->master_model->nilai_form_b($nrp, $periode)->row();
+                    $fb_k = $this->master_model->get_fb_karyawan($nrp, $periode);
+                    $fb_a = $this->master_model->get_fb_atasan($nrp, $periode);
+
                     $row1 = $this->master_model->get_menu4_data()->row(0); // Mengambil baris pertama
                     $row2 = $this->master_model->get_menu4_data()->row(1); // Mengambil baris kedua
                     $row3 = $this->master_model->get_menu6_data()->row(0); // Mengambil baris pertama
@@ -1065,8 +1075,8 @@ class Trans_pkk extends CI_Controller
                     // Row 3: Menyesuaikan agar kolom sejajar dengan header
                     $pdf->Cell($col_widths[0], $height, isset($penilaian->tugas_tambahan) ? $penilaian->tugas_tambahan : 'N/A', 1, 0, 'C');
                     $pdf->Cell($col_widths[1], $height, isset($penilaian->hasil_tgs_tambahan) ? $penilaian->hasil_tgs_tambahan : 'N/A', 1, 0, 'C');
-                    $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : 'N/A', 1, 0, 'C');
-                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : '0', 1, 1, 'C');
+                    $pdf->Cell($col_widths[2], $height, isset($penilaian->persen_tambahan) ? $penilaian->persen_tambahan : '0', 1, 0, 'C');
+                    $pdf->Cell($col_widths[3], $height, isset($penilaian->deviasi_tambahan) ? $penilaian->deviasi_tambahan : 'N/A', 1, 1, 'C');
 
                     // Kesimpulan Atas Hasil Seluruh Penilaian - Sebagai Text Area
                     // Kesimpulan Atas Hasil Seluruh Penilaian - Mengambil data dari database dan menambahkan deskripsi
@@ -1096,14 +1106,14 @@ class Trans_pkk extends CI_Controller
                     $pdf->SetFont("Arial", 'I', 9);
                     $pdf->MultiCell(0, 10, isset($row3->description) ? $row3->description : '', 0);
                     $pdf->SetFont("Arial", '', 10);
-                    $pdf->MultiCell(0, 20, isset($penilaian2->pendapat) ? $penilaian2->pendapat : '', 1);
+                    $pdf->MultiCell(0, 20, isset($fb_k->isi_feedback) ? $fb_k->isi_feedback : '', 1);
 
                     // Komentar Atasan Penilai - Sebagai Text Area
                     $pdf->Ln(5);
                     $pdf->SetFont("Arial", 'B', 10);
                     $pdf->Cell(0, 7, isset($row4->nama_value) ? $row4->nama_value : '', 0, 1, 'L');
                     $pdf->SetFont("Arial", '', 10);
-                    $pdf->MultiCell(0, 20, isset($penilaian2->komentar_atasan) ? $penilaian2->komentar_atasan : '', 1);
+                    $pdf->MultiCell(0, 20, isset($fb_a->isi_feedback) ? $fb_a->isi_feedback : '', 1);
                     $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
                 } else {
                     $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
@@ -2621,6 +2631,8 @@ class Trans_pkk extends CI_Controller
                 $menu6 = $this->master_model->get_menu6_data()->result();
                 $form_a = $this->master_model->get_form_A($nrp, $periode, $penilaian2->atasan);
                 $form_b = $this->master_model->get_form_B($nrp, $periode, $penilaian2->atasan);
+                $feedback_karyawan = $this->master_model->get_fb_karyawan($nrp, $periode, $penilaian2->atasan);
+                $feedback_atasan   = $this->master_model->get_fb_atasan($nrp, $periode, $penilaian2->atasan);
 
                 // Set awal row
                 $row = $start_kriteria + 1;
@@ -2676,40 +2688,61 @@ class Trans_pkk extends CI_Controller
                     $sheet->getStyle("A" . ($row - 2) . ":D" . ($row - 1))->applyFromArray($thickBorder);
                 }
 
-                // *Kesimpulan*
-                if (!empty($menu4)) {
-                    $row += 2;
+
+                // Kesimpulan
+                if (!empty($menu4) && isset($menu4[1]->description)) {
+                    $row += 1;
                     $sheet->setCellValue("A$row", $menu4[1]->nama_value);
                     $sheet->mergeCells("A$row:D$row");
                     $sheet->getStyle("A$row")->getFont()->setBold(true);
                     $row++;
 
-                    $sheet->setCellValue("A$row", $menu4[1]->description);
+                    $descriptionText = $menu4[1]->description ?? ''; // Pastikan variabel selalu ada
+                    $sheet->setCellValue("A$row", $descriptionText);
                     $sheet->mergeCells("A$row:D$row");
+                    $sheet->getStyle("A$row")->getAlignment()->setWrapText(true);
+
+                    // Hitung tinggi baris berdasarkan jumlah karakter
+                    $textLength = strlen($descriptionText);
+                    $estimatedHeight = ceil($textLength / 50) * 6; // Estimasi tinggi berdasarkan panjang teks
+                    $sheet->getRowDimension($row)->setRowHeight($estimatedHeight);
+
                     $row++;
 
                     $sheet->setCellValue("A$row", $form_b->kesimpulan ?? 'Nilai Belum Di Isi !');
                     $sheet->mergeCells("A$row:D" . ($row + 1));
+                    $sheet->getStyle("A$row")->getAlignment()->setWrapText(true);
+
+                    // Hitung tinggi baris berdasarkan jumlah karakter
+                    $textLength = strlen($descriptionText);
+                    $estimatedHeight = ceil($textLength / 50) * 6; // Estimasi tinggi berdasarkan panjang teks
+                    $sheet->getRowDimension($row)->setRowHeight($estimatedHeight);
                     $row += 2;
 
-                    // *Menambahkan Border ke Kesimpulan*
+                    // Menambahkan Border ke Kesimpulan
                     $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
                 }
 
                 // penjelasan
                 if (!empty($menu4)) {
-                    $row += 2;
-                    $sheet->setCellValue("A$row", $menu4[1]->nama_value);
+                    $row += 1;
+                    $sheet->setCellValue("A$row", $menu4[0]->nama_value);
                     $sheet->mergeCells("A$row:D$row");
                     $sheet->getStyle("A$row")->getFont()->setBold(true);
                     $row++;
 
-                    $sheet->setCellValue("A$row", $menu4[1]->description);
+                    $sheet->setCellValue("A$row", $menu4[0]->description);
                     $sheet->mergeCells("A$row:D$row");
                     $row++;
 
                     $sheet->setCellValue("A$row", $form_b->penjelasan ?? 'Nilai Belum Di Isi !');
                     $sheet->mergeCells("A$row:D" . ($row + 1));
+                    $sheet->getStyle("A$row")->getAlignment()->setWrapText(true);
+
+                    // Hitung tinggi baris berdasarkan jumlah karakter
+                    $textLength = strlen($descriptionText);
+                    $estimatedHeight = ceil($textLength / 50) * 6; // Estimasi tinggi berdasarkan panjang teks
+                    $sheet->getRowDimension($row)->setRowHeight($estimatedHeight);
                     $row += 2;
 
                     // *Menambahkan Border ke Kesimpulan*
@@ -2718,7 +2751,7 @@ class Trans_pkk extends CI_Controller
 
 
                 // *Pendapat / Komentar*
-                $row += 2;
+                $row += 1;
                 $sheet->setCellValue("A$row", 'PENDAPAT / KOMENTAR');
                 $sheet->mergeCells("A$row:D$row");
                 $sheet->getStyle("A$row")->getFont()->setBold(true);
@@ -2734,13 +2767,21 @@ class Trans_pkk extends CI_Controller
                     $sheet->mergeCells("A$row:D" . ($row + 1));
                     $row += 2;
 
+                    $sheet->setCellValue("A$row", $feedback_karyawan->isi_feedback ?? 'Nilai Belum Di Isi !');
+                    $sheet->mergeCells("A$row:D" . ($row + 1));
+                    $row += 2;
+
                     $sheet->setCellValue("A$row", "2. {$menu6[1]->nama_value}");
                     $sheet->mergeCells("A$row:D$row");
                     $sheet->getStyle("A$row")->getFont()->setBold(true);
                     $row++;
 
+                    $sheet->setCellValue("A$row", $feedback_atasan->isi_feedback ?? 'Nilai Belum Di Isi !');
+                    $sheet->mergeCells("A$row:D" . ($row + 1));
+                    $row += 1;
+
                     // *Menambahkan Border ke Pendapat*
-                    $sheet->getStyle("A" . ($row - 6) . ":D$row")->applyFromArray($thickBorder);
+                    $sheet->getStyle("A" . ($row - 8) . ":D$row")->applyFromArray($thickBorder);
                 }
 
                 // Set nama file
