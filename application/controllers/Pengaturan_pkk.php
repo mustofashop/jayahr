@@ -90,6 +90,7 @@ class Pengaturan_pkk extends CI_Controller
             }
             $detail_nrp     = $this->master_model->detail_nrp($nrp);
             $d['id_k']      = $id_karyawan;
+            $d['filled_ids'] = $this->master_model->get_filled_p_periode_ids($nrp); // Ambil ID yang sudah diisi
             $d['idp_nrp']   = $nrp;
             $d['trans_pkk'] = $this->master_model->get_trans_pkk($nrp);
             $d['class']     = '';

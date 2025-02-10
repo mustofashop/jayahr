@@ -287,6 +287,22 @@ FROM
 		return $q;
 	}
 
+	public function get_filled_p_periode_ids($nrp)
+	{
+		$this->db->select('id_p_periode');
+		$this->db->from('trans_pkk'); // Sesuaikan dengan nama tabel Anda
+		$this->db->where('nrp', $nrp);
+		$query = $this->db->get();
+
+		$filled_ids = [];
+		foreach ($query->result() as $row) {
+			$filled_ids[] = $row->id_p_periode; // Simpan ID yang sudah diisi
+		}
+
+		return $filled_ids; // Kembalikan array ID yang sudah diisi
+	}
+
+
 	public function lap_nilai($nrp)
 	{
 		$q = $this->db->query("SELECT 

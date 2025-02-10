@@ -24,6 +24,8 @@ class Trans_pkk extends CI_Controller
             $id_jenis_form      = $this->input->post('id_jenis_form');
             $flag_jenis_form    = $this->input->post('flag_jenis_form');
             $nrp                = $this->input->post('nrp');
+            $id_p_periode       = $this->input->post('id_p_periode') ?? $this->input->post('id_p_periode_hidden');
+
 
             if (empty($id_p_periode) || empty($id_periode) || empty($flag_penilaian) || empty($nrp)) {
                 $this->session->set_flashdata('msg', 'Data tidak lengkap, gagal menyimpan!');
