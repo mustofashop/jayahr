@@ -814,6 +814,9 @@ class Trans_pkk extends CI_Controller
 
                         $penilaian = $this->master_model->nilai_form_a($dt->nrp, $dt->id_p_periode)->row();
                         $penilaian2 = $this->master_model->nilai_form_b($dt->nrp, $dt->id_p_periode)->row();
+                        $fb_k = $this->master_model->get_fb_karyawan($dt->nrp, $dt->id_p_periode);
+                        $fb_a = $this->master_model->get_fb_atasan($dt->nrp, $dt->id_p_periode);
+
                         $row1 = $this->master_model->get_menu4_data()->row(0); // Mengambil baris pertama
                         $row2 = $this->master_model->get_menu4_data()->row(1); // Mengambil baris kedua
                         $row3 = $this->master_model->get_menu6_data()->row(0); // Mengambil baris pertama
@@ -869,14 +872,14 @@ class Trans_pkk extends CI_Controller
                         $pdf->SetFont("Arial", 'I', 9);
                         $pdf->MultiCell(0, 10, isset($row3->description) ? $row3->description : '', 0);
                         $pdf->SetFont("Arial", '', 10);
-                        $pdf->MultiCell(0, 20, isset($penilaian2->pendapat) ? $penilaian2->pendapat : '', 1);
+                        $pdf->MultiCell(0, 20, isset($fb_k->isi_feedback) ? $fb_k->isi_feedback : '', 1);
 
                         // Komentar Atasan Penilai - Sebagai Text Area
                         $pdf->Ln(5);
                         $pdf->SetFont("Arial", 'B', 10);
                         $pdf->Cell(0, 7, isset($row4->nama_value) ? $row4->nama_value : '', 0, 1, 'L');
                         $pdf->SetFont("Arial", '', 10);
-                        $pdf->MultiCell(0, 20, isset($penilaian2->komentar_atasan) ? $penilaian2->komentar_atasan : '', 1);
+                        $pdf->MultiCell(0, 20, isset($fb_a->isi_feedback) ? $fb_a->isi_feedback : '', 1);
                     } else {
                         $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
                         redirect($_SERVER['HTTP_REFERER']);
