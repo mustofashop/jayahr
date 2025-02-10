@@ -867,7 +867,7 @@ FROM
 		$this->db->from('trans_pkk');
 		$this->db->where('nrp', $nrp);
 		$query = $this->db->get();
-		return $query->result_array(); // Mengembalikan array, bukan object query
+		return $query; // Mengembalikan array, bukan object query
 	}
 
 

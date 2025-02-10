@@ -15,7 +15,7 @@
 <?php if ($flag_jenis_form == 1): ?>
     <center>
         <div class="form-group">
-            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 100px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/1'">Penilaian ke 1</a>
+            <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 100px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/1'">Penilaian ke 1</a>
             <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-right: 50px; margin-left: 50px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/2'">Penilaian ke 2</a>
             <a class="btn bg-blue btn-success btn-flat-margin" style="font-size: 15px; margin-left: 100px;" onclick="location.href='<?php echo base_url(); ?>pengaturan_pkk/nilai_pkk_periode/<?php echo $nrp; ?>/<?php echo $flag_jenis_form; ?>/3'">Penilaian ke 3</a>
         </div>

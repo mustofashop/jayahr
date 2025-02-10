@@ -399,6 +399,8 @@ class Pengaturan_pkk extends CI_Controller
                     $d['penilaian2'] = $penilaian2;
                     $d['form_a']    = $form_a;
                     $d['form_b']    = $form_b;
+                    $d['fb_k']       = $this->master_model->get_fb_karyawan($nrp, $periode);
+                    $d['fb_a']       = $this->master_model->get_fb_atasan($nrp, $periode);
                 }
             }
             $data_pkk       = $this->master_model->detail_karyawan1($nrp);

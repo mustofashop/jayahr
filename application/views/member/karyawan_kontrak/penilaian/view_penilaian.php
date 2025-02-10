@@ -493,6 +493,8 @@
                         <?php
                         $row1 = $menu6->row(0); // Mengambil baris pertama (index 0)
                         $row2 = $menu6->row(1); // Mengambil baris kedua (index 1)
+                        $fb_k       = $this->master_model->get_fb_karyawan($dt->nrp, $dt->id_p_periode);
+                        $fb_a       = $this->master_model->get_fb_atasan($dt->nrp, $dt->id_p_periode);
                         ?>
                         <tr>
                             <th>1. <?php echo $row1->nama_value; ?>
@@ -501,7 +503,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"></textarea>
+                                <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"><?php echo $fb_k->isi_feedback; ?></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -509,7 +511,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <textarea name="komentar_atasan" style="width: 100%; height: 150px;"></textarea>
+                                <textarea name="komentar_atasan" style="width: 100%; height: 150px;"><?php echo $fb_a->isi_feedback; ?></textarea>
                             </td>
                         </tr>
                     </table>
