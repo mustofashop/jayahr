@@ -24,8 +24,6 @@ class Trans_pkk extends CI_Controller
             $id_jenis_form      = $this->input->post('id_jenis_form');
             $flag_jenis_form    = $this->input->post('flag_jenis_form');
             $nrp                = $this->input->post('nrp');
-            $id_p_periode       = $this->input->post('id_p_periode') ?? $this->input->post('id_p_periode_hidden');
-
 
             if (empty($id_p_periode) || empty($id_periode) || empty($flag_penilaian) || empty($nrp)) {
                 $this->session->set_flashdata('msg', 'Data tidak lengkap, gagal menyimpan!');
@@ -876,9 +874,9 @@ class Trans_pkk extends CI_Controller
                         $this->session->set_flashdata('msg_error', 'Data Belum Di Nilai');
                         redirect($_SERVER['HTTP_REFERER']);
                     }
-                    ob_clean();
-                    $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
                 }
+                ob_clean();
+                $pdf->Output('D', 'Laporan_Penilaian_Kel_3_7.pdf');
             } else {
                 $data   = $this->master_model->lap_nilai_3_7_periode($nrp, $periode);
                 if ($data->num_rows() > 0) {
@@ -2253,6 +2251,8 @@ class Trans_pkk extends CI_Controller
                     $menu6 = $this->master_model->get_menu6_data()->result();
                     $form_a = $this->master_model->get_form_A($dm->nrp, $dm->id_p_periode, $penilaian2->atasan);
                     $form_b = $this->master_model->get_form_B($dm->nrp, $dm->id_p_periode, $penilaian2->atasan);
+                    $feedback_karyawan       = $this->master_model->get_fb_karyawan($dm->nrp, $dm->id_p_periode);
+                    $feedback_atasan       = $this->master_model->get_fb_atasan($dm->nrp, $dm->id_p_periode);
 
                     // Set awal row
                     $row = $start_kriteria + 1;
@@ -2308,40 +2308,61 @@ class Trans_pkk extends CI_Controller
                         $sheet->getStyle("A" . ($row - 2) . ":D" . ($row - 1))->applyFromArray($thickBorder);
                     }
 
-                    // *Kesimpulan*
-                    if (!empty($menu4)) {
-                        $row += 2;
+
+                    // Kesimpulan
+                    if (!empty($menu4) && isset($menu4[1]->description)) {
+                        $row += 1;
                         $sheet->setCellValue("A$row", $menu4[1]->nama_value);
                         $sheet->mergeCells("A$row:D$row");
                         $sheet->getStyle("A$row")->getFont()->setBold(true);
                         $row++;
 
-                        $sheet->setCellValue("A$row", $menu4[1]->description);
+                        $descriptionText = $menu4[1]->description ?? ''; // Pastikan variabel selalu ada
+                        $sheet->setCellValue("A$row", $descriptionText);
                         $sheet->mergeCells("A$row:D$row");
+                        $sheet->getStyle("A$row")->getAlignment()->setWrapText(true);
+
+                        // Hitung tinggi baris berdasarkan jumlah karakter
+                        $textLength = strlen($descriptionText);
+                        $estimatedHeight = ceil($textLength / 50) * 6; // Estimasi tinggi berdasarkan panjang teks
+                        $sheet->getRowDimension($row)->setRowHeight($estimatedHeight);
+
                         $row++;
 
                         $sheet->setCellValue("A$row", $form_b->kesimpulan ?? 'Nilai Belum Di Isi !');
                         $sheet->mergeCells("A$row:D" . ($row + 1));
+                        $sheet->getStyle("A$row")->getAlignment()->setWrapText(true);
+
+                        // Hitung tinggi baris berdasarkan jumlah karakter
+                        $textLength = strlen($descriptionText);
+                        $estimatedHeight = ceil($textLength / 50) * 6; // Estimasi tinggi berdasarkan panjang teks
+                        $sheet->getRowDimension($row)->setRowHeight($estimatedHeight);
                         $row += 2;
 
-                        // *Menambahkan Border ke Kesimpulan*
+                        // Menambahkan Border ke Kesimpulan
                         $sheet->getStyle("A" . ($row - 4) . ":D" . ($row - 1))->applyFromArray($thickBorder);
                     }
 
                     // penjelasan
                     if (!empty($menu4)) {
-                        $row += 2;
-                        $sheet->setCellValue("A$row", $menu4[1]->nama_value);
+                        $row += 1;
+                        $sheet->setCellValue("A$row", $menu4[0]->nama_value);
                         $sheet->mergeCells("A$row:D$row");
                         $sheet->getStyle("A$row")->getFont()->setBold(true);
                         $row++;
 
-                        $sheet->setCellValue("A$row", $menu4[1]->description);
+                        $sheet->setCellValue("A$row", $menu4[0]->description);
                         $sheet->mergeCells("A$row:D$row");
                         $row++;
 
                         $sheet->setCellValue("A$row", $form_b->penjelasan ?? 'Nilai Belum Di Isi !');
                         $sheet->mergeCells("A$row:D" . ($row + 1));
+                        $sheet->getStyle("A$row")->getAlignment()->setWrapText(true);
+
+                        // Hitung tinggi baris berdasarkan jumlah karakter
+                        $textLength = strlen($descriptionText);
+                        $estimatedHeight = ceil($textLength / 50) * 6; // Estimasi tinggi berdasarkan panjang teks
+                        $sheet->getRowDimension($row)->setRowHeight($estimatedHeight);
                         $row += 2;
 
                         // *Menambahkan Border ke Kesimpulan*
@@ -2350,7 +2371,7 @@ class Trans_pkk extends CI_Controller
 
 
                     // *Pendapat / Komentar*
-                    $row += 2;
+                    $row += 1;
                     $sheet->setCellValue("A$row", 'PENDAPAT / KOMENTAR');
                     $sheet->mergeCells("A$row:D$row");
                     $sheet->getStyle("A$row")->getFont()->setBold(true);
@@ -2366,13 +2387,21 @@ class Trans_pkk extends CI_Controller
                         $sheet->mergeCells("A$row:D" . ($row + 1));
                         $row += 2;
 
+                        $sheet->setCellValue("A$row", $feedback_karyawan->isi_feedback ?? 'Nilai Belum Di Isi !');
+                        $sheet->mergeCells("A$row:D" . ($row + 1));
+                        $row += 2;
+
                         $sheet->setCellValue("A$row", "2. {$menu6[1]->nama_value}");
                         $sheet->mergeCells("A$row:D$row");
                         $sheet->getStyle("A$row")->getFont()->setBold(true);
                         $row++;
 
+                        $sheet->setCellValue("A$row", $feedback_atasan->isi_feedback ?? 'Nilai Belum Di Isi !');
+                        $sheet->mergeCells("A$row:D" . ($row + 1));
+                        $row += 1;
+
                         // *Menambahkan Border ke Pendapat*
-                        $sheet->getStyle("A" . ($row - 6) . ":D$row")->applyFromArray($thickBorder);
+                        $sheet->getStyle("A" . ($row - 8) . ":D$row")->applyFromArray($thickBorder);
                     }
                     $index++;
                 }
