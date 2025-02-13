@@ -25,7 +25,7 @@
                             <td>Nama Karyawan</td>
                             <td>Unit</td>
                             <td>Job Grade</td>
-                            <td>Submit</td>
+                            <td>Keterangan</td>
                             <td>Aksi</td>
                         </tr>
                     </thead>

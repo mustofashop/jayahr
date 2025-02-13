@@ -34,16 +34,16 @@ class Trans_pkk extends CI_Controller
             $flag_penilaian_selected = isset($flag_penilaian[$id_p_periode]) ? $flag_penilaian[$id_p_periode] : null;
 
             if ($flag_penilaian_selected === null) {
-                $this->session->set_flashdata('error', 'Flag Penilaian tidak ditemukan!');
-                redirect('controller_name/form_page'); // Redirect kembali ke halaman form
+                $this->session->set_flashdata('msg_error', 'Periode Penilaian belum dipilih!');
+                redirect($_SERVER['HTTP_REFERER']); // Redirect kembali ke halaman form
             }
 
             // 🔹 Ambil `flag_jenis_form` berdasarkan ID yang dipilih dari input form
             $flag_jenis_form_selected = isset($flag_jenis_form[$id_jenis_form]) ? $flag_jenis_form[$id_jenis_form] : null;
 
             if ($flag_jenis_form_selected === null) {
-                $this->session->set_flashdata('error', 'Flag Jenis Form tidak ditemukan!');
-                redirect('controller_name/form_page');
+                $this->session->set_flashdata('msg_error', 'Jenis Form belum dipilih!');
+                redirect($_SERVER['HTTP_REFERER']);
             }
             $data = [
                 'id_p_periode'    => $id_p_periode,
@@ -349,7 +349,7 @@ class Trans_pkk extends CI_Controller
             redirect(base_url('login'));
         } else {
             if ($periode == 'all') {
-                $data1   = $this->master_model->get_trans_pkk($nrp);
+                $data1   = $this->master_model->get_trans_nilai_1_2($nrp);
                 $pdf = new reportProduct();
                 $pdf->setKriteria("cetak_laporan");
                 foreach ($data1->result() as $dt) {
@@ -648,7 +648,7 @@ class Trans_pkk extends CI_Controller
             redirect(base_url('login'));
         } else {
             if ($periode == 'all') {
-                $data1   = $this->master_model->get_trans_pkk($nrp);
+                $data1   = $this->master_model->get_trans_nilai_3_7($nrp);
                 $pdf = new reportProduct();
                 $pdf->setKriteria("cetak_laporan");
                 foreach ($data1->result() as $dt) {
@@ -762,7 +762,7 @@ class Trans_pkk extends CI_Controller
                         $total_nilai_atasan_tidak_langsung = is_numeric($row->total_nilai_atasan_tidak_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_tidak_langsung) : 0;
 
                         // Hitung hasil akhir
-                        $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
+                        $hasil_akhir = ($total_nilai_atasan_langsung + $total_nilai_atasan_tidak_langsung) / 2;
 
                         // Cetak ke PDF dengan number_format
                         $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(floatval($hasil_akhir), 1), 1, 0, 'C');
@@ -1000,7 +1000,7 @@ class Trans_pkk extends CI_Controller
                     $total_nilai_atasan_tidak_langsung = is_numeric($row->total_nilai_atasan_tidak_langsung) ? str_replace(',', '.', $row->total_nilai_atasan_tidak_langsung) : 0;
 
                     // Hitung hasil akhir
-                    $hasil_akhir = ($total_nilai_atasan_langsung * 0.6) + ($total_nilai_atasan_tidak_langsung * 0.4);
+                    $hasil_akhir = ($total_nilai_atasan_langsung + $total_nilai_atasan_tidak_langsung) / 2;
 
                     // Cetak ke PDF dengan number_format
                     $pdf->Cell($colWidths[2] + $colWidths[3] + $colWidths[4] + $colWidths[5], 7, number_format(floatval($hasil_akhir), 1), 1, 0, 'C');
@@ -1436,9 +1436,9 @@ class Trans_pkk extends CI_Controller
         }
     }
 
-    public function download_data_pkk_excel($unit)
+    public function download_data_pkk_excel()
     {
-        $data = $this->master_model->list_member_rekap_pkk1($unit); // Ambil data dari model
+        $data = $this->master_model->list_member_rekap_pkk1(); // Ambil data dari model
 
         if ($data->num_rows() > 0) {
             $row = $data->row();
@@ -1545,7 +1545,7 @@ class Trans_pkk extends CI_Controller
             redirect(base_url('login'));
         } else {
             if ($periode == 'all') {
-                $trans = $this->master_model->get_trans_pkk($nrp);
+                $trans = $this->master_model->get_trans_nilai_1_2($nrp);
                 $spreadsheet = new Spreadsheet();
                 $index = 0;
                 foreach ($trans->result() as $tl) {
@@ -2057,7 +2057,7 @@ class Trans_pkk extends CI_Controller
         } else {
             // Ambil data dari database
             if ($periode == 'all') {
-                $trans = $this->master_model->get_trans_pkk($nrp);
+                $trans = $this->master_model->get_trans_nilai_3_7($nrp);
                 $spreadsheet = new Spreadsheet();
                 $index = 0;
                 foreach ($trans->result() as $dm) {

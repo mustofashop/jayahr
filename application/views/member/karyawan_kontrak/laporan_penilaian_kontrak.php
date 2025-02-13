@@ -18,7 +18,7 @@
             <i class="fa fa-arrow-left"></i>
             Kembali
         </a>
-        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel/<?php echo $unit ?>">
+        <a class="btn bg-green btn-flat margin text-center" href="<?php echo base_url(); ?>Trans_pkk/download_data_pkk_excel">
             <i class="fa fa-download"></i>
             Excel
         </a>
@@ -44,13 +44,21 @@
                         <?php
                         $no     = '1';
                         $status = '0';
-                        $data = $this->master_model->list_member_rekap_pkk1($unit);
+                        $data = $this->master_model->list_member_rekap_pkk1();
                         foreach ($data->result() as $dt) {
                             $data2 = $this->master_model->real_hasil_nilai($dt->nip, $dt->id_jenis_form)->row();
                             $data3 = $this->master_model->get_nilai_ceklis_by_nrp($dt->nip, $dt->id_jenis_form)->row();
-                            $nilaiAkhir = (isset($data2->total_nilai_atasan_langsung) && isset($data2->total_nilai_atasan_tidak_langsung))
-                                ? ($data2->total_nilai_atasan_langsung * 0.6) + ($data2->total_nilai_atasan_tidak_langsung * 0.4)
-                                : 0.0;
+
+                            if ($dt->id_jenis_form == '1') {
+                                $nilaiAkhir = (isset($data2->total_nilai_atasan_langsung) && isset($data2->total_nilai_atasan_tidak_langsung))
+                                    ? ($data2->total_nilai_atasan_langsung * 0.6) + ($data2->total_nilai_atasan_tidak_langsung * 0.4)
+                                    : 0.0;
+                            } else {
+                                $nilaiAkhir = (isset($data2->total_nilai_atasan_langsung) && isset($data2->total_nilai_atasan_tidak_langsung))
+                                    ? ($data2->total_nilai_atasan_langsung + $data2->total_nilai_atasan_tidak_langsung) / 2
+                                    : 0.0;
+                            }
+                            
                             $jumlah_ceklis = $data3->jumlah_ceklis;
 
                             if ($nilaiAkhir == 0 && $nilaiAkhir == NULL) {

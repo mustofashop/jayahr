@@ -139,15 +139,15 @@ class Pengaturan_pkk extends CI_Controller
         if ($masuk != TRUE) {
             redirect(base_url('login'));
         } else {
-            $unit           = $this->input->get('unit');
-            $dtl_bagian     = $this->master_model->detail_bagian($unit);
-            $nrp            = $this->session->userdata('nrp');
-            $penilaian      = $this->master_model->hasil_nilai($nrp);
-            $d['penilaian'] = $penilaian;
-            $d['unit']      = $unit;
-            $d['nrp']       = $nrp;            //AKSI
+            // $unit           = $this->input->get('unit');
+            // $dtl_bagian     = $this->master_model->detail_bagian($unit);
+            // $nrp            = $this->session->userdata('nrp');
+            // $penilaian      = $this->master_model->hasil_nilai($nrp);
+            // $d['penilaian'] = $penilaian;
+            // $d['unit']      = $unit;
+            // $d['nrp']       = $nrp;            //AKSI
             $d['class']     = '';
-            $d['header']    = 'Laporan Penilaian Karyawan Kontrak  | ' . $dtl_bagian->nama_bagian;
+            $d['header']    = 'Laporan Penilaian Karyawan Kontrak';
             $d['content']   = 'member/karyawan_kontrak/laporan_penilaian_kontrak';
             $this->load->view('master', $d);
         }
@@ -374,13 +374,13 @@ class Pengaturan_pkk extends CI_Controller
         } else {
             if ($periode == 'all') {
                 if ($jenis_form == 'form_penilaian_1_2') {
-                    $rowData        = $this->master_model->get_trans_pkk($nrp);
+                    $rowData        = $this->master_model->get_trans_nilai_1_2($nrp);
                     $d['rowData']   = $rowData;
                     $d['periode']   = $periode;
                 } else {
-                    $rowData        = $this->master_model->get_trans_pkk($nrp);
-                    $d['periode']   = $periode;
+                    $rowData        = $this->master_model->get_trans_nilai_3_7($nrp);
                     $d['rowData']   = $rowData;
+                    $d['periode']   = $periode;
                 }
             } else {
                 if ($jenis_form == 'form_penilaian_1_2') {

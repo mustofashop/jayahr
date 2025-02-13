@@ -154,7 +154,14 @@
                                 </td>
                                 <!-- FORM A -->
                                 <td><textarea name="hasil_nilai_a" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->hasil_nilai_a) ? htmlspecialchars($form_a->hasil_nilai_a) : ''; ?></textarea></td>
-                                <td><input type="number" name="persen_a" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_a) ? htmlspecialchars($form_a->persen_a) : '0'; ?>"></td>
+                                <!-- <td><input type="number" name="persen_a" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_a) ? htmlspecialchars($form_a->persen_a) : '0'; ?>"></td> -->
+                                <td><input type="number" name="persen_a"
+                                        style="width: 100%; text-align: center;"
+                                        value="<?php echo isset($form_a->persen_a) ? htmlspecialchars($form_a->persen_a) : '0'; ?>"
+                                        min="0" max="100"
+                                        onkeydown="return enforceLimits(event)"
+                                        oninput="validateInput(this)">
+                                </td>
                                 <td><textarea name="deviasi_nilai_a" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->deviasi_nilai_a) ? htmlspecialchars($form_a->deviasi_nilai_a) : ''; ?></textarea></td>
                             </tr>
                             <tr>
@@ -165,7 +172,14 @@
                                     (hasil bisa dilihat dari jumlah, nilai, lama waktu, dll)
                                 </td>
                                 <td><textarea name="hasil_nilai_b" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->hasil_nilai_b) ? htmlspecialchars($form_a->hasil_nilai_b) : ''; ?></textarea></td>
-                                <td><input type="number" name="persen_b" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_b) ? htmlspecialchars($form_a->persen_b) : '0'; ?>"></td>
+                                <!-- <td><input type="number" name="persen_b" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_b) ? htmlspecialchars($form_a->persen_b) : '0'; ?>"></td> -->
+                                <td><input type="number" name="persen_b"
+                                        style="width: 100%; text-align: center;"
+                                        value="<?php echo isset($form_a->persen_b) ? htmlspecialchars($form_a->persen_b) : '0'; ?>"
+                                        min="0" max="100"
+                                        onkeydown="return enforceLimits(event)"
+                                        oninput="validateInput(this)">
+                                </td>
                                 <td><textarea name="deviasi_b" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->deviasi_b) ? htmlspecialchars($form_a->deviasi_b) : ''; ?></textarea></td>
                             </tr>
                             <tr>
@@ -180,7 +194,13 @@
                             <tr>
                                 <td><textarea name="tugas_tambahan" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->tugas_tambahan) ? htmlspecialchars($form_a->tugas_tambahan) : ''; ?></textarea></td>
                                 <td><textarea name="hasil_tgs_tambahan" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->hasil_tgs_tambahan) ? htmlspecialchars($form_a->hasil_tgs_tambahan) : ''; ?></textarea></td>
-                                <td><input type="number" name="persen_tambahan" style="width: 100%; text-align: center;" value="<?php echo isset($form_a->persen_tambahan) ? htmlspecialchars($form_a->persen_tambahan) : '0'; ?>"></td>
+                                <td><input type="number" name="persen_tambahan" id="persen_tambahan"
+                                        style="width: 100%; text-align: center;"
+                                        value="<?php echo isset($form_a->persen_tambahan) ? htmlspecialchars($form_a->persen_tambahan) : '0'; ?>"
+                                        min="0" max="100"
+                                        onkeydown="return enforceLimits(event)"
+                                        oninput="validateInput(this)">
+                                </td>
                                 <td><textarea name="deviasi_tambahan" style="width: 100%; height: 100px;" placeholder="Isi Di Sini"><?php echo isset($form_a->deviasi_tambahan) ? htmlspecialchars($form_a->deviasi_tambahan) : ''; ?></textarea></td>
                                 <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                 <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
@@ -204,7 +224,7 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row1->description; ?></p>
-                                    <textarea name="kesimpulan" style="width: 100%; height: 150px;"><?php echo isset($form_b->kesimpulan) ? htmlspecialchars($form_b->kesimpulan) : ''; ?></textarea>
+                                    <textarea name="kesimpulan" placeholder="Isi Di Sini" style="width: 100%; height: 150px;"><?php echo isset($form_b->kesimpulan) ? htmlspecialchars($form_b->kesimpulan) : ''; ?></textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -213,7 +233,7 @@
                             <tr>
                                 <td>
                                     <p><?php echo $row2->description; ?></p>
-                                    <textarea name="penjelasan" style="width: 100%; height: 150px;"><?php echo isset($form_b->penjelasan) ? htmlspecialchars($form_b->penjelasan) : ''; ?></textarea>
+                                    <textarea name="penjelasan" placeholder="Isi Di Sini" style="width: 100%; height: 150px;"><?php echo isset($form_b->penjelasan) ? htmlspecialchars($form_b->penjelasan) : ''; ?></textarea>
                                     <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
                                     <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
                                     <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
@@ -324,3 +344,37 @@
         </form> <!-- END FORM -->
     </div>
 </body>
+
+<script>
+    function enforceLimits(event) {
+        let key = event.key;
+
+        // Izinkan tombol navigasi dan edit teks
+        if (
+            key === "Backspace" || key === "Delete" || key === "ArrowLeft" || key === "ArrowRight" ||
+            key === "Tab" || key === "Enter"
+        ) {
+            return true;
+        }
+
+        // Izinkan hanya angka (0-9)
+        if (!/^[0-9]$/.test(key)) {
+            return false;
+        }
+    }
+
+    function validateInput(input) {
+        if (input.value !== "") {
+            let value = parseInt(input.value);
+
+            // Jika nilai lebih dari 100, batasi ke 100
+            if (value > 100) {
+                input.value = 100;
+            }
+            // Jika kurang dari 0, batasi ke 0
+            else if (value < 0 || isNaN(value)) {
+                input.value = 0;
+            }
+        }
+    }
+</script>

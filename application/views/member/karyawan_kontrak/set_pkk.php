@@ -35,10 +35,21 @@
                     <tbody>
                         <?php
                         $data = $this->master_model->set_pkk();
+                        $last_filled = !empty($filled_ids) ? max($filled_ids) : 0;
+                        // Cek apakah id_p_periode ini sudah ada di array $filled_ids
+                        // $is_disabled = in_array($dt->id_p_periode, $filled_ids) ? 'disabled' : '';
+
                         if ($data->num_rows() > 0) {
                             foreach ($data->result() as $dt) {
-                                // Cek apakah id_p_periode ini sudah ada di array $filled_ids
-                                $is_disabled = in_array($dt->id_p_periode, $filled_ids) ? 'disabled' : '';
+
+                                $is_disabled = '';
+                                if ($dt->id_p_periode <= $last_filled) {
+                                    // Disable jika periode ini sudah diisi
+                                    $is_disabled = 'disabled';
+                                } elseif ($dt->id_p_periode > $last_filled + 1) {
+                                    // Disable jika periode sebelumnya belum diisi
+                                    $is_disabled = 'disabled';
+                                }
                         ?>
                                 <tr>
                                     <td><?php echo $dt->nama_value; ?></td>

@@ -62,7 +62,39 @@ class Master_model extends CI_Model
 		return $query->row_array(); // Ambil hanya satu baris data
 	}
 
+	public function get_nilai_submit_by_nrp($nrp)
+	{
+		$query = $this->db->query("SELECT 
+            COALESCE(COUNT(DISTINCT id_p_periode), 0) AS jumlah_terisi,
+            COALESCE((
+                SELECT COUNT(DISTINCT id_p_periode) 
+                FROM (
+                    SELECT id_p_periode FROM trans_kel_1_2 WHERE nrp = ? 
+                    UNION 
+                    SELECT id_p_periode FROM trans_kel_3_7 WHERE nrp = ?
+                ) AS total_data
+            ), 0) AS total_periode,
+            CONCAT(
+                COALESCE(COUNT(DISTINCT id_p_periode), 0), '/', 
+                CASE 
+                    WHEN COUNT(DISTINCT id_p_periode) > 0 
+                    THEN (SELECT COUNT(DISTINCT id_p_periode) 
+                          FROM (
+                              SELECT id_p_periode FROM trans_kel_1_2 WHERE nrp = ?
+                              UNION 
+                              SELECT id_p_periode FROM trans_kel_3_7 WHERE nrp = ?
+                          ) AS total_data) 
+                    ELSE 0 
+                END
+            ) AS hasil
+			FROM (
+				SELECT id_p_periode FROM trans_kel_1_2 WHERE nrp = ? AND flag_sent = 1
+				UNION ALL
+				SELECT id_p_periode FROM trans_kel_3_7 WHERE nrp = ? AND flag_sent = 1
+			) AS t1", array($nrp, $nrp, $nrp, $nrp, $nrp, $nrp));
 
+		return $query->row();
+	}
 
 	public function detail_periode($id_periode)
 	{
@@ -94,7 +126,7 @@ class Master_model extends CI_Model
 		$q = $this->db->query("SELECT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
 		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir
 		FROM mst_karyawan a
-		where  a.jenis_karyawan = '3'
+		where a.jenis_karyawan = '3'
 		order by nama_lengkap ASC");
 		return $q;
 	}
@@ -157,7 +189,7 @@ class Master_model extends CI_Model
 		$q = $this->db->query("SELECT a.*, b.nama_lengkap, b.spv1, b.spv2
 		FROM trans_pkk a
 		JOIN mst_karyawan b ON a.nrp = b.nip
-		 order by id_trans_pkk asc");
+		 order by b.nama_lengkap, a.id_p_periode asc");
 		return $q;
 	}
 
@@ -223,18 +255,18 @@ class Master_model extends CI_Model
 	public function cek_submit_pkk($nrp)
 	{
 		$p = $this->db->query("SELECT 
-		pkk_jwb.nrp,
-		pkk_jwb.jml_jwb || '/' || pkk_mst.jml_pkk AS hasil,
-		pkk_mst.jml_pkk - pkk_jwb.jml_jwb AS cek
-	FROM 
-		(SELECT nrp, COUNT(DISTINCT id_p_periode) AS jml_jwb 
-		FROM trans_pkk WHERE nrp = '$nrp'
-		GROUP BY nrp) AS pkk_jwb
-	JOIN 
-		(SELECT nrp, COUNT(DISTINCT id_p_periode) AS jml_pkk 
-		FROM trans_pkk WHERE nrp = '$nrp'
-		GROUP BY nrp) AS pkk_mst
-	ON pkk_jwb.nrp = pkk_mst.nrp");
+				pkk_jwb.nrp,
+				pkk_jwb.jml_jwb || '/3' AS hasil,
+				pkk_mst.jml_pkk - pkk_jwb.jml_jwb AS cek
+			FROM 
+				(SELECT nrp, COUNT(DISTINCT id_p_periode) AS jml_jwb 
+				FROM trans_pkk WHERE nrp = '$nrp'
+				GROUP BY nrp) AS pkk_jwb
+			JOIN 
+				(SELECT nrp, COUNT(DISTINCT id_p_periode) AS jml_pkk 
+				FROM trans_pkk WHERE nrp = '$nrp'
+				GROUP BY nrp) AS pkk_mst
+			ON pkk_jwb.nrp = pkk_mst.nrp");
 		return $p;
 	}
 
@@ -422,52 +454,49 @@ FROM
 	{
 		if ($jenis_form == '1') {
 			$q = $this->db->query("WITH atasan_langsung AS (
-				SELECT 
-					a.id_nilai_pkk,
-					a.nrp,
-					a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
-					a.nilai_akhir AS nilai_atasan_langsung,
-					a.text_tambahan AS text_tambahan_atasan_langsung,
-					ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
-				FROM trans_kel_1_2 a
-				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' AND a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
+					SELECT 
+						a.id_nilai_pkk,
+						a.nrp,
+						a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
+						a.nilai_akhir AS nilai_atasan_langsung,
+						a.text_tambahan AS text_tambahan_atasan_langsung,
+						ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
+					FROM trans_kel_1_2 a
+					WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
+					AND a.nrp = '$nrp' AND a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
 				),
-			atasan_tidak_langsung AS (
-				SELECT 
-					a2.id_nilai_pkk,
-					a2.nrp,
-					a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
-					a2.nilai_akhir AS nilai_atasan_tidak_langsung,
-					a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
-					ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
-				FROM trans_kel_1_2 a2
-				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' AND a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
-			)
-			SELECT
-				c.nama_value AS aspek_dinilai,                  
-				al.isi_nilai_atasan_langsung,  
-				al.nilai_atasan_langsung,         
-				al.text_tambahan_atasan_langsung, -- Menampilkan text_tambahan dari atasan langsung
-				atl.isi_nilai_atasan_tidak_langsung, 
-				atl.nilai_atasan_tidak_langsung,
-				atl.text_tambahan_atasan_tidak_langsung, -- Menampilkan text_tambahan dari atasan tidak langsung
-				
-				-- Total keseluruhan nilai atasan langsung
-				SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
-				
-				-- Total keseluruhan nilai atasan tidak langsung
-				SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
-
+				atasan_tidak_langsung AS (
+					SELECT 
+						a2.id_nilai_pkk,
+						a2.nrp,
+						a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
+						a2.nilai_akhir AS nilai_atasan_tidak_langsung,
+						a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
+						ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
+					FROM trans_kel_1_2 a2
+					WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
+					AND a2.nrp = '$nrp' AND a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_1_2 WHERE nrp = '$nrp')
+				)
+				SELECT
+					c.nama_value AS aspek_dinilai,                  
+					al.isi_nilai_atasan_langsung,  
+					al.nilai_atasan_langsung,         
+					al.text_tambahan_atasan_langsung,
+					atl.isi_nilai_atasan_tidak_langsung, 
+					atl.nilai_atasan_tidak_langsung,
+					atl.text_tambahan_atasan_tidak_langsung,
+					-- Total keseluruhan nilai atasan langsung
+					SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
+					-- Total keseluruhan nilai atasan tidak langsung
+					SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
 				FROM atasan_langsung al
-				LEFT JOIN atasan_tidak_langsung atl 
+				FULL OUTER JOIN atasan_tidak_langsung atl 
 					ON al.id_nilai_pkk = atl.id_nilai_pkk 
 					AND al.nrp = atl.nrp
-				JOIN mst_penilaian_1_2 c 
-					ON al.id_nilai_pkk = c.id_nilai_pkk
-				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-				ORDER BY al.id_nilai_pkk DESC
+				LEFT JOIN mst_penilaian_1_2 c 
+					ON COALESCE(al.id_nilai_pkk, atl.id_nilai_pkk) = c.id_nilai_pkk
+				WHERE (al.rn = 1 OR al.rn IS NULL) AND (atl.rn = 1 OR atl.rn IS NULL)  
+				ORDER BY COALESCE(al.id_nilai_pkk, atl.id_nilai_pkk)
 				");
 		} else {
 			$q = $this->db->query("WITH atasan_langsung AS (
@@ -479,7 +508,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a.id_form_penilaian, a.nrp ORDER BY a.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a
 				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' and a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
+				AND a.nrp = '$nrp' AND a.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
 			),
 			atasan_tidak_langsung AS (
 				SELECT 
@@ -490,7 +519,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a2.id_form_penilaian, a2.nrp ORDER BY a2.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a2
 				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' and a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
+				AND a2.nrp = '$nrp' AND a2.id_p_periode = (SELECT MAX(id_p_periode) from trans_kel_3_7 WHERE nrp = '$nrp')
 			)
 			SELECT
 				c.nama_value AS aspek_dinilai,                  
@@ -498,16 +527,24 @@ FROM
 				al.nilai_atasan_langsung,         
 				atl.isi_nilai_atasan_tidak_langsung, 
 				atl.nilai_atasan_tidak_langsung,
-				SUM(COALESCE(CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_langsung,
-				SUM(COALESCE(CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_tidak_langsung
-				FROM atasan_langsung al
-				LEFT JOIN atasan_tidak_langsung atl 
-					ON al.id_form_penilaian = atl.id_form_penilaian 
-					AND al.nrp = atl.nrp
-				JOIN mst_penilaian_3_7_form_penilaian c 
-					ON al.id_form_penilaian = c.id_form_penilaian
-				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-				ORDER BY al.id_form_penilaian
+				-- Total keseluruhan nilai atasan langsung
+				SUM(COALESCE(
+					CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 
+					0
+				)) OVER () AS total_nilai_atasan_langsung,
+				-- Total keseluruhan nilai atasan tidak langsung
+				SUM(COALESCE(
+					CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 
+					0
+				)) OVER () AS total_nilai_atasan_tidak_langsung
+			FROM atasan_langsung al
+			FULL OUTER JOIN atasan_tidak_langsung atl 
+				ON al.id_form_penilaian = atl.id_form_penilaian 
+				AND al.nrp = atl.nrp
+			LEFT JOIN mst_penilaian_3_7_form_penilaian c 
+				ON COALESCE(al.id_form_penilaian, atl.id_form_penilaian) = c.id_form_penilaian
+			WHERE (al.rn = 1 OR al.rn IS NULL) AND (atl.rn = 1 OR atl.rn IS NULL)  
+			ORDER BY COALESCE(al.id_form_penilaian, atl.id_form_penilaian)
 				");
 		}
 
@@ -517,52 +554,49 @@ FROM
 	public function hasil_nilai($nrp)
 	{
 		$q = $this->db->query("WITH atasan_langsung AS (
-				SELECT 
-					a.id_nilai_pkk,
-					a.nrp,
-					a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
-					a.nilai_akhir AS nilai_atasan_langsung,
-					a.text_tambahan AS text_tambahan_atasan_langsung,
-					ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
-				FROM trans_kel_1_2 a
-				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' and a.id_p_periode = '1'
-			),
-			atasan_tidak_langsung AS (
-				SELECT 
-					a2.id_nilai_pkk,
-					a2.nrp,
-					a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
-					a2.nilai_akhir AS nilai_atasan_tidak_langsung,
-					a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
-					ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
-				FROM trans_kel_1_2 a2
-				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' and a2.id_p_periode = '1'
-			)
-			SELECT
-				c.nama_value AS aspek_dinilai,                  
-				al.isi_nilai_atasan_langsung,  
-				al.nilai_atasan_langsung,         
-				al.text_tambahan_atasan_langsung, -- Menampilkan text_tambahan dari atasan langsung
-				atl.isi_nilai_atasan_tidak_langsung, 
-				atl.nilai_atasan_tidak_langsung,
-				atl.text_tambahan_atasan_tidak_langsung, -- Menampilkan text_tambahan dari atasan tidak langsung
-				
-				-- Total keseluruhan nilai atasan langsung
-				SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
-				
-				-- Total keseluruhan nilai atasan tidak langsung
-				SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
-
+					SELECT 
+						a.id_nilai_pkk,
+						a.nrp,
+						a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
+						a.nilai_akhir AS nilai_atasan_langsung,
+						a.text_tambahan AS text_tambahan_atasan_langsung,
+						ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
+					FROM trans_kel_1_2 a
+					WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
+					AND a.nrp = '$nrp' AND a.id_p_periode = '1'
+				),
+				atasan_tidak_langsung AS (
+					SELECT 
+						a2.id_nilai_pkk,
+						a2.nrp,
+						a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
+						a2.nilai_akhir AS nilai_atasan_tidak_langsung,
+						a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
+						ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
+					FROM trans_kel_1_2 a2
+					WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
+					AND a2.nrp = '$nrp' AND a2.id_p_periode = '1'
+				)
+				SELECT
+					c.nama_value AS aspek_dinilai,                  
+					al.isi_nilai_atasan_langsung,  
+					al.nilai_atasan_langsung,         
+					al.text_tambahan_atasan_langsung,
+					atl.isi_nilai_atasan_tidak_langsung, 
+					atl.nilai_atasan_tidak_langsung,
+					atl.text_tambahan_atasan_tidak_langsung,
+					-- Total keseluruhan nilai atasan langsung
+					SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
+					-- Total keseluruhan nilai atasan tidak langsung
+					SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
 				FROM atasan_langsung al
-				LEFT JOIN atasan_tidak_langsung atl 
+				FULL OUTER JOIN atasan_tidak_langsung atl 
 					ON al.id_nilai_pkk = atl.id_nilai_pkk 
 					AND al.nrp = atl.nrp
-				JOIN mst_penilaian_1_2 c 
-					ON al.id_nilai_pkk = c.id_nilai_pkk
-				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-				ORDER BY al.id_nilai_pkk
+				LEFT JOIN mst_penilaian_1_2 c 
+					ON COALESCE(al.id_nilai_pkk, atl.id_nilai_pkk) = c.id_nilai_pkk
+				WHERE (al.rn = 1 OR al.rn IS NULL) AND (atl.rn = 1 OR atl.rn IS NULL)  
+				ORDER BY COALESCE(al.id_nilai_pkk, atl.id_nilai_pkk)
 				");
 		return $q;
 	}
@@ -570,52 +604,49 @@ FROM
 	public function hasil_nilai_periode($nrp, $periode)
 	{
 		$q = $this->db->query("WITH atasan_langsung AS (
-				SELECT 
-					a.id_nilai_pkk,
-					a.nrp,
-					a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
-					a.nilai_akhir AS nilai_atasan_langsung,
-					a.text_tambahan AS text_tambahan_atasan_langsung,
-					ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
-				FROM trans_kel_1_2 a
-				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' and a.id_p_periode = '$periode'
-			),
-			atasan_tidak_langsung AS (
-				SELECT 
-					a2.id_nilai_pkk,
-					a2.nrp,
-					a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
-					a2.nilai_akhir AS nilai_atasan_tidak_langsung,
-					a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
-					ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
-				FROM trans_kel_1_2 a2
-				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' and a2.id_p_periode = '$periode'
-			)
-			SELECT
-				c.nama_value AS aspek_dinilai,                  
-				al.isi_nilai_atasan_langsung,  
-				al.nilai_atasan_langsung,         
-				al.text_tambahan_atasan_langsung, -- Menampilkan text_tambahan dari atasan langsung
-				atl.isi_nilai_atasan_tidak_langsung, 
-				atl.nilai_atasan_tidak_langsung,
-				atl.text_tambahan_atasan_tidak_langsung, -- Menampilkan text_tambahan dari atasan tidak langsung
-				
-				-- Total keseluruhan nilai atasan langsung
-				SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
-				
-				-- Total keseluruhan nilai atasan tidak langsung
-				SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
-
+					SELECT 
+						a.id_nilai_pkk,
+						a.nrp,
+						a.isi_nilai_kel_1_2 AS isi_nilai_atasan_langsung,  
+						a.nilai_akhir AS nilai_atasan_langsung,
+						a.text_tambahan AS text_tambahan_atasan_langsung,
+						ROW_NUMBER() OVER (PARTITION BY a.id_nilai_pkk, a.nrp ORDER BY a.insert_date DESC) AS rn
+					FROM trans_kel_1_2 a
+					WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
+					AND a.nrp = '$nrp' AND a.id_p_periode = '$periode'
+				),
+				atasan_tidak_langsung AS (
+					SELECT 
+						a2.id_nilai_pkk,
+						a2.nrp,
+						a2.isi_nilai_kel_1_2 AS isi_nilai_atasan_tidak_langsung,  
+						a2.nilai_akhir AS nilai_atasan_tidak_langsung,
+						a2.text_tambahan AS text_tambahan_atasan_tidak_langsung,
+						ROW_NUMBER() OVER (PARTITION BY a2.id_nilai_pkk, a2.nrp ORDER BY a2.insert_date DESC) AS rn
+					FROM trans_kel_1_2 a2
+					WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
+					AND a2.nrp = '$nrp' AND a2.id_p_periode = '$periode'
+				)
+				SELECT
+					c.nama_value AS aspek_dinilai,                  
+					al.isi_nilai_atasan_langsung,  
+					al.nilai_atasan_langsung,         
+					al.text_tambahan_atasan_langsung,
+					atl.isi_nilai_atasan_tidak_langsung, 
+					atl.nilai_atasan_tidak_langsung,
+					atl.text_tambahan_atasan_tidak_langsung,
+					-- Total keseluruhan nilai atasan langsung
+					SUM(COALESCE(al.nilai_atasan_langsung, 0)) OVER () AS total_nilai_atasan_langsung,
+					-- Total keseluruhan nilai atasan tidak langsung
+					SUM(COALESCE(atl.nilai_atasan_tidak_langsung, 0)) OVER () AS total_nilai_atasan_tidak_langsung
 				FROM atasan_langsung al
-				LEFT JOIN atasan_tidak_langsung atl 
+				FULL OUTER JOIN atasan_tidak_langsung atl 
 					ON al.id_nilai_pkk = atl.id_nilai_pkk 
 					AND al.nrp = atl.nrp
-				JOIN mst_penilaian_1_2 c 
-					ON al.id_nilai_pkk = c.id_nilai_pkk
-				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-				ORDER BY al.id_nilai_pkk
+				LEFT JOIN mst_penilaian_1_2 c 
+					ON COALESCE(al.id_nilai_pkk, atl.id_nilai_pkk) = c.id_nilai_pkk
+				WHERE (al.rn = 1 OR al.rn IS NULL) AND (atl.rn = 1 OR atl.rn IS NULL)  
+				ORDER BY COALESCE(al.id_nilai_pkk, atl.id_nilai_pkk)
 				");
 		return $q;
 	}
@@ -676,27 +707,23 @@ FROM
 		return $query;
 	}
 
-	public function get_nilai_submit_by_nrp($nrp)
-	{
-		$query = $this->db->query("SELECT 
-				COUNT(DISTINCT id_p_periode) AS jumlah_terisi,
-				(SELECT COUNT(DISTINCT id_p_periode) 
-				 FROM (SELECT id_p_periode FROM trans_kel_1_2 
-					   UNION 
-					   SELECT id_p_periode FROM trans_kel_3_7) AS total_data) AS total_periode,
-				COUNT(DISTINCT id_p_periode) || '/' || 
-				(SELECT COUNT(DISTINCT id_p_periode) 
-				 FROM (SELECT id_p_periode FROM trans_kel_1_2 
-					   UNION 
-					   SELECT id_p_periode FROM trans_kel_3_7) AS total_data) AS hasil
-			FROM (
-				SELECT id_p_periode FROM trans_kel_1_2 WHERE nrp = ? AND flag_sent = 1
-				UNION ALL
-				SELECT id_p_periode FROM trans_kel_3_7 WHERE nrp = ? AND flag_sent = 1
-			) AS t1", array($nrp, $nrp));
+	// public function get_nilai_submit_by_nrp($nrp)
+	// {
+	// 	$query = $this->db->query("SELECT 
+	// 			COUNT(DISTINCT id_p_periode) AS jumlah_terisi,
+	// 			(SELECT COUNT(DISTINCT id_p_periode) 
+	// 			 FROM (SELECT id_p_periode FROM trans_kel_1_2 
+	// 				   UNION 
+	// 				   SELECT id_p_periode FROM trans_kel_3_7) AS total_data) AS total_periode,
+	// 			COUNT(DISTINCT id_p_periode) || '/3' AS hasil
+	// 		FROM (
+	// 			SELECT id_p_periode FROM trans_kel_1_2 WHERE nrp = ? AND flag_sent = 1
+	// 			UNION ALL
+	// 			SELECT id_p_periode FROM trans_kel_3_7 WHERE nrp = ? AND flag_sent = 1
+	// 		) AS t1", array($nrp, $nrp));
 
-		return $query->row(); // Mengembalikan satu baris hasil
-	}
+	// 	return $query->row(); // Mengembalikan satu baris hasil
+	// }
 
 	public function lap_nilai_3_7($nrp)
 	{
@@ -746,7 +773,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a.id_form_penilaian, a.nrp ORDER BY a.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a
 				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' and a.id_p_periode = '1'
+				AND a.nrp = '$nrp' AND a.id_p_periode = '1'
 			),
 			atasan_tidak_langsung AS (
 				SELECT 
@@ -757,7 +784,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a2.id_form_penilaian, a2.nrp ORDER BY a2.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a2
 				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' and a2.id_p_periode = '1'
+				AND a2.nrp = '$nrp' AND a2.id_p_periode = '1'
 			)
 			SELECT
 				c.nama_value AS aspek_dinilai,                  
@@ -765,16 +792,24 @@ FROM
 				al.nilai_atasan_langsung,         
 				atl.isi_nilai_atasan_tidak_langsung, 
 				atl.nilai_atasan_tidak_langsung,
-				SUM(COALESCE(CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_langsung,
-				SUM(COALESCE(CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_tidak_langsung
-				FROM atasan_langsung al
-				LEFT JOIN atasan_tidak_langsung atl 
-					ON al.id_form_penilaian = atl.id_form_penilaian 
-					AND al.nrp = atl.nrp
-				JOIN mst_penilaian_3_7_form_penilaian c 
-					ON al.id_form_penilaian = c.id_form_penilaian
-				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-				ORDER BY al.id_form_penilaian
+				-- Total keseluruhan nilai atasan langsung
+				SUM(COALESCE(
+					CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 
+					0
+				)) OVER () AS total_nilai_atasan_langsung,
+				-- Total keseluruhan nilai atasan tidak langsung
+				SUM(COALESCE(
+					CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 
+					0
+				)) OVER () AS total_nilai_atasan_tidak_langsung
+			FROM atasan_langsung al
+			FULL OUTER JOIN atasan_tidak_langsung atl 
+				ON al.id_form_penilaian = atl.id_form_penilaian 
+				AND al.nrp = atl.nrp
+			LEFT JOIN mst_penilaian_3_7_form_penilaian c 
+				ON COALESCE(al.id_form_penilaian, atl.id_form_penilaian) = c.id_form_penilaian
+			WHERE (al.rn = 1 OR al.rn IS NULL) AND (atl.rn = 1 OR atl.rn IS NULL)  
+			ORDER BY COALESCE(al.id_form_penilaian, atl.id_form_penilaian)
 				");
 		return $q;
 	}
@@ -790,7 +825,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a.id_form_penilaian, a.nrp ORDER BY a.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a
 				WHERE a.insert_by = (SELECT spv1 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a.nrp = '$nrp' and a.id_p_periode = '$periode'
+				AND a.nrp = '$nrp' AND a.id_p_periode = '$periode'
 			),
 			atasan_tidak_langsung AS (
 				SELECT 
@@ -801,7 +836,7 @@ FROM
 					ROW_NUMBER() OVER (PARTITION BY a2.id_form_penilaian, a2.nrp ORDER BY a2.insert_date DESC) AS rn
 				FROM trans_kel_3_7 a2
 				WHERE a2.insert_by = (SELECT spv2 FROM mst_karyawan WHERE nip = '$nrp')
-				AND a2.nrp = '$nrp' and a2.id_p_periode = '$periode'
+				AND a2.nrp = '$nrp' AND a2.id_p_periode = '$periode'
 			)
 			SELECT
 				c.nama_value AS aspek_dinilai,                  
@@ -809,17 +844,24 @@ FROM
 				al.nilai_atasan_langsung,         
 				atl.isi_nilai_atasan_tidak_langsung, 
 				atl.nilai_atasan_tidak_langsung,
-				SUM(COALESCE(CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_langsung,
-				SUM(COALESCE(CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 0)) OVER () AS total_nilai_atasan_tidak_langsung
-				FROM atasan_langsung al
-				LEFT JOIN atasan_tidak_langsung atl 
-					ON al.id_form_penilaian = atl.id_form_penilaian 
-					AND al.nrp = atl.nrp
-				JOIN mst_penilaian_3_7_form_penilaian c 
-					ON al.id_form_penilaian = c.id_form_penilaian
-				WHERE al.rn = 1 AND (atl.rn = 1 OR atl.rn IS NULL)  -- Ambil hanya baris pertama per aspek
-				ORDER BY al.id_form_penilaian
-				");
+				-- Total keseluruhan nilai atasan langsung
+				SUM(COALESCE(
+					CAST(NULLIF(REPLACE(al.nilai_atasan_langsung, ',', '.'), '') AS NUMERIC), 
+					0
+				)) OVER () AS total_nilai_atasan_langsung,
+				-- Total keseluruhan nilai atasan tidak langsung
+				SUM(COALESCE(
+					CAST(NULLIF(REPLACE(atl.nilai_atasan_tidak_langsung, ',', '.'), '') AS NUMERIC), 
+					0
+				)) OVER () AS total_nilai_atasan_tidak_langsung
+			FROM atasan_langsung al
+			FULL OUTER JOIN atasan_tidak_langsung atl 
+				ON al.id_form_penilaian = atl.id_form_penilaian 
+				AND al.nrp = atl.nrp
+			LEFT JOIN mst_penilaian_3_7_form_penilaian c 
+				ON COALESCE(al.id_form_penilaian, atl.id_form_penilaian) = c.id_form_penilaian
+			WHERE (al.rn = 1 OR al.rn IS NULL) AND (atl.rn = 1 OR atl.rn IS NULL)  
+			ORDER BY COALESCE(al.id_form_penilaian, atl.id_form_penilaian)");
 		return $q;
 	}
 
@@ -870,6 +912,17 @@ FROM
 		return $query; // Mengembalikan array, bukan object query
 	}
 
+	public function get_trans_nilai_1_2($nrp)
+	{
+		$query = $this->db->query("SELECT DISTINCT nrp, id_p_periode from trans_kel_1_2 where nrp = '$nrp' ORDER BY id_p_periode ASC");
+		return $query; // Mengembalikan array, bukan object query
+	}
+
+	public function get_trans_nilai_3_7($nrp)
+	{
+		$query = $this->db->query("SELECT DISTINCT nrp, id_p_periode from trans_kel_3_7 where nrp = '$nrp' ORDER BY id_p_periode ASC");
+		return $query; // Mengembalikan array, bukan object query
+	}
 
 	public function get_nilai_1_2_terisi($nrp, $id_p_periode, $atasan)
 	{
@@ -1349,15 +1402,14 @@ FROM
 		return $q;
 	}
 
-	public function list_member_rekap_pkk1($unit)
+	public function list_member_rekap_pkk1()
 	{
 		$q = $this->db->query("SELECT DISTINCT a.id_karyawan, a.nip, a.nama_lengkap, a.status_jaya, a.department, 
 		a.job_title, a.job_grade, a.tgl_hire, a.tgl_permanen, a.tgl_lahir, b.id_bagian, c.id_jenis_form 
 		FROM mst_karyawan a
 		LEFT JOIN mst_bagian b on a.department = b.nama_bagian
 		LEFT JOIN trans_pkk c on a.nip = c.nrp
-		where jenis_karyawan = '3' and a.nip = c.nrp
-		and b.id_bagian = '$unit' order by nama_lengkap asc");
+		where jenis_karyawan = '3' and a.nip = c.nrp order by nama_lengkap asc");
 		return $q;
 	}
 	public function detail_bagian($unit)

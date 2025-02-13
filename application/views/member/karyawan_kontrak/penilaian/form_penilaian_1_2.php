@@ -76,7 +76,7 @@
                                     <th style="border: 1px solid black;">No</th>
                                     <th style="border: 1px solid black;">Kriteria</th>
                                     <th style="border: 1px solid black;">Bobot</th>
-                                    <th style="border: 1px solid black;">Pilihan Jawaban</th>
+                                    <th colspan="4" style="border: 1px solid black; text-align: center;">Pilihan Jawaban</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -91,23 +91,34 @@
                                         <td style="border: 1px solid black; padding: 5px;"><?php echo $no; ?></td>
                                         <td style="border: 1px solid black; padding: 5px;"><?php echo $dt->nama_value; ?></td>
                                         <td style="border: 1px solid black; padding: 5px;"><?php echo $dt->bobot; ?>%</td>
-                                        <td style="border: 1px solid black; padding: 5px;">
-                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="A" <?php echo ($nilai_saat_ini == 'A') ? 'checked' : ''; ?>> A</label>
+                                        <!-- <td style="border: 1px solid black; padding: 5px;"> -->
+                                        <!-- <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="A" <?php echo ($nilai_saat_ini == 'A') ? 'checked' : ''; ?>> A</label>
                                             <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="B" <?php echo ($nilai_saat_ini == 'B') ? 'checked' : ''; ?>> B</label>
                                             <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="C" <?php echo ($nilai_saat_ini == 'C') ? 'checked' : ''; ?>> C</label>
-                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="D" <?php echo ($nilai_saat_ini == 'D') ? 'checked' : ''; ?>> D</label>
-
-                                            <input type="hidden" name="id_nilai_pkk[]" value="<?php echo $dt->id_nilai_pkk; ?>">
-                                            <input type="hidden" name="bobot[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->bobot; ?>">
-                                            <input type="hidden" name="isi_nilai_a[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_a; ?>">
-                                            <input type="hidden" name="isi_nilai_b[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_b; ?>">
-                                            <input type="hidden" name="isi_nilai_c[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_c; ?>">
-                                            <input type="hidden" name="isi_nilai_d[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_d; ?>">
-                                            <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
-                                            <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
-                                            <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
-                                            <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="D" <?php echo ($nilai_saat_ini == 'D') ? 'checked' : ''; ?>> D</label> -->
+                                        <td style="border: 1px solid black; padding: 5px; text-align: center;">
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="A" <?php echo ($nilai_saat_ini == 'A') ? 'checked' : ''; ?>> A</label>
                                         </td>
+                                        <td style="border: 1px solid black; padding: 5px; text-align: center;">
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="B" <?php echo ($nilai_saat_ini == 'B') ? 'checked' : ''; ?>> B</label>
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 5px; text-align: center;">
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="C" <?php echo ($nilai_saat_ini == 'C') ? 'checked' : ''; ?>> C</label>
+                                        </td>
+                                        <td style="border: 1px solid black; padding: 5px; text-align: center;">
+                                            <label><input type="radio" name="isi_nilai_kel_1_2[<?php echo $dt->id_nilai_pkk; ?>]" value="D" <?php echo ($nilai_saat_ini == 'D') ? 'checked' : ''; ?>> D</label>
+                                        </td>
+
+                                        <input type="hidden" name="id_nilai_pkk[]" value="<?php echo $dt->id_nilai_pkk; ?>">
+                                        <input type="hidden" name="bobot[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->bobot; ?>">
+                                        <input type="hidden" name="isi_nilai_a[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_a; ?>">
+                                        <input type="hidden" name="isi_nilai_b[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_b; ?>">
+                                        <input type="hidden" name="isi_nilai_c[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_c; ?>">
+                                        <input type="hidden" name="isi_nilai_d[<?php echo $dt->id_nilai_pkk; ?>]" value="<?php echo $dt->nilai_d; ?>">
+                                        <input type="hidden" name="id_periode" value="<?php echo $id_periode; ?>">
+                                        <input type="hidden" name="id_p_periode" value="<?php echo $id_p_periode; ?>">
+                                        <input type="hidden" name="flag_jenis_form" value="<?php echo $flag_jenis_form; ?>">
+                                        <input type="hidden" name="nrp" value="<?php echo $idp_nrp; ?>">
                                     </tr>
 
                                 <?php $no++;

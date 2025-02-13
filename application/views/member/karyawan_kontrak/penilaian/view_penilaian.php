@@ -503,7 +503,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"><?php echo $fb_k->isi_feedback; ?></textarea>
+                                <textarea name="pendapat_karyawan" style="width: 100%; height: 150px;"><?php echo isset($fb_k->isi_feedback) ? htmlspecialchars($fb_k->isi_feedback) : 'Nilai Belum Di Isi !'; ?></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -511,7 +511,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <textarea name="komentar_atasan" style="width: 100%; height: 150px;"><?php echo $fb_a->isi_feedback; ?></textarea>
+                                <textarea name="komentar_atasan" style="width: 100%; height: 150px;"><?php echo isset($fb_a->isi_feedback) ? htmlspecialchars($fb_a->isi_feedback) : 'Nilai Belum Di Isi !'; ?></textarea>
                             </td>
                         </tr>
                     </table>

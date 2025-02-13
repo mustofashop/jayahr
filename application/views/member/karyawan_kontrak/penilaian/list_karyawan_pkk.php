@@ -38,7 +38,13 @@
                         foreach ($data->result() as $dt) {
                             // Mengambil hasil submit berdasarkan NRP
                             $nilai_submit = $this->master_model->get_nilai_submit_by_nrp($dt->nip);
-                            $hasil_submit = isset($nilai_submit->hasil) ? $nilai_submit->hasil : '0/6';
+                            // $hasil_submit = isset($nilai_submit->hasil) ? $nilai_submit->hasil : '0/6';
+
+                            $total_periode = 3; // Tetapkan jumlah aksi sebagai 3
+                            $jumlah_terisi = isset($nilai_submit->jumlah_terisi) ? $nilai_submit->jumlah_terisi : 0;
+                            $hasil_submit = "$jumlah_terisi/$total_periode";
+                            $warna = ($jumlah_terisi == $total_periode) ? 'green' : 'red';
+
                         ?>
                             <tr>
                                 <td><?php echo $no; ?></td>
@@ -46,7 +52,7 @@
                                 <td><?php echo $dt->nama_lengkap; ?></td>
                                 <td><?php echo $dt->status_jaya; ?></td>
                                 <td>
-                                    <p style="font-weight: bold; color: <?php echo ($hasil_submit === '3/3') ? 'green' : 'red'; ?>">
+                                    <p style="font-weight: bold; color: <?php echo $warna; ?>">
                                         <?php echo $hasil_submit; ?>
                                     </p>
                                 </td>
