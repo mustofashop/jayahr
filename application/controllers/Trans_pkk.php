@@ -2178,8 +2178,8 @@ class Trans_pkk extends CI_Controller
 
                     // **Menambahkan Total**
                     $sheet->setCellValue("B$row", 'Total');
-                    $sheet->setCellValue("C$row", $total_nilai_atasan_langsung);
-                    $sheet->setCellValue("E$row", $total_nilai_atasan_tidak_langsung);
+                    $sheet->setCellValue("C$row", round($total_nilai_atasan_langsung, 1));
+                    $sheet->setCellValue("E$row", round($total_nilai_atasan_tidak_langsung, 1));
                     $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
                     $sheet->mergeCells("E$row:F$row");
                     $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
@@ -2190,7 +2190,7 @@ class Trans_pkk extends CI_Controller
                     $hasil_akhir = ($total_nilai_atasan_langsung + $total_nilai_atasan_tidak_langsung) / 2;
 
                     $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
-                    $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
+                    $sheet->setCellValue("C$row_hasil_akhir", round($hasil_akhir, 1));
                     $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
                     $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
                     $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
@@ -2548,8 +2548,8 @@ class Trans_pkk extends CI_Controller
 
                 // **Menambahkan Total**
                 $sheet->setCellValue("B$row", 'Total');
-                $sheet->setCellValue("C$row", $total_nilai_atasan_langsung);
-                $sheet->setCellValue("E$row", $total_nilai_atasan_tidak_langsung);
+                $sheet->setCellValue("C$row", round($total_nilai_atasan_langsung, 1));
+                $sheet->setCellValue("E$row", round($total_nilai_atasan_tidak_langsung, 1));
                 $sheet->mergeCells("C$row:D$row"); // Perbaikan merge agar sesuai dengan nomor baris
                 $sheet->mergeCells("E$row:F$row");
                 $sheet->getStyle("B$row:F$row")->getFont()->setBold(true);
@@ -2560,7 +2560,7 @@ class Trans_pkk extends CI_Controller
                 $hasil_akhir = ($total_nilai_atasan_langsung + $total_nilai_atasan_tidak_langsung) / 2;
 
                 $sheet->setCellValue("B$row_hasil_akhir", 'Hasil Akhir');
-                $sheet->setCellValue("C$row_hasil_akhir", $hasil_akhir);
+                $sheet->setCellValue("C$row_hasil_akhir", round($hasil_akhir, 1));
                 $sheet->mergeCells("C$row_hasil_akhir:F$row_hasil_akhir");
                 $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getFont()->setBold(true);
                 $sheet->getStyle("B$row_hasil_akhir:F$row_hasil_akhir")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
